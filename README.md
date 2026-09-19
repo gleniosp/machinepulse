@@ -13,9 +13,10 @@ The project is currently in **planning**: the documentation foundation is being 
 - [Architecture overview](docs/architecture/overview.md) — system structure and evolution.
 - [Telemetry contract](docs/specs/telemetry-contract.md) — producer-facing data contract.
 - [Working agreement](docs/working-agreement.md) — collaboration and delivery workflow.
+- [Project governance](docs/project-governance.md) — license, contribution, security, and artifact-provenance baseline.
 
 Operational issue and milestone state is maintained in [GitHub issues](https://github.com/gleniosp/machinepulse/issues) and [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones).
 
 ## Open-source status
 
-The repository is being prepared for public development and reproducible local execution. The project license and contribution policy remain open Phase 00 decisions; see the [readiness checklist](docs/project-readiness.md).
+The repository is being prepared for public development and reproducible local execution. The project uses Apache-2.0; governance follow-ups and artifact-provenance expectations are recorded in the [project governance baseline](docs/project-governance.md) and [readiness checklist](docs/project-readiness.md).

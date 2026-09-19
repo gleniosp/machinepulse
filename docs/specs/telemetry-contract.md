@@ -153,3 +153,20 @@ Internal event envelopes and derived-event schemas are separate contracts. The [
 6. Should JSON remain the first internal event encoding or be converted at the gateway boundary?
 
 These questions are intentionally visible. Their accepted answers should be recorded before the telemetry implementation is considered complete.
+
+### Follow-up ownership
+
+The questions are reviewed for the foundation phase and assigned to the
+capability work that needs each decision:
+
+| Question | Follow-up owner |
+|---|---|
+| Identifier format | P01-001 simulator specification and P02-001 ingestion specification |
+| Initial window duration and sampling default | P01-001 simulator specification |
+| Scalar temperature and RPM window semantics | P01-001 simulator specification, confirmed by P04-001 signal-processing specification |
+| Producer event time and gateway receipt time | P02-001 ingestion specification |
+| MQTT QoS and session behavior | P02-001 ingestion specification and its transport ADR |
+| JSON as the initial internal encoding | P02-001 ingestion specification and its transport ADR |
+
+These assignments keep the contract review complete without silently resolving
+decisions that belong to the simulator or ingestion phases.

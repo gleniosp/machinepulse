@@ -28,6 +28,7 @@ Specifications should link to the product requirements they satisfy and to archi
 | Specification | Status | Purpose |
 |---|---|---|
 | [Telemetry contract](telemetry-contract.md) | Draft | Defines the producer-facing telemetry window and initial event semantics |
+| [Simulator behavior](simulator.md) | Draft | Defines deterministic motor telemetry generation and ground-truth separation |
 
 The remaining capability specifications will be added just before their implementation phases:
 
