@@ -26,7 +26,7 @@ Review and refine the initial MachinePulse product definition, architecture, tel
 - [x] P00-004 — architecture reviewed.
 - [x] P00-005 — telemetry contract reviewed.
 - [x] P00-006 — documentation workflows established.
-- [ ] P00-007 — Phase 01 prepared.
+- [x] P00-007 — Phase 01 prepared.
 - [ ] P00-008 — readiness reviewed.
 - [ ] P00-009 — governance baseline selected.
 - [ ] P00-010 — developer-tooling baseline defined.
@@ -157,12 +157,21 @@ Review document ownership and the task, journal, ADR, experiment, blog, and GitH
 
 The documentation audit established one owner for each major information type. The root `AGENTS.md` now points agents to those owners, `docs/README.md` is an index rather than a second project specification, and the public `README.md` is limited to project orientation. Product, architecture, task, readiness, and journal documents now link to their canonical sources instead of copying their contents. P00-006 is complete.
 
+The simulator specification, Phase 01 task breakdown, Week 01 journal plan,
+article outline, and required experiment records were prepared and reviewed.
+The project maintainer accepted P00-007 on 2026-09-19. Phase 01 remains
+planned work; its implementation tasks are not being marked complete by this
+preparation review.
+
 ### Evidence
 
 - [Documentation hub](../README.md)
 - [AI-agent instructions](../../AGENTS.md)
 - [Phase 00 tasks](../tasks/phase-00-foundation.md)
 - [Pre-implementation readiness](../project-readiness.md)
+- [Simulator specification](../specs/simulator.md)
+- [Phase 01 tasks](../tasks/phase-01-simulated-world.md)
+- [Week 01 journal](week-01-simulated-world.md)
 
 ## Open questions
 

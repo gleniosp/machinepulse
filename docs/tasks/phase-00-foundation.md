@@ -82,10 +82,10 @@
 
 - **Outcome:** The simulator phase is ready to implement without unresolved foundational ambiguity.
 - **Acceptance criteria:**
-  - [ ] Simulator capability specification is drafted.
-  - [ ] Phase 01 tasks have acceptance criteria.
-  - [ ] Week 01 journal plan and article outline are ready.
-  - [ ] Required experiments are identified.
+  - [x] Simulator capability specification is drafted.
+  - [x] Phase 01 tasks have acceptance criteria.
+  - [x] Week 01 journal plan and article outline are ready.
+  - [x] Required experiments are identified.
 - **Evidence:** Phase 01 task file and Week 01 journal entry.
 
 ### P00-008 — Complete the pre-implementation readiness review
