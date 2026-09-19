@@ -28,7 +28,7 @@ A task should not introduce behavior absent from the relevant specification unle
 | 07 | Reliability and observability | Week 07 |
 | 08 | Physical edge integration | Week 08 |
 
-Only Phase 00 is currently drafted in detail. Create or refine later task files immediately before their implementation phase.
+Phases 00 and 01 are currently drafted in detail. Create or refine later task files immediately before their implementation phase.
 
 ## Task conventions
 
