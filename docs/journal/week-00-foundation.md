@@ -29,7 +29,7 @@ Review and refine the initial MachinePulse product definition, architecture, tel
 - [x] P00-007 — Phase 01 prepared.
 - [x] P00-008 — readiness reviewed.
 - [x] P00-009 — governance baseline selected.
-- [ ] P00-010 — developer-tooling baseline defined.
+- [x] P00-010 — developer-tooling baseline defined.
 
 The detailed acceptance criteria for these outcomes live in [Phase 00 tasks](../tasks/phase-00-foundation.md); this journal tracks their evidence rather than repeating them.
 
@@ -187,19 +187,46 @@ The documentation foundation is coherent and the simulator phase is prepared
 for implementation planning.
 
 The governance/license baseline is complete and recorded in P00-009. The
-developer-tooling/validation work remains open and is assigned to P00-010. The
-Phase 01 runtime start gate is clearly blocked until that follow-up is reviewed
-and included in the Phase 00 pull request.
+developer-tooling baseline is accepted under P00-010. Exact implementation tool
+versions, CI setup, and clean-checkout validation remain Phase 01 evidence and
+are assigned to the relevant implementation setup and P01-008.
 
 The project maintainer accepted the P00-008 readiness outcome on 2026-09-19.
-The gate is intentionally not marked as permitting runtime implementation until
-P00-010 is complete.
+The P00-010 tooling baseline was subsequently accepted on 2026-09-19. Exact
+tool versions, CI setup, and clean-checkout execution remain implementation
+evidence owned by Phase 01.
+
+The readiness gate is phase-scoped: prerequisites for Phase 01 are accepted,
+the clean-checkout validation is required before Phase 01 exits, and
+observability, recovery, benchmark, and physical-edge concerns remain owned by
+their later phases.
 
 ### Evidence
 
 - [Pre-implementation readiness](../project-readiness.md)
 - [Phase 00 tasks](../tasks/phase-00-foundation.md)
 - [Working agreement](../working-agreement.md)
+
+## Developer tooling review
+
+### Notes
+
+The project maintainer accepted the developer-tooling baseline on 2026-09-19.
+mise is the repository-level tool and task manager; Go modules, Pixi-managed
+Python components, pnpm-managed React/Vite packages, and the `infra/` area keep
+their own dependency manifests and lockfiles. Vite+ is a frontend package
+dependency used through `pnpm exec vp`; a global Vite+ CLI is not required.
+
+The baseline records the initial toolchain choices, local task contract, CI
+expectations, lockfile policy, and evidence boundaries. Exact patch versions,
+the CI provider, and the clean-checkout validation run are intentionally
+deferred to implementation setup and P01-008.
+
+### Evidence
+
+- [Developer tooling baseline](../developer-tooling.md)
+- [Phase 01 simulator tasks](../tasks/phase-01-simulated-world.md)
+- Maintainer acceptance recorded on 2026-09-19.
 
 ## Governance and licensing review
 

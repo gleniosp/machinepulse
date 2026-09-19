@@ -113,11 +113,14 @@
 
 - **Outcome:** Contributors and agents have repeatable commands for the first implementation phase.
 - **Acceptance criteria:**
-  - [ ] Supported Go, Python, Node.js, and package-manager versions are selected or tracked as open decisions.
-  - [ ] Formatter, linter, type-checker, and test-runner choices are recorded.
-  - [ ] Initial local and CI command expectations are documented.
-  - [ ] Phase 01 includes the commands as executable checks.
-- **Evidence:** Developer setup documentation and a clean-checkout validation run.
+  - [x] Supported Go, Python, Node.js, and package-manager versions are selected or tracked as open decisions.
+  - [x] Formatter, linter, type-checker, and test-runner choices are recorded.
+  - [x] Initial local and CI command expectations are documented.
+  - [x] Phase 01 includes the commands as executable checks.
+- **Evidence:** [Developer tooling baseline](../developer-tooling.md), the
+  Phase 01 validation requirement in [P01-008](../tasks/phase-01-simulated-world.md),
+  and the Week 00 acceptance record. Clean-checkout execution remains Phase 01
+  evidence and is not claimed by this planning task.
 
 ## Out of scope
 

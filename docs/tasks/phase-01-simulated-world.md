@@ -3,6 +3,7 @@
 - **Status:** Planned
 - **Goal:** Produce deterministic, contract-compliant motor telemetry and evidence without physical hardware.
 - **Related specifications:** [Simulator behavior](../specs/simulator.md), [Telemetry contract](../specs/telemetry-contract.md)
+- **Related tooling:** [Developer tooling baseline](../developer-tooling.md)
 - **Related journal entry:** [Week 01 — Simulated industrial world](../journal/week-01-simulated-world.md)
 
 ## Objective
@@ -91,8 +92,10 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Phase 01 behavior is evaluated and its limitations are recorded.
 - **Acceptance criteria:** Unit and contract tests cover all conditions;
   time-domain and frequency-domain plots are produced; Week 01 records commands
-  and limitations; the first article draft is evidence-based.
-- **Tests or evidence:** Test output, plots, journal, and article outline/draft.
+  and limitations; the first article draft is evidence-based; the project
+  validation commands are executable for the checks that exist in this phase.
+- **Tests or evidence:** Test output, plots, journal, article outline/draft, and
+  the Phase 01 validation command run.
 - **Dependencies:** P01-003 through P01-007.
 
 ## Required experiments
