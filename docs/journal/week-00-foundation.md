@@ -20,12 +20,12 @@ Review and refine the initial MachinePulse product definition, architecture, tel
 
 ## Planned outcomes
 
-- [ ] P00-001 — project identity reviewed.
-- [ ] P00-002 — version 0.1 scope reviewed.
-- [ ] P00-003 — domain model and workflows reviewed.
-- [ ] P00-004 — architecture reviewed.
-- [ ] P00-005 — telemetry contract reviewed.
-- [ ] P00-006 — documentation workflows established.
+- [x] P00-001 — project identity reviewed.
+- [x] P00-002 — version 0.1 scope reviewed.
+- [x] P00-003 — domain model and workflows reviewed.
+- [x] P00-004 — architecture reviewed.
+- [x] P00-005 — telemetry contract reviewed.
+- [x] P00-006 — documentation workflows established.
 - [ ] P00-007 — Phase 01 prepared.
 - [ ] P00-008 — readiness reviewed.
 - [ ] P00-009 — governance baseline selected.
@@ -41,11 +41,32 @@ Review the [product vision](../product/vision.md).
 
 ### Notes
 
-_To be filled during the work session._
+Reviewed the project vision and its relationship to the version 0.1 scope. The
+project identity is coherent: MachinePulse is an experimental, simulation-first
+condition-monitoring platform for rotating industrial assets, with a later
+physical producer using the same telemetry contract.
+
+The review found the following principles explicit in the vision:
+
+- simulation before hardware;
+- evidence before conclusions;
+- simple baselines before complex models;
+- reproducibility and observable failure; and
+- open-source development with clear limits on physical claims.
+
+The vision also identifies maintenance technicians, reliability or operations
+engineers, and platform or data engineers as the intended users. Synthetic
+signals and analytical results are framed as engineering evidence, not validated
+or safety-critical diagnoses.
+
+The project maintainer accepted the project identity and principles on
+2026-09-19. P00-001 is complete.
 
 ### Evidence
 
-_Links to review notes or amendments._
+- [Product vision](../product/vision.md)
+- [Version 0.1 scope](../product/scope.md)
+- Review completed on 2026-09-19; no amendment is proposed.
 
 ## Day 2 — Domain and scope
 
@@ -55,11 +76,30 @@ Review the [product scope](../product/scope.md), [domain model](../product/domai
 
 ### Notes
 
-_To be filled during the work session._
+Reviewed the version 0.1 boundary against the product requirements. The scope
+defines one coherent path: a simulated rotating motor produces vibration,
+temperature, and RPM telemetry; the platform validates, stores, analyzes, and
+presents the resulting evidence through alerts and a minimal work-order flow.
+
+The scope also explicitly limits the first release to synthetic, non-safety-
+critical engineering evidence. It excludes validated digital-twin claims,
+additional asset classes, mobile and enterprise features, a large fault catalog,
+deep-learning optimization, premature hardware integration, and an assistant as
+a core dependency.
+
+The scope-change rule is clear: a proposed addition must support the core
+monitoring workflow, teach an important physical-systems/data/reliability
+concept, or be necessary for testability, observability, or operability.
+Otherwise it belongs on the later roadmap.
+
+The project maintainer accepted the version 0.1 scope, non-goals, and
+scope-change rule on 2026-09-19. P00-002 is complete.
 
 ### Evidence
 
-_Links to decisions or document changes._
+- [Version 0.1 scope](../product/scope.md)
+- [Product requirements](../product/requirements.md)
+- Review completed on 2026-09-19; no scope amendment is proposed.
 
 ## Day 3 — Telemetry contract
 
@@ -69,11 +109,20 @@ Review the [telemetry contract](../specs/telemetry-contract.md) and assign its o
 
 ### Notes
 
-_To be filled during the work session._
+Reviewed the `telemetry.v1` payload shape, field units, event-time and sequence
+semantics, validation rules, duplicate expectations, and simulator ground-truth
+separation. The contract is sufficient for simulator planning. Its unresolved
+questions are now assigned to the simulator or ingestion specifications and
+their follow-up ADRs where transport choices are durable.
+
+P00-005 is complete as a foundation review. The contract remains Draft until
+those phase-specific decisions are made; this is an explicit follow-up rather
+than an untracked blocker.
 
 ### Evidence
 
-_Links to contract changes, fixtures, or follow-up experiments._
+- [Telemetry contract](../specs/telemetry-contract.md)
+- Follow-up ownership mapping added to the contract on 2026-09-19.
 
 ## Day 4 — Architecture
 
@@ -83,11 +132,20 @@ Review the [architecture overview](../architecture/overview.md), [data flow](../
 
 ### Notes
 
-_To be filled during the work session._
+Reviewed the logical architecture, data flow, and runtime boundaries. The
+responsibilities of Go, Python, TypeScript, MQTT, the Kafka-compatible stream,
+PostgreSQL, and ClickHouse are clear without requiring one process per logical
+component. The simulator and future physical producer meet at the same producer
+contract, and local-first execution is the initial deployment direction.
+
+P00-004 is complete; no architecture amendment or ADR is required by this
+review.
 
 ### Evidence
 
-_Links to architecture changes or ADRs._
+- [Architecture overview](../architecture/overview.md)
+- [Data flow](../architecture/data-flow.md)
+- [Runtime boundaries](../architecture/runtime-boundaries.md)
 
 ## Day 5 — Execution system
 
@@ -97,7 +155,7 @@ Review document ownership and the task, journal, ADR, experiment, blog, and GitH
 
 ### Notes
 
-The documentation audit established one owner for each major information type. The root `AGENTS.md` now points agents to those owners, `docs/README.md` is an index rather than a second project specification, and the public `README.md` is limited to project orientation. Product, architecture, task, readiness, and journal documents now link to their canonical sources instead of copying their contents.
+The documentation audit established one owner for each major information type. The root `AGENTS.md` now points agents to those owners, `docs/README.md` is an index rather than a second project specification, and the public `README.md` is limited to project orientation. Product, architecture, task, readiness, and journal documents now link to their canonical sources instead of copying their contents. P00-006 is complete.
 
 ### Evidence
 
