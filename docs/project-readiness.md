@@ -26,33 +26,33 @@ The Week 01 journal is a placeholder until the Phase 01 weekly entry is created.
 
 ### Product and domain
 
-- [ ] Review the [product vision](product/vision.md), [scope](product/scope.md), [requirements](product/requirements.md), [domain model](product/domain-model.md), and [workflows](product/workflows.md) together.
-- [ ] Confirm that synthetic conditions, health scores, and anomaly observations are described with their limitations.
-- [ ] Keep future asset types, advanced models, hardware, and optional assistants outside version 0.1 unless the scope owner changes it.
+- [x] Review the [product vision](product/vision.md), [scope](product/scope.md), [requirements](product/requirements.md), [domain model](product/domain-model.md), and [workflows](product/workflows.md) together.
+- [x] Confirm that synthetic conditions, health scores, and anomaly observations are described with their limitations.
+- [x] Keep future asset types, advanced models, hardware, and optional assistants outside version 0.1 unless the scope owner changes it.
 
 ### Contracts and architecture
 
-- [ ] Review the [telemetry contract](specs/telemetry-contract.md) and resolve or assign its open questions.
-- [ ] Create the next capability specification before its implementation phase rather than extending the producer contract with unrelated behavior.
-- [ ] Confirm that the [architecture](architecture/overview.md) and [runtime boundaries](architecture/runtime-boundaries.md) do not imply unnecessary process boundaries.
+- [x] Review the [telemetry contract](specs/telemetry-contract.md) and resolve or assign its open questions.
+- [x] Create the next capability specification before its implementation phase rather than extending the producer contract with unrelated behavior.
+- [x] Confirm that the [architecture](architecture/overview.md) and [runtime boundaries](architecture/runtime-boundaries.md) do not imply unnecessary process boundaries.
 
 ### Governance and tooling
 
-- [ ] Select and document the repository license.
-- [ ] Record contribution, conduct, security, issue, and pull-request follow-ups.
+- [x] Select and document the repository license.
+- [x] Record contribution, conduct, security, issue, and pull-request follow-ups.
 - [ ] Select supported Go, Python, Node.js, and package-manager versions plus formatter, linter, type-checker, and test-runner expectations.
 - [ ] Establish a clean-checkout validation path and ensure CI will run the same focused checks once runtime code exists.
 
 ### Quality, data, and analytical claims
 
 - [ ] Define the project-wide definition of done and the division between unit, contract, integration, end-to-end, and load evidence.
-- [ ] Record simulator configuration, seed, generator version, source revision, and dataset/model provenance for analytical work.
-- [ ] Keep simulator ground truth separate from inference inputs and document what synthetic experiments cannot prove about physical equipment.
+- [x] Record simulator configuration, seed, generator version, source revision, and dataset/model provenance for analytical work.
+- [x] Keep simulator ground truth separate from inference inputs and document what synthetic experiments cannot prove about physical equipment.
 - [ ] Establish observability, failure-recovery, replay, and benchmark evidence before making performance or reliability claims.
 
 ### Physical edge preparation
 
-- [ ] Keep the producer contract independent of simulator internals.
+- [x] Keep the producer contract independent of simulator internals.
 - [ ] Define clock quality, sequence gaps, buffering, reconnect, calibration, and orientation assumptions in the edge-integration work before hardware is connected.
 - [ ] Plan a compatibility test showing that a physical producer can replace the simulator without downstream special cases.
 
@@ -60,7 +60,7 @@ The Week 01 journal is a placeholder until the Phase 01 weekly entry is created.
 
 These do not block the documentation foundation, but they must be resolved before the relevant implementation phase:
 
-- final open-source license;
+- final contribution, conduct, security, and artifact-review policies;
 - exact toolchain versions and CI provider;
 - MQTT QoS and session settings;
 - internal event encoding and topic policy;
@@ -68,6 +68,20 @@ These do not block the documentation foundation, but they must be resolved befor
 - physical sensor and edge platform;
 - cloud deployment topology; and
 - optional document retrieval or maintenance-assistant features.
+
+## Review record — 2026-09-19
+
+The readiness checklist and its linked source documents were reviewed. Product
+intent and boundary, requirements and domain, producer-contract follow-ups,
+system design, the Phase 01 implementation plan, governance baseline, and agent
+collaboration are documented sufficiently for planning.
+
+Tooling and validation remain explicitly open and are assigned to P00-010,
+which owns supported toolchains, validation commands, and the clean-checkout
+path. The Phase 01 runtime start gate is clearly blocked until P00-010 is
+reviewed and its evidence is included in the Phase 00 pull request. Preparing
+Phase 01 documentation is allowed; runtime implementation is not yet
+authorized by this gate.
 
 ## Exit record
 

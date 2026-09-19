@@ -92,21 +92,21 @@
 
 - **Outcome:** The project has explicit governance, tooling, quality, data, and agent-readiness expectations before runtime code is added.
 - **Acceptance criteria:**
-  - [ ] The [readiness checklist](../project-readiness.md) has been reviewed.
-  - [ ] Open-source license and governance follow-ups are recorded.
-  - [ ] Initial toolchain and validation follow-ups are recorded.
-  - [ ] Data provenance, reproducibility, and analytical limitations are accepted.
-  - [ ] `AGENTS.md` is reviewed and linked from the project documentation.
-  - [ ] Any blocking question has an owner, ADR, experiment, or explicit user decision.
+  - [x] The [readiness checklist](../project-readiness.md) has been reviewed.
+  - [x] Open-source license and governance follow-ups are recorded.
+  - [x] Initial toolchain and validation follow-ups are recorded.
+  - [x] Data provenance, reproducibility, and analytical limitations are accepted.
+  - [x] `AGENTS.md` is reviewed and linked from the project documentation.
+  - [x] Any blocking question has an owner, ADR, experiment, or explicit user decision.
 - **Evidence:** Completed checklist sections and Week 00 review notes.
 
 ### P00-009 — Select the open-source license and governance baseline
 
 - **Outcome:** The public repository has a clear legal and collaboration baseline.
 - **Acceptance criteria:**
-  - [ ] A project license is selected and documented.
-  - [ ] Contribution, code-of-conduct, and security-policy follow-ups are defined.
-  - [ ] Dataset, model, document, and image licensing expectations are recorded.
+  - [x] A project license is selected and documented.
+  - [x] Contribution, code-of-conduct, and security-policy follow-ups are defined.
+  - [x] Dataset, model, document, and image licensing expectations are recorded.
 - **Evidence:** Governance files and a documented license decision.
 
 ### P00-010 — Define the developer-tooling and validation baseline

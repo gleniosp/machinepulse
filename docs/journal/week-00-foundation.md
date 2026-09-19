@@ -27,8 +27,8 @@ Review and refine the initial MachinePulse product definition, architecture, tel
 - [x] P00-005 — telemetry contract reviewed.
 - [x] P00-006 — documentation workflows established.
 - [x] P00-007 — Phase 01 prepared.
-- [ ] P00-008 — readiness reviewed.
-- [ ] P00-009 — governance baseline selected.
+- [x] P00-008 — readiness reviewed.
+- [x] P00-009 — governance baseline selected.
 - [ ] P00-010 — developer-tooling baseline defined.
 
 The detailed acceptance criteria for these outcomes live in [Phase 00 tasks](../tasks/phase-00-foundation.md); this journal tracks their evidence rather than repeating them.
@@ -173,10 +173,58 @@ preparation review.
 - [Phase 01 tasks](../tasks/phase-01-simulated-world.md)
 - [Week 01 journal](week-01-simulated-world.md)
 
+## Readiness review
+
+### Review date
+
+2026-09-19
+
+### Findings
+
+The readiness checklist was reviewed against the product, requirements,
+domain, architecture, telemetry contract, Phase 01 plan, and agent workflow.
+The documentation foundation is coherent and the simulator phase is prepared
+for implementation planning.
+
+The governance/license baseline is complete and recorded in P00-009. The
+developer-tooling/validation work remains open and is assigned to P00-010. The
+Phase 01 runtime start gate is clearly blocked until that follow-up is reviewed
+and included in the Phase 00 pull request.
+
+The project maintainer accepted the P00-008 readiness outcome on 2026-09-19.
+The gate is intentionally not marked as permitting runtime implementation until
+P00-010 is complete.
+
+### Evidence
+
+- [Pre-implementation readiness](../project-readiness.md)
+- [Phase 00 tasks](../tasks/phase-00-foundation.md)
+- [Working agreement](../working-agreement.md)
+
+## Governance and licensing review
+
+### Notes
+
+The project maintainer selected Apache-2.0 for the project. The repository now
+records the license and a governance baseline covering contribution, conduct,
+security reporting, dependency review, and provenance expectations for source,
+documentation, datasets, models, images, and generated plots.
+
+The follow-up policy files are intentionally defined before runtime work and can
+be expanded when the first contribution workflow and public security process
+are established.
+
+### Evidence
+
+- [Apache-2.0 license](../../LICENSE)
+- [Project governance baseline](../project-governance.md)
+- [Repository README](../../README.md)
+
 ## Open questions
 
 - Review and assign the open questions in the [telemetry contract](../specs/telemetry-contract.md).
-- Decide the open-source license and governance follow-ups.
+- Expand the contribution, conduct, security, and artifact-review policy files
+  before accepting outside contributions or distributing third-party material.
 - Record any new question discovered during the review in the owning specification, ADR, or experiment.
 
 ## Weekly review
