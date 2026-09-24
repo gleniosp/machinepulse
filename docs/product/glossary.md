@@ -29,6 +29,9 @@ This glossary owns shared vocabulary that crosses document boundaries. The [doma
 | **Sequence number** | A producer-local ordering value used to identify gaps or out-of-order delivery. |
 | **Sampling rate** | The number of samples captured per second for a signal. |
 | **Operating condition** | A simulator-controlled scenario, such as normal or imbalance; it is not automatically a real fault diagnosis. |
+| **Ground truth** | The simulator's reference label for the scenario it generated, used to evaluate analysis results; see [Simulator condition](domain-model.md#simulator-condition). |
+| **Condition intensity** | A simulator input from `0.0` to `1.0` that scales a synthetic condition effect; it is ground-truth metadata, not an analytical result. |
+| **Analytical severity** | A downstream rating assigned by a documented analysis or alert policy to an observation; it is derived from telemetry and features, not supplied by the simulator. |
 | **Health score** | A product-level representation of current condition derived from rules or model outputs; it is not a validated physical measurement. |
 | **Quarantine** | Storage or routing for data that cannot safely enter the normal processing path. |
 | **Replay** | Reprocessing previously recorded events under explicitly selected execution semantics. |

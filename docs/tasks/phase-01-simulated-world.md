@@ -1,6 +1,6 @@
 # Phase 01 — Simulated Industrial World
 
-- **Status:** Planned
+- **Status:** In progress
 - **Goal:** Produce deterministic, contract-compliant motor telemetry and evidence without physical hardware.
 - **Related specifications:** [Simulator behavior](../specs/simulator.md), [Telemetry contract](../specs/telemetry-contract.md)
 - **Related tooling:** [Developer tooling baseline](../developer-tooling.md)
@@ -25,9 +25,9 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 - **Outcome:** Simulator parameters, conditions, execution modes, limitations,
   and reproducibility expectations are normative.
-- **Acceptance criteria:** Motor parameters, operating conditions, severity,
-  duration, sampling, seed, and real-time/accelerated behavior are specified;
-  synthetic-data limitations are explicit.
+- **Acceptance criteria:** Motor parameters, operating conditions, condition
+  intensity, duration, sampling, seed, and real-time/accelerated behavior are
+  specified; synthetic-data limitations are explicit.
 - **Tests or evidence:** Accepted simulator specification and configuration examples.
 - **Dependencies:** P00-005, P00-007.
 
@@ -35,7 +35,9 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 - **Outcome:** Every generated run can be reproduced and audited.
 - **Acceptance criteria:** A seed produces repeatable output; configuration,
-  generator version, code revision, and separate ground truth are recorded.
+  generator version, code revision, and separate ground truth are recorded;
+  the simulator's deterministic UUIDv5 event IDs reproduce from the same run
+  identity and sequence.
 - **Tests or evidence:** Metadata fixture and repeatability comparison.
 - **Dependencies:** P01-001.
 
@@ -74,7 +76,8 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Simulator output conforms to `telemetry.v1` and invalid fixtures
   are rejected with useful reasons.
 - **Acceptance criteria:** Sample counts, timestamps, identifiers, units, and
-  finite numeric values are validated; invalid fixture cases are included.
+  finite numeric values are validated; `event_id` uses the canonical UUID
+  form; invalid fixture cases are included.
 - **Tests or evidence:** Contract tests and invalid-payload fixtures.
 - **Dependencies:** P00-005, P01-004, P01-005.
 

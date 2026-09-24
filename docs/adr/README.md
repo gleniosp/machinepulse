@@ -37,6 +37,8 @@ The sequence should not be reused, even if a decision is later rejected or super
 
 ## Current status
 
-No formal ADRs have been accepted yet. Candidate decisions are listed in the architecture and telemetry documents and will become ADRs when they are reviewed.
+The accepted decisions are:
+
+- [ADR-0001 — Telemetry event identifiers](0001-telemetry-event-identifiers.md)
 
 Use the [ADR template](template.md) for new records.

@@ -35,7 +35,7 @@ Compare time-domain summaries, spectra, output size, and repeatability.
 
 ### Independent variables
 
-- Window duration, sample rate, noise level, and condition severity.
+- Window duration, sample rate, noise level, and condition intensity.
 
 ### Measured variables
 
