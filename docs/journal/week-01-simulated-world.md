@@ -1,6 +1,6 @@
 # Week 01 — Simulated Industrial World
 
-- **Status:** Planned
+- **Status:** In progress
 - **Phase:** 01
 - **Theme:** Generate reproducible motor telemetry before hardware exists
 
@@ -18,6 +18,7 @@ operating conditions.
 ## Related tasks
 
 - [Phase 01 tasks](../tasks/phase-01-simulated-world.md)
+- [P01-001 GitHub issue](https://github.com/gleniosp/machinepulse/issues/11)
 - GitHub P01-001 through P01-008
 
 ## Planned outcomes
@@ -33,14 +34,39 @@ operating conditions.
 
 ### Plan
 
-Implement the configuration model, condition parameters, execution modes, and
-motor domain objects from the simulator specification.
+Specify the configuration model, condition behavior, and execution modes for
+P01-001, then implement the accepted domain model.
 
 ### What happened
 
+Prepared a simulator specification proposal with configuration fields and an
+example, condition equations, window timing, fixed-seed expectations, and
+accelerated and real-time behavior. Proposed initial signal values are marked
+for evaluation by EXP-0001. Renamed the simulator's scenario-strength setting
+to condition intensity and reserved analytical severity for downstream results.
+The maintainer chose one scalar temperature and RPM context value per window;
+these channels do not need sample arrays at the vibration rate.
+Recorded the telemetry event-ID policy in ADR-0001: UUIDv5 for repeatable
+simulator windows, with UUIDv7 preferred for physical producers and the
+device-local sequence retained for ordering and gap detection.
+The specification remains Draft for maintainer review; no simulator code has
+been implemented yet.
+
 ### What I learned
 
+Reproducing event timestamps requires the effective configuration to retain
+the resolved run start time. Scalar temperature and RPM need explicit window
+semantics; the simulator proposal uses midpoint context, pending confirmation
+by the signal-processing specification. Real monitoring systems can acquire
+vibration, temperature, and speed at different rates, so associating context
+with the vibration interval does not require equal-rate sample arrays.
+
 ### Evidence
+
+- [Simulator behavior proposal](../specs/simulator.md)
+- [Telemetry contract midpoint proposal](../specs/telemetry-contract.md)
+- [NI sensor guide](https://www.ni.com/en/shop/data-acquisition/sensor-fundamentals/sensors-for-condition-monitoring.html)
+- [Rotating electromechanical system dataset](https://doi.org/10.1038/s41597-026-07224-0)
 
 ## Day 2 — Signal and context generation
 

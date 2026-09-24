@@ -16,7 +16,7 @@ This file is the documentation map. It explains where information belongs; it do
 
 ## Current work
 
-The active milestone is Phase 00: review and accept the documentation foundation before runtime implementation. Its task breakdown is in [Phase 00](tasks/phase-00-foundation.md), its readiness gate is in [Pre-Implementation Readiness](project-readiness.md), and its current evidence belongs in [Week 00](journal/week-00-foundation.md).
+The active milestone is Phase 01: build and evaluate the simulated industrial world. Its task breakdown is in [Phase 01](tasks/phase-01-simulated-world.md), its simulator contract is in [Simulator Behavior](specs/simulator.md), and its current evidence belongs in [Week 01](journal/week-01-simulated-world.md). The Phase 00 foundation and readiness record remains in [Week 00](journal/week-00-foundation.md).
 
 ## Document ownership
 

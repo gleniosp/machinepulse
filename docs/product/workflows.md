@@ -17,8 +17,10 @@ The simulator should perform this setup through a reproducible command or fixtur
 
 ## 2. Produce telemetry
 
-1. The producer samples or generates measurements.
-2. It groups them into a contract-compliant telemetry window.
+1. The producer samples or generates the vibration waveform and obtains
+   operating-context readings.
+2. It groups the vibration samples for one interval with scalar temperature and
+   RPM context in a contract-compliant telemetry window.
 3. It publishes the window through the device-facing transport boundary.
 4. If delivery is retried, the producer preserves the event identity.
 
@@ -45,7 +47,7 @@ The [data-flow specification](../architecture/data-flow.md) owns the stage trans
 ## 5. Evaluate and present an alert
 
 1. Alert policy receives an anomaly observation.
-2. It applies severity, persistence, and asset-context rules.
+2. It applies downstream severity, persistence, and asset-context rules.
 3. It creates or updates an alert when policy conditions are met.
 4. The API exposes the alert and its supporting evidence.
 5. The dashboard presents the asset, trend, feature changes, and detection explanation.

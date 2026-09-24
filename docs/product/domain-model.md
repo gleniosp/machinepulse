@@ -44,7 +44,11 @@ The model does not require every logical sensor to be a separate physical compon
 
 ### Telemetry window
 
-A synchronized group of raw samples observed over a finite time interval. A window contains:
+A bounded record for a finite time interval. Its vibration axes are sampled on
+a shared timeline; temperature and RPM are scalar context values associated
+with that interval. Those context sensors may use different, slower update
+rates, so the window does not imply that every measurement type has a
+same-rate sample array. A window contains:
 
 - device and asset identity;
 - event and sequence metadata;
@@ -52,7 +56,14 @@ A synchronized group of raw samples observed over a finite time interval. A wind
 - vibration arrays; and
 - scalar temperature and RPM context.
 
-The window is the principal unit of transport and signal processing in version 0.1.
+The window keeps the vibration samples from one interval together as one
+identified, timestamped event. This gives signal processing a bounded segment
+for time-domain and frequency-domain calculations; an isolated vibration
+sample does not contain the history needed to calculate those features. The
+sampling metadata defines how the vibration arrays map to the interval, while
+temperature and RPM provide scalar context for it. The window is therefore
+the principal unit of transport, storage, replay, and signal processing in
+version 0.1.
 
 ### Feature vector
 
@@ -71,10 +82,15 @@ A result indicating that a telemetry window or sequence of windows differs from 
 
 An anomaly observation should include:
 
-- score and severity;
+- score and, when assigned by downstream analysis or policy, analytical
+  severity;
 - detection method and model version;
 - contributing features or rules; and
 - source window references.
+
+Analytical severity is derived downstream from telemetry, features, and the
+documented detection or alert policy. It is not a raw measurement or a
+simulator-controlled condition value.
 
 ### Alert
 
@@ -94,7 +110,20 @@ A record of work or inspection performed on an asset. It can later provide conte
 
 ### Simulator condition
 
-Ground-truth context known by the simulator, such as `normal`, `imbalance`, or `overheating`. This is experimental metadata and must not be treated as a production sensor measurement.
+Ground truth is the reference description of the scenario the simulator was
+configured to generate. Because the simulator creates the data, it knows by
+construction whether a window belongs to `normal`, `imbalance`, or
+`overheating`. This label lets experiments compare downstream features or
+model outputs with the generated scenario. It is not a sensor reading, a
+prediction, or proof that a real machine has that physical condition.
+
+A non-normal simulated condition may also have a `condition_intensity`
+parameter describing how strongly the simulator applied that synthetic
+effect. The condition and intensity are stored as experimental reference data
+outside production telemetry; inference uses the telemetry and its derived
+features, not these labels. Intensity is simulator input/reference metadata,
+not analytical severity. See the [simulator behavior specification](../specs/simulator.md#ground-truth-sidecar)
+for how the reference data is associated with each window.
 
 ## Relationships
 

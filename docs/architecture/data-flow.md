@@ -61,7 +61,7 @@ Analytics workers normalize a window and calculate a versioned feature vector. F
 
 ### 7. Predicted
 
-A baseline rule or anomaly model produces an anomaly observation. The output includes the method, model version if applicable, score, severity, and supporting features.
+A baseline rule or anomaly model produces an anomaly observation. The output includes the method, model version if applicable, score, any assigned analytical severity, and supporting features.
 
 ### 8. Operationalized
 
@@ -69,7 +69,11 @@ Alert policy determines whether the observation creates or updates an operationa
 
 ## Event identity and ordering
 
-The producer supplies an event identifier and a device-local sequence number. The gateway adds receipt metadata but should preserve producer identity and event time.
+The producer assigns a stable `event_id` as defined by the
+[telemetry contract](../specs/telemetry-contract.md) and a device-local
+sequence number. The event ID identifies the window across retries; the
+sequence supports ordering and gap detection. The gateway adds receipt
+metadata but preserves producer identity and event time.
 
 The initial processing model should assume:
 

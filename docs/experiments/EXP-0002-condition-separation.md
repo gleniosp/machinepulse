@@ -18,7 +18,8 @@ and spectral views to exercise downstream processing and explain limitations?
 ## Hypothesis
 
 Condition-specific components will create visible differences in selected
-time-domain and frequency-domain summaries under controlled severity changes.
+time-domain and frequency-domain summaries under controlled changes in
+condition intensity.
 
 ## Setup
 
@@ -34,7 +35,7 @@ outside the production telemetry input.
 
 ### Independent variables
 
-- Operating condition and severity.
+- Operating condition and condition intensity.
 
 ### Measured variables
 
