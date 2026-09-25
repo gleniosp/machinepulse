@@ -24,7 +24,8 @@ operating conditions.
 
 ## Planned outcomes
 
-- [ ] Simulator configuration and condition behavior are specified.
+- [x] P01-001 simulator configuration and condition behavior are specified;
+  initial signal defaults remain subject to EXP-0001.
 - [ ] Reproducibility metadata and fixed-seed behavior are implemented.
 - [ ] Motor, vibration, temperature, and RPM generation are implemented.
 - [ ] Telemetry serialization and validation are covered by tests.
@@ -50,8 +51,11 @@ these channels do not need sample arrays at the vibration rate.
 Recorded the telemetry event-ID policy in ADR-0001: UUIDv5 for repeatable
 simulator windows, with UUIDv7 preferred for physical producers and the
 device-local sequence retained for ordering and gap detection.
-The specification remains Draft for maintainer review; no simulator code has
-been implemented yet.
+The specification remains Draft while initial signal defaults await EXP-0001
+and midpoint-context semantics await P04-001; no simulator code has been
+implemented yet. P01-001 was completed in
+[PR #78](https://github.com/gleniosp/machinepulse/pull/78), and its
+[issue #11](https://github.com/gleniosp/machinepulse/issues/11) is closed.
 
 ### What I learned
 
@@ -66,6 +70,8 @@ with the vibration interval does not require equal-rate sample arrays.
 
 - [Simulator behavior proposal](../specs/simulator.md)
 - [Telemetry contract midpoint proposal](../specs/telemetry-contract.md)
+- [P01-001 — Specify simulator behavior and configuration](https://github.com/gleniosp/machinepulse/issues/11)
+- [PR #78](https://github.com/gleniosp/machinepulse/pull/78)
 - [NI sensor guide](https://www.ni.com/en/shop/data-acquisition/sensor-fundamentals/sensors-for-condition-monitoring.html)
 - [Rotating electromechanical system dataset](https://doi.org/10.1038/s41597-026-07224-0)
 

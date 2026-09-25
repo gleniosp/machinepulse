@@ -25,80 +25,108 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 - **Outcome:** Simulator parameters, conditions, execution modes, limitations,
   and reproducibility expectations are normative.
-- **Acceptance criteria:** Motor parameters, operating conditions, condition
-  intensity, duration, sampling, seed, and real-time/accelerated behavior are
-  specified; synthetic-data limitations are explicit.
-- **Tests or evidence:** Accepted simulator specification and configuration examples.
+- **Acceptance criteria:**
+  - [x] Motor parameters, operating conditions, condition intensity, duration,
+    sampling, and seed are specified.
+  - [x] Real-time and accelerated execution expectations are explicit.
+  - [x] Synthetic-data limitations are documented.
+- **Tests or evidence:** [Simulator specification](../specs/simulator.md),
+  configuration example, and
+  [merged PR #78](https://github.com/gleniosp/machinepulse/pull/78).
+- **GitHub issue:** [#11](https://github.com/gleniosp/machinepulse/issues/11) (closed).
 - **Dependencies:** P00-005, P00-007.
 
 ### P01-002 — Define simulator reproducibility metadata
 
 - **Outcome:** Every generated run can be reproduced and audited.
-- **Acceptance criteria:** A seed produces repeatable output; configuration,
-  generator version, code revision, and separate ground truth are recorded;
-  the simulator's deterministic UUIDv5 event IDs reproduce from the same run
-  identity and sequence.
+- **Acceptance criteria:**
+  - [ ] A fixed seed and effective configuration produce repeatable output.
+  - [ ] Run configuration, generator version, and code revision are recorded.
+  - [ ] Ground-truth condition metadata is recorded separately from production
+    telemetry.
+  - [ ] Deterministic UUIDv5 event IDs reproduce from the same run identity
+    and sequence.
 - **Tests or evidence:** Metadata fixture and repeatability comparison.
+- **GitHub issue:** [#12](https://github.com/gleniosp/machinepulse/issues/12).
 - **Dependencies:** P01-001.
 
 ### P01-003 — Implement the motor and operating-condition domain model
 
 - **Outcome:** A motor and its three initial operating conditions are represented
   in testable domain logic.
-- **Acceptance criteria:** Nominal RPM and sensor groups are configurable;
-  normal, imbalance, and overheating have explicit parameterization; unit tests
-  cover the domain rules.
+- **Acceptance criteria:**
+  - [ ] Nominal RPM and sensor groups are configurable.
+  - [ ] Normal, imbalance, and overheating have explicit parameterization.
+  - [ ] Unit tests cover the domain rules.
 - **Tests or evidence:** Unit tests and configuration fixtures.
+- **GitHub issue:** [#13](https://github.com/gleniosp/machinepulse/issues/13).
 - **Dependencies:** P01-001.
 
 ### P01-004 — Implement sampled vibration generation
 
 - **Outcome:** The simulator generates three-axis vibration windows with
   configurable rotational and condition-specific components.
-- **Acceptance criteria:** Declared rate and sample count are honored;
-  rotational frequency is derived consistently from RPM; noise and condition
-  components are configurable; output is marked synthetic.
+- **Acceptance criteria:**
+  - [ ] Three vibration axes honor the declared rate and sample count.
+  - [ ] Rotational frequency is derived consistently from RPM.
+  - [ ] Noise and condition-specific components are configurable.
+  - [ ] Generated output is marked synthetic.
 - **Tests or evidence:** Deterministic fixtures and exploratory plots.
+- **GitHub issue:** [#14](https://github.com/gleniosp/machinepulse/issues/14).
 - **Dependencies:** P01-003.
 
 ### P01-005 — Implement temperature and RPM context generation
 
 - **Outcome:** Scalar context accompanies each telemetry window with explicit
   units and documented condition behavior.
-- **Acceptance criteria:** Temperature and RPM units are valid; condition
-  changes affect context according to documented rules; fixed-seed output is
-  reproducible.
+- **Acceptance criteria:**
+  - [ ] Temperature and RPM values use valid units.
+  - [ ] Operating-condition changes affect context according to documented
+    rules.
+  - [ ] Output is reproducible under a fixed seed.
 - **Tests or evidence:** Unit tests and labeled sample windows.
+- **GitHub issue:** [#15](https://github.com/gleniosp/machinepulse/issues/15).
 - **Dependencies:** P01-003.
 
 ### P01-006 — Build the telemetry-window serializer and validator
 
 - **Outcome:** Simulator output conforms to `telemetry.v1` and invalid fixtures
   are rejected with useful reasons.
-- **Acceptance criteria:** Sample counts, timestamps, identifiers, units, and
-  finite numeric values are validated; `event_id` uses the canonical UUID
-  form; invalid fixture cases are included.
+- **Acceptance criteria:**
+  - [ ] Simulator output conforms to `telemetry.v1`.
+  - [ ] Sample counts, timestamps, identifiers, units, and finite numeric
+    values are validated.
+  - [ ] `event_id` uses the canonical UUID form.
+  - [ ] Invalid fixture cases are included.
 - **Tests or evidence:** Contract tests and invalid-payload fixtures.
+- **GitHub issue:** [#16](https://github.com/gleniosp/machinepulse/issues/16).
 - **Dependencies:** P00-005, P01-004, P01-005.
 
 ### P01-007 — Add the simulator CLI and labeled dataset output
 
 - **Outcome:** A documented command generates telemetry and its ground-truth
   sidecar for one or more motors.
-- **Acceptance criteria:** Seed, duration, RPM, condition, and output settings
-  are configurable; telemetry and sidecar records associate by event ID.
+- **Acceptance criteria:**
+  - [ ] A documented command generates telemetry for one or more motors.
+  - [ ] Seed, duration, RPM, condition, and output settings are configurable.
+  - [ ] Telemetry and sidecar records associate by event ID.
 - **Tests or evidence:** CLI help output, example run, and reproducibility manifest.
+- **GitHub issue:** [#17](https://github.com/gleniosp/machinepulse/issues/17).
 - **Dependencies:** P01-002, P01-006.
 
 ### P01-008 — Add simulator tests, plots, and Week 01 evidence
 
 - **Outcome:** Phase 01 behavior is evaluated and its limitations are recorded.
-- **Acceptance criteria:** Unit and contract tests cover all conditions;
-  time-domain and frequency-domain plots are produced; Week 01 records commands
-  and limitations; the first article draft is evidence-based; the project
-  validation commands are executable for the checks that exist in this phase.
+- **Acceptance criteria:**
+  - [ ] Unit and contract tests cover normal and simulated conditions.
+  - [ ] Time-domain and frequency-domain exploratory plots are produced.
+  - [ ] Week 01 records commands, results, and limitations.
+  - [ ] The first technical article draft is based on evidence.
+  - [ ] Project validation commands run for the checks implemented in this
+    phase.
 - **Tests or evidence:** Test output, plots, journal, article outline/draft, and
   the Phase 01 validation command run.
+- **GitHub issue:** [#18](https://github.com/gleniosp/machinepulse/issues/18).
 - **Dependencies:** P01-003 through P01-007.
 
 ### P01-009 — Add repository hooks for baseline checks
@@ -143,8 +171,8 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ## Definition of done
 
-- All Phase 01 acceptance criteria and evidence are linked.
-- Reproducibility and contract tests pass.
-- Generated telemetry and ground truth are separate and traceable.
-- Plots, limitations, and open questions are recorded in the Week 01 journal.
-- Follow-up decisions are assigned to the next owning specification or ADR.
+- [ ] All Phase 01 acceptance criteria are checked and their evidence is linked.
+- [ ] Reproducibility and contract tests pass.
+- [ ] Generated telemetry and ground truth are separate and traceable.
+- [ ] Plots, limitations, and open questions are recorded in the Week 01 journal.
+- [ ] Follow-up decisions are assigned to the next owning specification or ADR.
