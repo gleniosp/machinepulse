@@ -19,7 +19,8 @@ operating conditions.
 
 - [Phase 01 tasks](../tasks/phase-01-simulated-world.md)
 - [P01-001 GitHub issue](https://github.com/gleniosp/machinepulse/issues/11)
-- GitHub P01-001 through P01-008
+- [P01-009 GitHub issue](https://github.com/gleniosp/machinepulse/issues/79)
+- GitHub P01-001 through P01-009
 
 ## Planned outcomes
 
