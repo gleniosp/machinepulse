@@ -37,11 +37,15 @@ Each task should have:
 - a stable identifier preserved in its GitHub issue title;
 - a clear outcome;
 - links to requirements and specifications;
-- acceptance criteria;
+- acceptance criteria written as separate, verifiable Markdown checkboxes;
 - tests or evidence expected;
 - dependencies;
 - an explicit out-of-scope section; and
 - a definition of done.
+
+Leave acceptance checkboxes unchecked until their evidence satisfies the
+criterion. Check each item when it is complete; a task is complete when all of
+its criteria are checked and the required evidence is recorded.
 
 Suggested identifiers are `P00-001`, `P01-001`, and so on. A journal entry should reference these identifiers rather than copy the task text.
 

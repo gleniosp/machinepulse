@@ -19,7 +19,8 @@ What should be true when this phase is complete?
 
 - **Outcome:**
 - **Acceptance criteria:**
-  - [ ] _
+  - [ ] _First independently verifiable criterion._
+  - [ ] _Second independently verifiable criterion._
 - **Tests or evidence:**
 - **Dependencies:**
 
@@ -29,7 +30,7 @@ What should be true when this phase is complete?
 
 ## Definition of done
 
-- [ ] Acceptance criteria are satisfied.
+- [ ] Every acceptance criterion is satisfied and checked.
 - [ ] Tests or evidence are linked.
 - [ ] Documentation is updated.
 - [ ] Journal entry is complete.

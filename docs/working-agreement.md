@@ -109,6 +109,15 @@ A new document is warranted when it answers a question that would otherwise be r
 
 Keep one authoritative location for each fact. Use the [documentation hub](README.md) to identify the owner, update that owner when the fact changes, and link to it from context documents. Do not paste product definitions into tasks, technical contracts into journals, or progress notes into specifications.
 
+### Acceptance criteria and progress
+
+Write each acceptance criterion as a separate, verifiable Markdown checkbox
+(`- [ ]`) in the phase task and its GitHub issue. Leave it unchecked until
+evidence shows the criterion is satisfied; then check it in both places and
+link the supporting evidence. A task is complete only when every acceptance
+criterion is checked and the required evidence is recorded. Keep the GitHub
+issue open until its pull request has merged.
+
 ## Review and direction changes
 
 After an implementation handoff, the maintainer may:
@@ -150,7 +159,7 @@ Ask for maintainer input before:
 
 An issue is complete only when:
 
-- its acceptance criteria are satisfied;
+- every acceptance criterion has supporting evidence and is checked in the task and GitHub issue;
 - relevant tests, measurements, screenshots, plots, or other evidence are available;
 - affected specifications and task files are current;
 - the journal records what happened and any limitations;
