@@ -101,6 +101,32 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
   the Phase 01 validation command run.
 - **Dependencies:** P01-003 through P01-007.
 
+### P01-009 — Add repository hooks for baseline checks
+
+- **GitHub issue:** [#79](https://github.com/gleniosp/machinepulse/issues/79).
+
+- **Outcome:** Contributors can install and run a small, repeatable set of
+  repository checks through the pinned mise toolchain.
+- **Acceptance criteria:**
+  - [ ] Pin `prek` in the root `mise.toml`, commit `mise.lock`, and record the
+    supported minimum mise version.
+  - [ ] Add `prek.toml` using only prek's native built-in hooks for trailing
+    whitespace, end-of-file newlines, merge-conflict markers, and YAML, TOML,
+    and JSON syntax checks.
+  - [ ] Add root mise tasks to install the local Git hook and run all configured
+    checks across the repository.
+  - [ ] Document contributor setup and the manual all-files check; make the
+    check command reusable by CI.
+  - [ ] Run the checks across the existing repository and resolve or explicitly
+    tune findings so the all-files check passes.
+- **Tests or evidence:** `mise install --locked`, the hook installation task,
+  and the all-files check from a clean checkout; record the resulting command
+  output in the Week 01 journal.
+- **Dependencies:** P00-010. Coordinate the shared check command with P01-008.
+- **Out of scope:** Markdown-specific linting or formatting, third-party hook
+  repositories, language-specific hooks, and selecting or introducing a CI
+  provider.
+
 ## Required experiments
 
 - [EXP-0001](../experiments/EXP-0001-simulator-parameters.md): choose useful

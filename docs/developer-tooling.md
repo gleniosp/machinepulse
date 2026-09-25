@@ -1,7 +1,7 @@
 # Developer Tooling and Validation Baseline
 
 - **Status:** Accepted baseline
-- **Related task:** P00-010
+- **Related task:** P00-010; [P01-009](tasks/phase-01-simulated-world.md#p01-009--add-repository-hooks-for-baseline-checks)
 - **Related phase:** [Phase 01 — Simulated industrial world](tasks/phase-01-simulated-world.md)
 - **Related readiness gate:** [Pre-implementation readiness](project-readiness.md)
 
@@ -22,7 +22,7 @@ the corresponding package exists.
 
 | Area | Owner and expected files | Repository-level integration |
 |---|---|---|
-| Shared tools and commands | `mise.toml`, `mise.lock`, and root mise tasks | `mise install --locked` and `mise run <task>` |
+| Shared tools and commands | `mise.toml`, `mise.lock`, `prek.toml`, and root mise tasks | `mise install --locked` and `mise run <task>` |
 | Go service or library | Its own `go.mod` and `go.sum` | mise supplies the selected Go toolchain; root tasks delegate to the module |
 | Python service or ML/data package | Its own `pixi.toml` or `pyproject.toml` and `pixi.lock` | mise supplies Pixi and delegates through `pixi run --locked` |
 | React/Vite frontend | Its own `package.json`, `pnpm-lock.yaml`, and `vite.config.ts` | mise supplies Node and pnpm; pnpm owns the local `vite-plus` package and its `vp` commands |
@@ -42,6 +42,7 @@ entries belong in the implementation phase once each package exists.
 | Area | Proposed baseline | Decision state |
 |---|---|---|
 | Repository manager | mise | Maintainer direction; record a supported minimum version when `mise.toml` is added |
+| Repository Git hooks | prek, installed through mise | Maintainer direction; start with prek's native hooks and extend as project checks grow |
 | Go | Go 1.27.x | Proposed; select and lock the patch version in the Go module/CI setup |
 | Python | Python 3.13.x in Pixi environments | Proposed compatibility baseline; evaluate 3.14.x separately for the ML/data stack |
 | Python dependency manager | Pixi | Maintainer direction; pin the CLI and commit each component's `pixi.lock` |
@@ -79,6 +80,8 @@ mise run lint
 mise run typecheck
 mise run test
 mise run check
+mise run hooks:install
+mise run hooks:check
 ```
 
 The root tasks should delegate to the components that exist in the current
@@ -161,6 +164,7 @@ before benchmarks exist.
 - Define the first `infra/` task surface for Docker and database checks.
 - Add the root mise tasks as executable Phase 01 checks and record a
   clean-checkout run before the readiness gate is reopened for runtime work.
+- Add the initial prek setup and native repository checks through [P01-009](tasks/phase-01-simulated-world.md#p01-009--add-repository-hooks-for-baseline-checks).
 
 ## References
 
