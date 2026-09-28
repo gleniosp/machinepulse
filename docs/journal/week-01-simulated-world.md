@@ -110,9 +110,42 @@ comparison across normal, imbalance, and overheating runs.
 
 ### What happened
 
+Started P01-002 by defining the run-manifest and sidecar metadata shape,
+canonical JSON serialization, and the fixed UUIDv5 namespace and tuple encoding
+in the simulator specification and ADR-0001. Added the first Python simulator
+package with run-manifest and ground-truth record helpers, source revision and
+working-tree state capture, and golden fixtures. Replaced manual effective-
+configuration validation with strict Pydantic models for run configuration,
+manifests, and sidecar records. Added Pydantic as a runtime dependency; deferred
+`pydantic-settings` until simulator settings need environment or secret sources.
+Split runtime and development
+dependencies in `pyproject.toml`, with runtime-only `default` and development
+`dev` Pixi environments. Pinned Pixi 0.76.1 in the root mise toolchain, added
+Ruff and strict mypy checks, and configured VS Code to use the Pixi development
+environment and `src/` import path. Added scoped simulator-agent guidance and
+shared pytest fixtures registered through `pytest_plugins`. The current checks
+pass: `pixi install --locked`, `pixi run -e dev typecheck`,
+`pixi run -e dev test` (13 tests), `pixi run -e dev lint`, and
+`pixi run -e dev format-check` from `simulator/`. The signal generator does not
+exist yet, so this evidence locks metadata and event-ID repeatability only;
+fixed-seed telemetry-value comparison remains open until generation is
+implemented.
+
 ### What I learned
 
+The fixed run start time must be present in effective configuration for
+timestamps to be reproducible. A source revision alone does not describe
+uncommitted edits, so the manifest records working-tree state separately and
+allows either value to be explicitly unknown when the runtime cannot determine
+it.
+
 ### Evidence
+
+- [Run manifest and sidecar fixture tests](../../simulator/tests/test_reproducibility.py)
+- [Run manifest fixture](../../simulator/tests/fixtures/run-manifest.v1.json)
+- [Ground-truth fixture](../../simulator/tests/fixtures/ground-truth.v1.json)
+- [Simulator reproducibility specification](../specs/simulator.md#run-manifest-and-ground-truth-sidecar)
+- [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md)
 
 ## Day 5 — Evaluation and communication
 

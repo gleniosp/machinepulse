@@ -2,7 +2,7 @@
 
 MachinePulse is an open-source, simulation-first industrial condition-monitoring platform for rotating machinery.
 
-The project is currently in **planning**: the documentation foundation is being reviewed and there is no runtime implementation yet. The [documentation hub](docs/README.md) is the canonical starting point for the project plan and document map.
+The project is beginning **Phase 01 runtime implementation**, starting with the simulator's reproducibility metadata. The [documentation hub](docs/README.md) is the canonical starting point for the project plan and document map.
 
 ## Start here
 

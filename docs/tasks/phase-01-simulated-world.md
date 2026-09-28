@@ -41,12 +41,12 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Every generated run can be reproduced and audited.
 - **Acceptance criteria:**
   - [ ] A fixed seed and effective configuration produce repeatable output.
-  - [ ] Run configuration, generator version, and code revision are recorded.
-  - [ ] Ground-truth condition metadata is recorded separately from production
+  - [x] Run configuration, generator version, and code revision are recorded.
+  - [x] Ground-truth condition metadata is recorded separately from production
     telemetry.
-  - [ ] Deterministic UUIDv5 event IDs reproduce from the same run identity
+  - [x] Deterministic UUIDv5 event IDs reproduce from the same run identity
     and sequence.
-- **Tests or evidence:** Metadata fixture and repeatability comparison.
+- **Tests or evidence:** [Reproducibility tests](../../simulator/tests/test_reproducibility.py), Pydantic models in `simulator/src/machinepulse_simulator/models.py`, and golden manifest/sidecar fixtures in `simulator/tests/fixtures/`. Fixed-seed telemetry-value repeatability remains pending the signal generator.
 - **GitHub issue:** [#12](https://github.com/gleniosp/machinepulse/issues/12).
 - **Dependencies:** P01-001.
 
