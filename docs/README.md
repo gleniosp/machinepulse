@@ -1,6 +1,6 @@
 # MachinePulse Documentation Hub
 
-- **Status:** Planning — foundation drafted for review
+- **Status:** Phase 01 implementation in progress
 - **Product version:** 0.1 proposal
 
 This file is the documentation map. It explains where information belongs; it does not restate the product definition, architecture, contracts, task details, or journal evidence maintained by the linked documents.
@@ -12,7 +12,7 @@ This file is the documentation map. It explains where information belongs; it do
 3. Read the [product vision](product/vision.md), [product scope](product/scope.md), and [product requirements](product/requirements.md) for product context.
 4. Read the relevant [architecture](architecture/overview.md), [specification](specs/README.md), and [phase task](tasks/README.md) for implementation work.
 5. Use the [engineering journal](journal/README.md) for factual progress and evidence.
-6. Check [pre-implementation readiness](project-readiness.md) before runtime work begins.
+6. Check [pre-implementation readiness](project-readiness.md) for the phase gates and their evidence.
 
 ## Current work
 

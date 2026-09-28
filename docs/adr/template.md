@@ -2,6 +2,7 @@
 
 - **Status:** Proposed
 - **Date:** YYYY-MM-DD
+- **Updated:** YYYY-MM-DD (omit until a substantive post-creation update)
 - **Decision owners:**
 - **Related requirements:**
 - **Related specifications:**

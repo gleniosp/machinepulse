@@ -2,6 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-24
+- **Updated:** 2026-09-28
 - **Decision owners:** Project maintainer
 - **Related requirements:** FR-001, NFR-001
 - **Related specifications:** [Telemetry contract](../specs/telemetry-contract.md), [Simulator behavior](../specs/simulator.md)
@@ -27,9 +28,12 @@ Use canonical lowercase, hyphenated UUID strings for `event_id` throughout
 event across retries. UUIDs let independent producers create event IDs without
 coordinating through a central counter.
 
-- The simulator generates deterministic UUIDv5 values in a fixed MachinePulse
-  telemetry namespace from the stable tuple `(device_id, run_id, sequence)`.
-  P01-002 locks the namespace and tuple encoding in a repeatability fixture.
+- The simulator generates deterministic UUIDv5 values in the fixed MachinePulse
+  telemetry namespace `137bfca0-3f75-56ce-a36c-932f0bc60c36`, derived from the
+  stable tuple `(device_id, run_id, sequence)`. The namespace is UUIDv5 of the
+  URL namespace and `https://github.com/gleniosp/machinepulse/telemetry`.
+  P01-002 locks the namespace and compact JSON-array tuple encoding in a
+  repeatability fixture; the simulator specification owns the exact encoding.
 - Physical producers should use UUIDv7 where available. UUIDv4 is also
   supported where UUIDv7 generation is unavailable.
 - Consumers use the device-local `sequence` for ordering and gap detection;

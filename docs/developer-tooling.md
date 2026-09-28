@@ -24,7 +24,7 @@ the corresponding package exists.
 |---|---|---|
 | Shared tools and commands | `mise.toml`, `mise.lock`, `prek.toml`, and root mise tasks | `mise install --locked` and `mise run <task>` |
 | Go service or library | Its own `go.mod` and `go.sum` | mise supplies the selected Go toolchain; root tasks delegate to the module |
-| Python service or ML/data package | Its own `pixi.toml` or `pyproject.toml` and `pixi.lock` | mise supplies Pixi and delegates through `pixi run --locked` |
+| Python service or ML/data package | Its own `pyproject.toml` and `pixi.lock` | mise supplies the pinned Pixi CLI; Pixi owns the package's Python environment and delegates through `pixi run --locked` |
 | React/Vite frontend | Its own `package.json`, `pnpm-lock.yaml`, and `vite.config.ts` | mise supplies Node and pnpm; pnpm owns the local `vite-plus` package and its `vp` commands |
 | Infrastructure | `infra/` package or folder with Docker, database, and operational scripts | mise exposes documented infra tasks; services remain explicit and local-first |
 
@@ -44,12 +44,12 @@ entries belong in the implementation phase once each package exists.
 | Repository manager | mise | Maintainer direction; record a supported minimum version when `mise.toml` is added |
 | Repository Git hooks | prek, installed through mise | Maintainer direction; start with prek's native hooks and extend as project checks grow |
 | Go | Go 1.27.x | Proposed; select and lock the patch version in the Go module/CI setup |
-| Python | Python 3.13.x in Pixi environments | Proposed compatibility baseline; evaluate 3.14.x separately for the ML/data stack |
-| Python dependency manager | Pixi | Maintainer direction; pin the CLI and commit each component's `pixi.lock` |
+| Python | Python 3.13.x in Pixi environments | Selected for the simulator; evaluate 3.14.x separately for the ML/data stack |
+| Python dependency manager | Pixi 0.76.1, installed through mise | Pinned in the root `mise.toml`; each component owns its Pixi environment and `pixi.lock` |
 | Node.js | Node.js 24 LTS | Proposed; managed by mise, not by a global Vite+ environment |
 | JavaScript package manager | pnpm 10.x | Maintainer direction; managed by mise and declared by each frontend package |
 | Go formatting and checks | `gofmt`, `go vet`, and `golangci-lint` | Proposed baseline |
-| Python formatting, linting, and tests | Pixi tasks using Ruff and pytest | Proposed baseline; mypy remains available for typed modules |
+| Python formatting, linting, typing, and tests | Pixi development environment with Ruff, mypy, and pytest | Used by the simulator; runtime-only dependencies remain in its Pixi `default` environment |
 | TypeScript/React formatting and linting | Vite+ with Oxfmt and Oxlint | Maintainer direction; no default Prettier or ESLint dependency |
 | TypeScript checks | Vite+ `vp check` with type-aware checking enabled | Proposed; verify against the first frontend package |
 | TypeScript tests | Vite+ `vp test` backed by Vitest | Maintainer direction |
@@ -94,10 +94,10 @@ gofmt -l .
 go vet ./...
 golangci-lint run
 
-pixi run --locked format
-pixi run --locked lint
-pixi run --locked typecheck
-pixi run --locked test
+pixi run --locked -e dev format
+pixi run --locked -e dev lint
+pixi run --locked -e dev typecheck
+pixi run --locked -e dev test
 
 pnpm install --frozen-lockfile
 pnpm exec vp fmt --check
@@ -118,7 +118,9 @@ run locally.
   configuration is introduced.
 - Commit `go.mod` and `go.sum` with each Go module.
 - Commit `pixi.lock` with each Pixi-managed Python component; CI uses
-  `pixi run --locked` or the equivalent locked installation mode.
+  `pixi run --locked` or the equivalent locked installation mode. Use the
+  component's `dev` environment for tests and quality checks; keep development
+  tools out of its runtime `default` environment.
 - Commit each frontend package's `pnpm-lock.yaml`; CI uses
   `pnpm install --frozen-lockfile`.
 - Keep infrastructure image references, Compose files, and database migration

@@ -196,14 +196,17 @@ configured total run duration.
 
 The simulator increments the device-local sequence for each window. Event IDs
 are canonical lowercase, hyphenated UUIDs. The simulator generates each one as
-a deterministic UUIDv5 in the fixed MachinePulse telemetry namespace, derived
-from the stable event identity tuple `(device_id, run_id, sequence)`. The
+a deterministic UUIDv5 in the fixed MachinePulse telemetry namespace
+`137bfca0-3f75-56ce-a36c-932f0bc60c36`, derived from the stable event identity
+tuple `(device_id, run_id, sequence)`. The UUIDv5 name is the UTF-8 encoding of
+the compact JSON array `[device_id, run_id, sequence]`, with non-ASCII
+characters emitted directly rather than JSON Unicode escape sequences. This
 namespace and tuple encoding must remain stable and be covered by the
 repeatability fixture defined for P01-002. Distinct runs use distinct run IDs;
-reproducing a run with the same `run_id` and effective configuration
-reproduces the same event IDs. A producer keeps an event ID unchanged when it
-retries delivery. The identifier format and the roles of UUID and sequence are
-defined in the [telemetry contract](telemetry-contract.md) and
+reproducing a run with the same `run_id` and effective configuration reproduces
+the same event IDs. A producer keeps an event ID unchanged when it retries
+delivery. The identifier format and the roles of UUID and sequence are defined
+in the [telemetry contract](telemetry-contract.md) and
 [ADR-0001](../adr/0001-telemetry-event-identifiers.md).
 
 Given the same effective configuration, seed, and generator version, runs
@@ -227,14 +230,48 @@ against the original schedule until it has caught up. It reports observed
 delivery lateness in run-level evidence. A late release does not alter the
 window's `occurred_at` timestamp.
 
-## Ground-truth sidecar
+## Run manifest and ground-truth sidecar
+
+Each run has one JSON manifest, separate from the telemetry windows. Its
+`manifest_version` is `machinepulse.run-manifest.v1`; fields are:
+
+| Field | Meaning |
+|---|---|
+| `manifest_version` | Version of this manifest shape. |
+| `run_id` | The run identity from the effective configuration. |
+| `generator_version` | Stable simulator behavior identifier, initially `simulator.v1`. Increment it when a change can alter generated output for the same effective configuration and seed. |
+| `code_revision` | Full source-control revision used to generate the run, or `null` when unavailable. |
+| `working_tree_dirty` | Whether tracked or untracked source changes were present, or `null` when it cannot be determined. |
+| `effective_config` | Complete configuration after defaults and `run.start_time_utc` have been resolved. It includes the seed and all values needed to regenerate the run. |
+
+Manifest serialization is UTF-8 JSON with object keys sorted lexicographically,
+no insignificant whitespace, and non-finite numbers rejected. It contains no
+generation timestamp: identical metadata and effective configuration must
+serialize identically.
+
+These fields help identify the exact code used for a run:
+
+- In a Git checkout, `code_revision` is the full commit ID reported by
+  `git rev-parse HEAD`. `working_tree_dirty` is `false` when the checkout has no
+  changes and `true` when it has tracked edits or untracked files. If it is
+  `true`, the commit ID alone does not capture all code that produced the run.
+- A packaged build may not include Git metadata. It can provide the source
+  commit ID through `MACHINEPULSE_CODE_REVISION`; dirty state may still be
+  unknown.
+- Use `null` when a value cannot be determined. A null `code_revision` means
+  the source version may not be traceable well enough to reproduce the run
+  exactly; it is not a placeholder for a revision.
 
 Ground truth is the simulator's record of what scenario it intended to
 generate. For each telemetry window, a separate sidecar record keyed by
 `event_id` carries the run ID, condition, condition intensity, seed, generator
-version, and effective run configuration needed to reproduce the window. The
-telemetry event contains the generated measurements; the sidecar contains the
-scenario reference and reproducibility details.
+version, code revision, and effective run configuration needed to reproduce
+the window. The sidecar record contains `event_id`, `run_id`, `condition`,
+`condition_intensity`, `seed`, `generator_version`, `code_revision`,
+`working_tree_dirty`, and `effective_config`. Its `event_id` is the same
+deterministic UUID as the corresponding telemetry window. The telemetry event
+contains the generated measurements; the sidecar contains the scenario
+reference and reproducibility details.
 
 For example, `condition: "imbalance"` says that the simulator applied its
 configured imbalance effect, while `condition_intensity: 0.7` says the effect
@@ -246,8 +283,8 @@ analysis recognized the scenarios present in synthetic data.
 Ground truth is an evaluation reference, not an input feature: production
 inference must not receive it when producing a prediction. It also does not
 establish that a signal pattern is a validated signature of a real fault or
-that a physical machine has the named condition. The exact manifest shape and
-code revision fields are defined by
+that a physical machine has the named condition. The manifest shape and
+revision semantics above are implemented by
 [P01-002](../tasks/phase-01-simulated-world.md).
 
 ## Failure behavior
