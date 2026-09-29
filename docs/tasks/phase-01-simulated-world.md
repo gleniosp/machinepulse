@@ -177,11 +177,11 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
     supported by Pixi; preserve simulator package metadata and direct
     dependencies. Keep its project task names in `tools/simulator/mise.toml`;
     those commands use the root Pixi workspace environment and lockfile.
-  - [ ] When the first JavaScript/TypeScript project is added, create the root
-    pnpm workspace with `apps/*` and `packages/*` globs, one named catalog for
-    Vite+, and a root lockfile. Add Node.js and pnpm through mise at that time.
-    Each applicable package should reference `vite-plus` through the catalog
-    from its initial manifest, with shared versions set in the catalog from the
+  - [x] Defer Node.js, pnpm, and the root pnpm workspace until the first
+    JavaScript/TypeScript project. At that time, add `apps/*` and `packages/*`
+    workspace globs, a root lockfile, and one named catalog for Vite+. Each
+    applicable package should reference `vite-plus` through the catalog from
+    its initial manifest, with shared versions set in the catalog from the
     beginning. Keep package-specific scripts in each package manifest.
   - [x] Configure root and project mise task roots. Root `setup` installs the
     locked tools, Pixi environment, and Git hook; common root verbs delegate to

@@ -34,8 +34,8 @@ operating conditions.
 - [ ] Plots, limitations, and experiment results are recorded.
 - [x] The mise/Pixi tooling foundation and repository hooks are installed and
   pass their current checks.
-- [ ] Add the pnpm workspace and Vite+ catalog with the first
-  JavaScript/TypeScript package.
+- [ ] Deferred follow-up: add the pnpm workspace and Vite+ catalog when the
+  first JavaScript/TypeScript package is introduced.
 
 ## Day 1 — Configuration and domain model
 
