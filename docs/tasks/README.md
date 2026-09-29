@@ -19,7 +19,7 @@ A task should not introduce behavior absent from the relevant specification unle
 | Phase | Focus | Journal |
 |---|---|---|
 | 00 | Documentation foundation and project setup | [Week 00](../journal/week-00-foundation.md) |
-| 01 | Simulated industrial world | Week 01 |
+| 01 | Simulated industrial world and polyglot workspace foundation | Week 01 |
 | 02 | Telemetry transport and ingestion | Week 02 |
 | 03 | Storage and data quality | Week 03 |
 | 04 | Signal processing | Week 04 |
