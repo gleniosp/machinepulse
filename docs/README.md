@@ -33,6 +33,7 @@ The active milestone is Phase 01: build and evaluate the simulated industrial wo
 | Architecture | [Runtime boundaries](architecture/runtime-boundaries.md) | Component ownership and cross-boundary rules |
 | Specifications | [Specifications index](specs/README.md) | Specification lifecycle and contract registry |
 | Project operations | [Working agreement](working-agreement.md) | Maintainer-agent collaboration and delivery lifecycle |
+| Project operations | [Developer tooling baseline](developer-tooling.md) | Tool, environment, setup, and root task ownership |
 | Project operations | [Readiness checklist](project-readiness.md) | Evidence that the project is ready for the next phase |
 | Execution | [Task index](tasks/README.md) | Phase map, task conventions, and task status |
 | Execution | [Journal index](journal/README.md) | Journal format and evidence rules |

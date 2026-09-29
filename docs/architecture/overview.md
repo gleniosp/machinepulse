@@ -21,7 +21,7 @@ The design prioritizes:
 
 ```mermaid
 flowchart TD
-    Simulator[Python simulator] --> MQTT[MQTT broker]
+    Simulator[Python telemetry-generation tool] --> MQTT[MQTT broker]
     Edge[Physical edge producer later] --> MQTT
     MQTT --> Gateway[Go telemetry gateway]
     Gateway --> Stream[Kafka-compatible event stream]
@@ -42,6 +42,8 @@ flowchart TD
 ```
 
 This is a logical view. It does not imply that every box must initially be a separate deployable process.
+The simulator is an engineering tool that produces synthetic telemetry, not a
+user-facing application or an independently deployed service.
 
 ## Responsibility references
 

@@ -12,32 +12,6 @@ requires-python = ">=3.13,<3.14"
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
-[tool.pixi.workspace]
-channels = ["conda-forge"]
-platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
-
-[tool.pixi.dependencies]
-python = ">=3.13,<3.14"
-
-[tool.pixi.pypi-dependencies]
-machinepulse_simulator = { path = ".", editable = true }
-
-[tool.pixi.feature.dev.pypi-dependencies]
-mypy = ">=1.14,<2"
-pytest = ">=8,<10"
-ruff = ">=0.14,<0.15"
-
-[tool.pixi.environments]
-default = { solve-group = "default" }
-dev = { features = ["dev"], solve-group = "default" }
-
-[tool.pixi.feature.dev.tasks]
-format = "ruff format src tests"
-format-check = "ruff format --check src tests"
-lint = "ruff check src tests"
-test = "pytest"
-typecheck = "mypy src tests"
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/machinepulse_simulator"]
 
