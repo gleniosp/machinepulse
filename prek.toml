@@ -1,0 +1,37 @@
+default_install_hook_types = ["pre-commit"]
+exclude = '(^|/)(\.pixi|__pycache__|\.pytest_cache|\.ruff_cache|\.mypy_cache)(/|$)'
+
+[[repos]]
+repo = "builtin"
+hooks = [
+    { id = "check-case-conflict" },
+    { id = "check-illegal-windows-names" },
+    { id = "check-merge-conflict" },
+    { id = "check-added-large-files", args = ["--maxkb=1024"] },
+    { id = "check-json" },
+    { id = "check-toml" },
+    { id = "check-yaml" },
+    { id = "end-of-file-fixer" },
+    { id = "trailing-whitespace", args = ["--markdown-linebreak-ext=md"] },
+]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "simulator-check"
+name = "simulator checks"
+language = "system"
+entry = "mise run simulator:check"
+files = '^(tools/simulator/|pixi\.(toml|lock)$)'
+pass_filenames = false
+stages = ["pre-commit"]
+
+[[repos.hooks]]
+id = "pixi-lock-check"
+name = "Pixi lock check"
+language = "system"
+entry = "mise run pixi:lock-check"
+files = '^(pixi\.(toml|lock)$|tools/simulator/pyproject\.toml$)'
+pass_filenames = false
+stages = ["pre-commit"]

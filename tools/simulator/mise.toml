@@ -1,0 +1,34 @@
+[tasks.setup]
+description = "Install the simulator development environment from the root Pixi lock"
+run = "pixi install --manifest-path ../../pixi.toml --locked -e dev"
+dir = "{{config_root}}"
+
+[tasks.format]
+description = "Format simulator Python sources"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format src tests"
+dir = "{{config_root}}"
+
+[tasks.format-check]
+description = "Check simulator formatting"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format --check src tests"
+dir = "{{config_root}}"
+
+[tasks.lint]
+description = "Lint simulator Python sources"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff check src tests"
+dir = "{{config_root}}"
+
+[tasks.typecheck]
+description = "Type-check simulator Python sources"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev mypy src tests"
+dir = "{{config_root}}"
+
+[tasks.test]
+description = "Run simulator tests"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev pytest"
+dir = "{{config_root}}"
+
+[tasks.check]
+description = "Run simulator formatting, lint, type, and test checks"
+depends = [":format-check", ":lint", ":typecheck", ":test"]
+dir = "{{config_root}}"

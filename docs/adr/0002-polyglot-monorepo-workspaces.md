@@ -7,7 +7,6 @@
 - **Related requirements:** None directly
 - **Related specifications:** [Developer tooling baseline](../developer-tooling.md), [Architecture overview](../architecture/overview.md), [Runtime boundaries](../architecture/runtime-boundaries.md)
 - **Related experiments:** None
-- **Related tasks:** [P01-010 — Establish the polyglot workspace and mise task interface](../tasks/phase-01-simulated-world.md#p01-010--establish-the-polyglot-workspace-and-mise-task-interface)
 - **Supersedes:** None
 - **Superseded by:** None
 
@@ -21,25 +20,22 @@ builds, and tests understandable to developers familiar with each ecosystem.
 The accepted [developer tooling baseline](../developer-tooling.md) already
 assigns repository toolchain selection and common commands to mise, and assigns
 package dependencies to native managers. Before this ADR, it did not establish
-root workspaces for Pixi and pnpm, or a consistent way to compose
-project-local tasks. This decision fills that gap; the updated developer
-tooling baseline records the detailed workspace and lockfile policy.
+ecosystem workspaces or a consistent way to compose project-local tasks. This
+decision fills that gap; the developer tooling baseline records the detailed
+workspace and lockfile policy.
 
 The project should organize code around applications, services, libraries,
 contracts, and infrastructure. Language remains a project implementation
 choice. Shared contracts should make cross-language dependencies visible and
-support generated clients where appropriate. The initial repository size does
-not justify adding a second cross-repository build graph before a concrete need
-is measured.
+support generated clients where appropriate. Add a second cross-repository
+build graph only when a concrete need is measured.
 
 ## Decision
 
 Adopt a polyglot monorepo with mise as the repository-level toolchain and task
 interface. Keep dependency graphs, workspace manifests, lockfiles, and project
-scripts in their native ecosystems. The maintainer accepted this decision on
-2026-09-29. Its detailed developer-tooling conventions are maintained in the
-[developer tooling baseline](../developer-tooling.md), and implementation is
-tracked by P01-010.
+scripts in their native ecosystems. The [developer tooling baseline](../developer-tooling.md)
+owns the detailed versions and command conventions.
 
 ### Repository organization
 
@@ -47,40 +43,40 @@ Organize projects by architectural responsibility. The intended top-level
 areas are:
 
 ```text
-apps/       # user-facing applications
-services/   # independently deployable services
-packages/   # reusable runtime libraries, SDKs, and components in any language
-contracts/  # OpenAPI, Protobuf, events, and shared schemas
-infra/      # local runtime, deployment, and infrastructure definitions
-tools/      # repository tooling and generators
+apps/          # user-facing product applications
+services/      # independently deployable runtime services
+packages/      # reusable runtime libraries, SDKs, and components
+contracts/     # OpenAPI, Protobuf, events, and shared schemas
+infra/         # local runtime, deployment, and infrastructure definitions
+tools/
+  simulator/    # synthetic telemetry CLI and fixture generator
 docs/
 mise.toml
 ```
 
-This is a target organization, not a required bulk move of existing files.
-Projects move when a scoped implementation task needs the new boundary.
-`packages/` is language-neutral: a reusable Python package shared by Python
-services belongs there just as a TypeScript package does. Each package keeps
-its native manifest and tooling. `tools/` is for repository and development
-tools such as generators, not reusable runtime libraries. Contracts are
-versioned architectural components; their changes should be linted and
-checked for compatibility, with client or model generation added where it
-helps consumers.
+`apps/` contains user-facing product applications; `services/` contains
+independently deployable runtime services. The simulator is an engineering
+tool that generates synthetic telemetry and fixtures, so it belongs in
+`tools/`, not in either runtime category. Create other areas as their projects
+are added rather than creating empty directories. `packages/` is
+language-neutral: a reusable Python package shared by Python services belongs
+there just as a TypeScript package does. Contracts are versioned architectural
+components; their changes should be checked for compatibility, with client or
+model generation added where it helps consumers.
 
 ### Toolchain and task ownership
 
-- The root `mise.toml` and `mise.lock` select and install shared development
-  tools, including Pixi, Node.js, pnpm, and prek. Add Go and other ecosystem
-  toolchains there as their projects are introduced. Pin supported versions
-  through mise rather than relying on undocumented global installations.
+- Root mise configuration selects shared development tools and exposes the
+  repository task interface. Pin supported versions through mise rather than
+  relying on undocumented global installations.
 - A project may have a small `mise.toml` for project-specific tools,
   environment variables, or mise task names. Root tool and environment
   settings are shared by default; project settings add to or override them only
   when needed.
-- Each project owns its native scripts and tasks. Python projects expose tasks
-  through Pixi, JavaScript/TypeScript projects through package scripts and
-  pnpm, and other projects through their ecosystem tooling. A project remains
-  directly buildable and testable with its native commands.
+- Each project owns its native scripts and tasks. JavaScript/TypeScript
+  projects expose tasks through package scripts and pnpm; other projects use
+  their ecosystem tooling. A project remains directly buildable and testable
+  with its native commands.
 - The root mise interface provides common commands such as `setup`, `dev`,
   `lint`, `test`, `build`, and `check`. These commands delegate to the
   corresponding tasks of projects that implement them, preserve failures, and
@@ -99,25 +95,23 @@ per project or a universal dependency model.
 
 | Ecosystem | Workspace and shared configuration | Project-owned configuration |
 |---|---|---|
-| Python | A root `pixi.toml` workspace, shared workspace settings, and a dependency pool where Pixi supports inheritance | Each Python project keeps its own package metadata, direct dependencies, environments, and Pixi tasks; the workspace lockfile is committed at the workspace root |
-| JavaScript / TypeScript | A root `pnpm-workspace.yaml`, pnpm catalogs for shared version ranges, and the root workspace lockfile | Each package keeps its `package.json`, direct dependencies, and scripts |
+| Python | A root `pixi.toml` workspace, shared settings, and a dependency pool where Pixi supports inheritance | Each project keeps package metadata and direct dependencies. Project task aliases live in its `mise.toml`; use the root workspace's shared environment and lockfile |
+| JavaScript / TypeScript | A root pnpm workspace, catalogs for shared version ranges, and one workspace lockfile | Each package keeps its `package.json`, direct dependencies, and scripts |
 | Go | A root `go.work` coordinates local Go modules | Each module keeps its own `go.mod`, `go.sum`, and Go commands |
 | Rust, JVM, and future ecosystems | Use the ecosystem's native workspace or multi-project feature when introduced | Projects keep native manifests, scripts, and lockfiles according to that workspace model |
 | Infrastructure | Keep infrastructure dependencies and provider configuration in their own area | Use native provider lockfiles and named mise tasks |
 
 Pixi's shared dependency pool applies only to dependency tables supported by
 Pixi's workspace model. In particular, PyPI dependencies remain declared by
-the projects that use them. Pin a Pixi release that supports the required
-workspace features, and verify the actual project and environment layout when
-the root workspace is introduced. pnpm catalogs centralize shared version
-ranges; they do not remove each package's responsibility to declare what it
-uses. Go workspace coordination does not replace each module's own manifest or
-sum file.
+the projects that use them. pnpm catalogs centralize shared version ranges;
+they do not remove each package's responsibility to declare what it uses. Go
+workspace coordination does not replace each module's own manifest or sum
+file.
 
 ### Repository evolution and automation
 
-- Do not introduce Nx initially. Native workspaces and mise provide the
-  starting developer interface and task orchestration.
+- Use native workspaces and mise for workspace management and task
+  orchestration.
 - Consider Nx later only if measured repository needs exceed the native setup,
   such as excessive CI work on unaffected projects, difficult cross-language
   impact analysis, duplicated task-graph logic, or material caching benefits.
@@ -132,12 +126,12 @@ sum file.
 
 ## Alternatives considered
 
-### Nx as the initial orchestrator
+### Nx as a cross-project orchestrator
 
 Nx offers a cross-project task graph, affected-project selection, and caching.
-Starting with it would add another abstraction before the repository has
-demonstrated a graph or CI scaling problem. Defer it and use mise with native
-workspace capabilities first.
+Adding it without a demonstrated graph or CI scaling problem would introduce
+another abstraction. Use mise with native workspace capabilities unless
+measured needs justify Nx.
 
 ### One package manager or lockfile for every language
 
@@ -183,9 +177,9 @@ while preserving their native project boundaries.
   lockfile behavior.
 - Common task names have to be defined by convention, and some projects may
   not implement every task.
-- Root workspaces change lockfile ownership for Python and JavaScript. Moving
-  the existing standalone simulator into the Pixi workspace requires lockfile
-  and environment reconfiguration.
+- Root workspaces establish lockfile ownership for their ecosystems and may
+  require standalone projects to reconfigure their lockfiles and environments
+  when they join a workspace.
 - Shared workspace dependency features have ecosystem-specific limits; a
   shared version catalog does not mean every dependency declaration is
   centralized.
@@ -193,24 +187,9 @@ while preserving their native project boundaries.
   projects are added, so task coverage should remain visible and failures must
   not be hidden.
 
-### Follow-up work
-
-- Add the required root workspace files and mise task configuration through
-  P01-010; migrate the current simulator only as part of that scoped change.
-- Pin mise-managed Pixi, Node.js, pnpm, prek, and later ecosystem tools; commit
-  the root mise lockfile and set the supported minimum mise version.
-- Verify shared dependency behavior and per-project tasks with the selected
-  Pixi and pnpm versions, then record clean-checkout CI evidence.
-- Add contract linting, compatibility checks, and code generation when the
-  first cross-language contracts and consumers are implemented.
-- Revisit Nx only when CI timing, affected-project selection, dependency
-  tracing, or cache measurements demonstrate a gap.
-
 ## Validation
 
-P01-010 validates the workspace and lockfile behavior against the pinned
-versions and existing simulator project. The implementation should verify
-that:
+Validate that:
 
 - a clean checkout installs pinned tools through mise and dependencies through
   the appropriate native workspace;

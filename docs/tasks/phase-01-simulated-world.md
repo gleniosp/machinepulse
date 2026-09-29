@@ -46,7 +46,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
     telemetry.
   - [x] Deterministic UUIDv5 event IDs reproduce from the same run identity
     and sequence.
-- **Tests or evidence:** [Reproducibility tests](../../simulator/tests/test_reproducibility.py), Pydantic models in `simulator/src/machinepulse_simulator/models.py`, and golden manifest/sidecar fixtures in `simulator/tests/fixtures/`. Fixed-seed telemetry-value repeatability remains pending the signal generator.
+- **Tests or evidence:** [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py), Pydantic models in `tools/simulator/src/machinepulse_simulator/models.py`, and golden manifest/sidecar fixtures in `tools/simulator/tests/fixtures/`. Fixed-seed telemetry-value repeatability remains pending the signal generator.
 - **GitHub issue:** [#12](https://github.com/gleniosp/machinepulse/issues/12).
 - **Dependencies:** P01-001.
 
@@ -136,20 +136,21 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Contributors can install and run a small, repeatable set of
   repository checks through the pinned mise toolchain.
 - **Acceptance criteria:**
-  - [ ] Pin `prek` in the root `mise.toml`, commit `mise.lock`, and record the
+  - [x] Pin `prek` in the root `mise.toml`, commit `mise.lock`, and record the
     supported minimum mise version.
-  - [ ] Add `prek.toml` using only prek's native built-in hooks for trailing
-    whitespace, end-of-file newlines, merge-conflict markers, and YAML, TOML,
-    and JSON syntax checks.
-  - [ ] Add root mise tasks to install the local Git hook and run all configured
+  - [x] Add `prek.toml` with native built-in filename, conflict, size,
+    whitespace, newline, and structured-data checks. Scope local pre-commit
+    hooks so simulator changes run `mise run simulator:check` and
+    workspace/package metadata changes verify the root Pixi lock.
+  - [x] Add root mise tasks to install the local Git hook and run all configured
     checks across the repository.
-  - [ ] Document contributor setup and the manual all-files check; make the
+  - [x] Document contributor setup and the manual all-files check; make the
     check command reusable by CI.
-  - [ ] Run the checks across the existing repository and resolve or explicitly
+  - [x] Run the checks across the existing repository and resolve or explicitly
     tune findings so the all-files check passes.
 - **Tests or evidence:** `mise install --locked`, the hook installation task,
-  and the all-files check from a clean checkout; record the resulting command
-  output in the Week 01 journal.
+  and the all-files check from a fresh isolated checkout snapshot; record the
+  resulting command output in the Week 01 journal.
 - **Dependencies:** P00-010. Coordinate the shared check command with P01-008.
 - **Out of scope:** Markdown-specific linting or formatting, third-party hook
   repositories, language-specific hooks, and selecting or introducing a CI
@@ -157,36 +158,49 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-010 — Establish the polyglot workspace and mise task interface
 
-- **Outcome:** The repository has root Pixi and pnpm workspaces, a pinned mise
-  toolchain, and common root tasks that delegate to self-contained project
-  tasks. Native package-manager commands remain usable within each project.
+- **Outcome:** The repository has a root Pixi workspace, a pinned mise toolchain,
+  the simulator engineering tool under the ADR's `tools/` area, and common root
+  tasks that delegate to self-contained project tasks. Go, Node.js, and pnpm are
+  added when their projects are introduced. Native package-manager commands
+  remain usable within each project.
 - **Acceptance criteria:**
   - [x] Update the [developer tooling baseline](../developer-tooling.md) to
     reflect the accepted ADR's workspace roots, native lockfiles, common task
     interface, and Go workspace pattern.
-  - [ ] Pin Pixi, Node.js, pnpm, prek, and Go through the root mise
-    configuration; commit the root mise lockfile and document the supported
-    minimum mise version.
-  - [ ] Add a root Pixi workspace with shared settings and dependency specs
-    supported by Pixi; migrate the simulator into it while preserving its
-    package metadata, direct dependencies, development/runtime environments,
-    and native Pixi tasks.
-  - [ ] Add a root pnpm workspace, shared dependency catalogs, and root
-    lockfile. Keep package-specific dependencies and scripts in each package
-    manifest, with workspace globs ready for future apps and packages.
-  - [ ] Configure root and project mise task roots. Root `setup`, `lint`,
-    `test`, and `check` commands delegate to applicable current project tasks,
-    show which projects ran, and fail when a selected task fails. Document
+  - [x] Place the simulator under `tools/simulator` as the synthetic telemetry
+    generator in the ADR's responsibility-based repository structure.
+  - [x] Pin Pixi and prek through the root mise configuration; commit the root
+    mise lockfile and document the supported minimum mise version. Defer Go
+    until the first Go project and Node.js/pnpm until the first
+    JavaScript/TypeScript project.
+  - [x] Add a root Pixi workspace with shared settings and dependency specs
+    supported by Pixi; preserve simulator package metadata and direct
+    dependencies. Keep its project task names in `tools/simulator/mise.toml`;
+    those commands use the root Pixi workspace environment and lockfile.
+  - [ ] When the first JavaScript/TypeScript project is added, create the root
+    pnpm workspace with `apps/*` and `packages/*` globs, one named catalog for
+    Vite+, and a root lockfile. Add Node.js and pnpm through mise at that time.
+    Each applicable package should reference `vite-plus` through the catalog
+    from its initial manifest, with shared versions set in the catalog from the
+    beginning. Keep package-specific scripts in each package manifest.
+  - [x] Configure root and project mise task roots. Root `setup` installs the
+    locked tools, Pixi environment, and Git hook; common root verbs delegate to
+    project-prefixed tasks, show which projects ran, and fail when a selected
+    task fails. Direct simulator tasks use the `simulator:` prefix. Document
     `dev` and `build` as common task names to add when projects define them.
-  - [ ] Keep each project's native setup, lint, test, and build commands
+  - [x] Add a Pixi lock-check task that verifies the root Pixi lockfile is
+    current.
+  - [x] Keep each project's native setup, lint, test, and build commands
     directly executable. Document the Go pattern: root `go.work` when the
     first module is introduced, with module-owned `go.mod` and `go.sum`.
-  - [ ] Run the locked tool/dependency setup and root checks from a clean
+  - [x] Run the locked tool/dependency setup and root checks from an isolated
     checkout, then record command output and limitations in the Week 01
-    journal.
-- **Tests or evidence:** Clean-checkout `mise install --locked`, locked Pixi
-  and pnpm workspace installation, native simulator task runs, root mise task
-  runs, and Week 01 journal evidence.
+    journal. Defer pnpm installation and lockfile evidence until the first
+    JavaScript/TypeScript project is added.
+- **Tests or evidence:** Setup and root checks from a fresh isolated checkout
+  snapshot, locked Pixi workspace installation, native simulator task runs,
+  root mise task runs, and Week 01 journal evidence. Record pnpm workspace
+  evidence with the first JavaScript/TypeScript project.
 - **GitHub issue:** [#83](https://github.com/gleniosp/machinepulse/issues/83).
 - **Dependencies:** P00-010, accepted ADR-0002, and P01-009
   ([#79](https://github.com/gleniosp/machinepulse/issues/79)). Complete before
@@ -195,9 +209,10 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Out of scope:** Implementing the Go gateway, a TypeScript application,
   infrastructure services, Nx, or a custom cross-language dependency graph.
 - **Definition of done:** The accepted ADR is reflected in the tooling baseline,
-  current Python and pnpm workspace entry points work from clean setup, the
-  common root checks report failures accurately, and the journal records
-  evidence and remaining limitations.
+  the current Python workspace entry points work from clean setup, the common
+  root checks report failures accurately, and the journal records evidence and
+  remaining limitations. pnpm workspace implementation is deferred until the
+  first JavaScript/TypeScript project is added.
 
 ## Required experiments
 

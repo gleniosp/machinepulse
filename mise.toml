@@ -1,2 +1,85 @@
+min_version = "2026.8.11"
+monorepo_root = true
+
+[monorepo]
+config_roots = ["tools/simulator"]
+lockfile = true
+
 [tools]
+prek = "0.5.3"
 pixi = "0.76.1"
+
+[tasks.setup]
+description = "Install repository tools, project environments, and Git hooks"
+run = [
+  "mise install --locked",
+  "mise run simulator:setup",
+  "mise run hooks:install",
+]
+
+[tasks."simulator:setup"]
+description = "Install the simulator development environment"
+run = "mise run //tools/simulator:setup"
+
+[tasks."simulator:format"]
+description = "Format the simulator"
+run = "mise run //tools/simulator:format"
+
+[tasks."simulator:format-check"]
+description = "Check simulator formatting"
+run = "mise run //tools/simulator:format-check"
+
+[tasks."simulator:lint"]
+description = "Lint the simulator"
+run = "mise run //tools/simulator:lint"
+
+[tasks."simulator:typecheck"]
+description = "Type-check the simulator"
+run = "mise run //tools/simulator:typecheck"
+
+[tasks."simulator:test"]
+description = "Test the simulator"
+run = "mise run //tools/simulator:test"
+
+[tasks."simulator:check"]
+description = "Run all simulator checks"
+run = "mise run //tools/simulator:check"
+
+[tasks.format]
+description = "Format all current projects"
+run = "mise run simulator:format"
+
+[tasks.format-check]
+description = "Check formatting for all current projects"
+run = "mise run simulator:format-check"
+
+[tasks.lint]
+description = "Lint all current projects"
+run = "mise run simulator:lint"
+
+[tasks.typecheck]
+description = "Type-check all current projects"
+run = "mise run simulator:typecheck"
+
+[tasks.test]
+description = "Test all current projects"
+run = "mise run simulator:test"
+
+[tasks.check]
+description = "Run all current repository checks"
+run = [
+  "mise run simulator:check",
+  "mise run pixi:lock-check",
+]
+
+[tasks."pixi:lock-check"]
+description = "Check that the root Pixi lockfile is current"
+run = "pixi lock --check --manifest-path pixi.toml"
+
+[tasks."hooks:install"]
+description = "Install the repository's prek Git hook"
+run = "prek install"
+
+[tasks."hooks:check"]
+description = "Run all configured repository hooks across all files"
+run = "prek run --all-files"
