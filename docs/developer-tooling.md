@@ -23,16 +23,20 @@ the corresponding package exists.
 | Area | Owner and expected files | Repository-level integration |
 |---|---|---|
 | Shared tools and commands | `mise.toml`, `mise.lock`, `prek.toml`, and root mise tasks | `mise install --locked` and `mise run <task>` |
-| Go service or library | Its own `go.mod` and `go.sum` | mise supplies the selected Go toolchain; root tasks delegate to the module |
-| Python service or ML/data package | Its own `pyproject.toml` and `pixi.lock` | mise supplies the pinned Pixi CLI; Pixi owns the package's Python environment and delegates through `pixi run --locked` |
-| React/Vite frontend | Its own `package.json`, `pnpm-lock.yaml`, and `vite.config.ts` | mise supplies Node and pnpm; pnpm owns the local `vite-plus` package and its `vp` commands |
+| Go service or library | Root `go.work` coordinates local modules; each module owns `go.mod` and `go.sum` | mise supplies the selected Go toolchain; project tasks delegate to the module |
+| Python service or ML/data package | Root Pixi workspace (`pixi.toml`, `pixi.lock`) owns shared settings and supported shared dependency specs; each project keeps its package metadata and Pixi environment/tasks | mise supplies the pinned Pixi CLI; Pixi owns Python dependency resolution and execution through `pixi run --locked` |
+| JavaScript/TypeScript app or package | Root `pnpm-workspace.yaml` and `pnpm-lock.yaml`; catalogs hold shared version ranges; each project owns `package.json` dependencies and scripts | mise supplies Node and pnpm; package scripts delegate to native tools such as Vite+ where selected |
 | Infrastructure | `infra/` package or folder with Docker, database, and operational scripts | mise exposes documented infra tasks; services remain explicit and local-first |
 
 Pixi environments may use conda-forge packages, PyPI packages, or both where
-appropriate for the Python component. A Python component must document the
+appropriate for the Python component. Pixi workspace dependency sharing is
+limited to the dependency tables supported by Pixi; PyPI dependencies stay
+declared by the projects that use them. A Python component must document the
 source and licensing of non-standard datasets, models, or binary artifacts it
-uses. The `infra/` area must not introduce hidden external services or require
-credentials for the Phase 01 local workflow.
+uses. Reusable runtime libraries in any language belong in `packages/`; use
+`tools/` for repository tooling and generators. The `infra/` area must not
+introduce hidden external services or require credentials for the Phase 01
+local workflow.
 
 ## Proposed toolchains
 
@@ -45,9 +49,9 @@ entries belong in the implementation phase once each package exists.
 | Repository Git hooks | prek, installed through mise | Maintainer direction; start with prek's native hooks and extend as project checks grow |
 | Go | Go 1.27.x | Proposed; select and lock the patch version in the Go module/CI setup |
 | Python | Python 3.13.x in Pixi environments | Selected for the simulator; evaluate 3.14.x separately for the ML/data stack |
-| Python dependency manager | Pixi 0.76.1, installed through mise | Pinned in the root `mise.toml`; each component owns its Pixi environment and `pixi.lock` |
+| Python dependency manager | Pixi 0.76.1, installed through mise | Pinned in the root `mise.toml`; the Pixi workspace owns its root `pixi.lock`, while projects own package metadata and environment/task definitions |
 | Node.js | Node.js 24 LTS | Proposed; managed by mise, not by a global Vite+ environment |
-| JavaScript package manager | pnpm 10.x | Maintainer direction; managed by mise and declared by each frontend package |
+| JavaScript package manager | pnpm 10.x | Maintainer direction; managed by mise and selected by the root workspace |
 | Go formatting and checks | `gofmt`, `go vet`, and `golangci-lint` | Proposed baseline |
 | Python formatting, linting, typing, and tests | Pixi development environment with Ruff, mypy, and pytest | Used by the simulator; runtime-only dependencies remain in its Pixi `default` environment |
 | TypeScript/React formatting and linting | Vite+ with Oxfmt and Oxlint | Maintainer direction; no default Prettier or ESLint dependency |
@@ -69,11 +73,13 @@ package owns Vite+ through its package manifest and lockfile.
 
 ## Repository command contract
 
-The root `mise.toml` should provide these commands once Phase 01 implementation
-starts:
+The root `mise.toml` should provide a common repository task vocabulary:
 
 ```text
 mise install --locked
+mise run setup
+mise run dev
+mise run build
 mise run format
 mise run format-check
 mise run lint
@@ -84,9 +90,13 @@ mise run hooks:install
 mise run hooks:check
 ```
 
-The root tasks should delegate to the components that exist in the current
-phase. A task may be a no-op for an absent language area, but it must not hide a
-failed check. Expected initial delegates are:
+Project `mise.toml` files and native manifests own project-specific task
+definitions. Root mise tasks compose the corresponding tasks for projects that
+implement them, preserve failures, and make the selected project set visible.
+Do not silently report success for a missing required check. Add `dev` and
+`build` delegates as projects define those actions. The current simulator
+delegates its Python checks through Pixi. CI uses the same root commands that
+contributors run locally. Expected native commands include:
 
 ```text
 go fmt ./...
@@ -117,12 +127,15 @@ run locally.
 - Commit `mise.lock` for repository-level tool resolution once the root
   configuration is introduced.
 - Commit `go.mod` and `go.sum` with each Go module.
-- Commit `pixi.lock` with each Pixi-managed Python component; CI uses
-  `pixi run --locked` or the equivalent locked installation mode. Use the
-  component's `dev` environment for tests and quality checks; keep development
-  tools out of its runtime `default` environment.
-- Commit each frontend package's `pnpm-lock.yaml`; CI uses
-  `pnpm install --frozen-lockfile`.
+- Commit one root `pixi.lock` for the Pixi workspace; project manifests own
+  package-specific dependencies and environments. CI uses `pixi run --locked`
+  or the equivalent locked installation mode. Use development environments
+  for tests and quality checks; keep development tools out of runtime-only
+  environments.
+- Commit the root `pnpm-lock.yaml` for the pnpm workspace; each package keeps
+  its own `package.json`. CI uses `pnpm install --frozen-lockfile`.
+- Add root `go.work` when the first Go module is introduced. Each Go module
+  keeps its own `go.mod` and `go.sum` and remains directly testable with Go.
 - Keep infrastructure image references, Compose files, and database migration
   or bootstrap scripts under `infra/` and validate them through named mise
   tasks.
@@ -159,6 +172,9 @@ before benchmarks exist.
 
 - Set and document the minimum supported mise version when the root
   configuration is created.
+- Implement the accepted [ADR-0002](adr/0002-polyglot-monorepo-workspaces.md)
+  through [P01-010](tasks/phase-01-simulated-world.md#p01-010--establish-the-polyglot-workspace-and-mise-task-interface),
+  before Phase 02 introduces the Go service.
 - Select exact toolchain patch versions and generate `mise.lock`.
 - Confirm the Python 3.13/3.14 compatibility decision for the first Pixi
   environment and record the supported platforms/channels.

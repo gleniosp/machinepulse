@@ -155,6 +155,50 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
   repositories, language-specific hooks, and selecting or introducing a CI
   provider.
 
+### P01-010 — Establish the polyglot workspace and mise task interface
+
+- **Outcome:** The repository has root Pixi and pnpm workspaces, a pinned mise
+  toolchain, and common root tasks that delegate to self-contained project
+  tasks. Native package-manager commands remain usable within each project.
+- **Acceptance criteria:**
+  - [x] Update the [developer tooling baseline](../developer-tooling.md) to
+    reflect the accepted ADR's workspace roots, native lockfiles, common task
+    interface, and Go workspace pattern.
+  - [ ] Pin Pixi, Node.js, pnpm, prek, and Go through the root mise
+    configuration; commit the root mise lockfile and document the supported
+    minimum mise version.
+  - [ ] Add a root Pixi workspace with shared settings and dependency specs
+    supported by Pixi; migrate the simulator into it while preserving its
+    package metadata, direct dependencies, development/runtime environments,
+    and native Pixi tasks.
+  - [ ] Add a root pnpm workspace, shared dependency catalogs, and root
+    lockfile. Keep package-specific dependencies and scripts in each package
+    manifest, with workspace globs ready for future apps and packages.
+  - [ ] Configure root and project mise task roots. Root `setup`, `lint`,
+    `test`, and `check` commands delegate to applicable current project tasks,
+    show which projects ran, and fail when a selected task fails. Document
+    `dev` and `build` as common task names to add when projects define them.
+  - [ ] Keep each project's native setup, lint, test, and build commands
+    directly executable. Document the Go pattern: root `go.work` when the
+    first module is introduced, with module-owned `go.mod` and `go.sum`.
+  - [ ] Run the locked tool/dependency setup and root checks from a clean
+    checkout, then record command output and limitations in the Week 01
+    journal.
+- **Tests or evidence:** Clean-checkout `mise install --locked`, locked Pixi
+  and pnpm workspace installation, native simulator task runs, root mise task
+  runs, and Week 01 journal evidence.
+- **GitHub issue:** [#83](https://github.com/gleniosp/machinepulse/issues/83).
+- **Dependencies:** P00-010, accepted ADR-0002, and P01-009
+  ([#79](https://github.com/gleniosp/machinepulse/issues/79)). Complete before
+  further runtime implementation resumes, including P01-003 through P01-008
+  and Phase 02.
+- **Out of scope:** Implementing the Go gateway, a TypeScript application,
+  infrastructure services, Nx, or a custom cross-language dependency graph.
+- **Definition of done:** The accepted ADR is reflected in the tooling baseline,
+  current Python and pnpm workspace entry points work from clean setup, the
+  common root checks report failures accurately, and the journal records
+  evidence and remaining limitations.
+
 ## Required experiments
 
 - [EXP-0001](../experiments/EXP-0001-simulator-parameters.md): choose useful

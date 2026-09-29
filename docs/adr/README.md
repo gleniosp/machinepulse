@@ -37,8 +37,13 @@ The sequence should not be reused, even if a decision is later rejected or super
 
 ## Current status
 
-The accepted decisions are:
+### Accepted decisions
 
 - [ADR-0001 — Telemetry event identifiers](0001-telemetry-event-identifiers.md)
+- [ADR-0002 — Polyglot monorepo workspaces and task interface](0002-polyglot-monorepo-workspaces.md)
+
+### Proposed decisions
+
+No proposed decisions.
 
 Use the [ADR template](template.md) for new records.
