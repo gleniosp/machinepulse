@@ -153,6 +153,26 @@ it.
 - [Simulator reproducibility specification](../specs/simulator.md#run-manifest-and-ground-truth-sidecar)
 - [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md)
 
+## P01-002 scope and verification — 2026-09-30
+
+The maintainer confirmed P01-002 should cover reproducibility metadata and
+event identities without absorbing the not-yet-implemented signal and context
+generators. Narrowed the task's repeatability acceptance to deterministic
+manifest and sidecar serialization; P01-004 owns repeatable vibration values,
+P01-005 owns repeatable temperature/RPM context, and P01-008 owns a full-run
+comparison once those generators exist. Added an explicit repeated-sidecar
+assertion to the reproducibility tests. `mise run simulator:check` passed:
+formatting, lint, type checks, and all 13 tests. The local acceptance criteria
+are now evidenced; issue #12 remains open until the maintainer-approved PR is
+merged.
+
+### Evidence
+
+- [P01-002 GitHub issue](https://github.com/gleniosp/machinepulse/issues/12)
+- [Phase 01 task breakdown](../tasks/phase-01-simulated-world.md)
+- [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py)
+- `mise run simulator:check` — formatting, lint, type checks, 13 tests passed.
+
 ## Day 5 — Evaluation and communication
 
 ### Plan
