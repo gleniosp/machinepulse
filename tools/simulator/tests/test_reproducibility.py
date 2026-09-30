@@ -113,10 +113,20 @@ def test_manifest_serialization_is_stable_and_separate_from_telemetry(
         code_revision="abc123",
         working_tree_dirty=False,
     )
+    event_id = event_id_for_window("simulator-0001", "run-0001", 0)
+    sidecar = create_ground_truth_record(event_id, manifest)
+    repeated_sidecar = create_ground_truth_record(event_id, repeated_manifest)
+
     assert serialize_json(manifest) == serialize_json(repeated_manifest)
+    assert serialize_json(sidecar) == serialize_json(repeated_sidecar)
     assert manifest["manifest_version"] == MANIFEST_VERSION
     assert manifest["generator_version"] == GENERATOR_VERSION
     assert "condition" not in manifest
+    assert sidecar["condition"] == effective_config["condition"]
+    run_config = effective_config["run"]
+    assert isinstance(run_config, dict)
+    assert sidecar["seed"] == run_config["seed"]
+    assert sidecar["event_id"] == event_id
 
 
 def test_metadata_rejects_missing_seed_and_non_finite_values(

@@ -38,17 +38,23 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-002 — Define simulator reproducibility metadata
 
-- **Outcome:** Every generated run can be reproduced and audited.
+- **Outcome:** Run metadata and event identities make generated runs traceable
+  and replayable.
 - **Acceptance criteria:**
-  - [ ] A fixed seed and effective configuration produce repeatable output.
-  - [x] Run configuration, generator version, and code revision are recorded.
+  - [x] The validated effective configuration, including seed and resolved
+    start time, is recorded with generator version and source revision state.
+  - [x] Identical run metadata produces byte-for-byte stable manifest and
+    ground-truth sidecar JSON.
   - [x] Ground-truth condition metadata is recorded separately from production
     telemetry.
   - [x] Deterministic UUIDv5 event IDs reproduce from the same run identity
     and sequence.
-- **Tests or evidence:** [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py), Pydantic models in `tools/simulator/src/machinepulse_simulator/models.py`, and golden manifest/sidecar fixtures in `tools/simulator/tests/fixtures/`. Fixed-seed telemetry-value repeatability remains pending the signal generator.
+- **Tests or evidence:** [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py), Pydantic models in `tools/simulator/src/machinepulse_simulator/models.py`, and golden manifest/sidecar fixtures in `tools/simulator/tests/fixtures/`.
 - **GitHub issue:** [#12](https://github.com/gleniosp/machinepulse/issues/12).
 - **Dependencies:** P01-001.
+- **Deferred verification:** Repeatable vibration values belong to P01-004,
+  repeatable temperature/RPM context belongs to P01-005, and identical full-run
+  output is verified by P01-008 after generation is implemented.
 
 ### P01-003 — Implement the motor and operating-condition domain model
 
@@ -71,6 +77,8 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
   - [ ] Rotational frequency is derived consistently from RPM.
   - [ ] Noise and condition-specific components are configurable.
   - [ ] Generated output is marked synthetic.
+  - [ ] Identical effective configuration, seed, and generator version produce
+    identical ordered vibration values.
 - **Tests or evidence:** Deterministic fixtures and exploratory plots.
 - **GitHub issue:** [#14](https://github.com/gleniosp/machinepulse/issues/14).
 - **Dependencies:** P01-003.
@@ -119,6 +127,8 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Phase 01 behavior is evaluated and its limitations are recorded.
 - **Acceptance criteria:**
   - [ ] Unit and contract tests cover normal and simulated conditions.
+  - [ ] Repeated runs with identical effective configuration, seed, and
+    generator version produce identical ordered telemetry and sidecar output.
   - [ ] Time-domain and frequency-domain exploratory plots are produced.
   - [ ] Week 01 records commands, results, and limitations.
   - [ ] The first technical article draft is based on evidence.
