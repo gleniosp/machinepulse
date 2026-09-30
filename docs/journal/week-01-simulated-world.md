@@ -21,6 +21,7 @@ operating conditions.
 - [P01-001 GitHub issue](https://github.com/gleniosp/machinepulse/issues/11)
 - [P01-009 GitHub issue](https://github.com/gleniosp/machinepulse/issues/79)
 - [P01-010 GitHub issue](https://github.com/gleniosp/machinepulse/issues/83)
+- [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
 - GitHub P01-001 through P01-009
 
 ## Planned outcomes
@@ -172,6 +173,44 @@ merged.
 - [Phase 01 task breakdown](../tasks/phase-01-simulated-world.md)
 - [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py)
 - `mise run simulator:check` — formatting, lint, type checks, 13 tests passed.
+
+## P01-003 motor and condition domain model — 2026-09-30
+
+Added typed simulator domain models for a motor and the `normal`, `imbalance`,
+and `overheating` conditions. The motor validates finite, positive nominal RPM
+and declares the required v0.1 groups: three-axis vibration, temperature, and
+RPM. Those groups stay required to match FR-004 and the `telemetry.v1`
+contract. The condition models enforce zero intensity for normal and positive
+intensity through 1.0 for simulated faults. Imbalance peak amplitude and
+overheating temperature rise are computed from their configured intensity-1
+values. The term means the parameter value at condition intensity `1.0`;
+lower intensities scale it linearly. Vibration amplitudes reject negative
+values, while phase offsets remain signed. The run configuration constructs
+only the selected condition model, so normal and imbalance runs do not need
+overheating-only constructor arguments (and vice versa). `EffectiveRunConfig`
+exposes these domain views without changing the serialized run-manifest
+configuration established by P01-002.
+
+Updated the P01-003 task and issue acceptance wording to reflect the required
+v0.1 sensor groups. Whitespace-only identifiers now use a shared Pydantic
+`StringConstraints` type, and condition/intensity validation is explicit for
+the flattened run config. Cross-field validators keep manifest and ground-truth
+metadata aligned with their effective configuration. `mise run simulator:check`
+passed: formatting, lint, strict type checking, and all 57 simulator tests.
+Amplitude fields reject negative values while phase offsets allow signed finite
+values. The condition model is constructed from only the parameters used by the
+selected condition; sidecar intensity is finite and within `[0, 1]`, and
+sidecar seed is non-negative. Issue #13 remains open until the
+maintainer-approved PR is merged.
+
+### Evidence
+
+- [Motor and condition domain models](../../tools/simulator/src/machinepulse_simulator/domain.py)
+- [Effective run configuration](../../tools/simulator/src/machinepulse_simulator/models.py)
+- [Domain tests](../../tools/simulator/tests/test_domain.py)
+- [P01-003 task acceptance](../tasks/phase-01-simulated-world.md)
+- [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
+- `mise run simulator:check` — formatting, lint, strict mypy, and 57 tests passed.
 
 ## Day 5 — Evaluation and communication
 

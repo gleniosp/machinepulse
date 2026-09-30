@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from pathlib import Path
@@ -5,6 +6,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
+from pydantic import ValidationError
 
 from machinepulse_simulator import (
     create_ground_truth_record,
@@ -18,6 +20,7 @@ from machinepulse_simulator.reproducibility import (
     ReproducibilityError,
     resolve_source_revision,
 )
+from machinepulse_simulator.models import GroundTruthRecord, RunManifest
 
 
 def test_event_id_matches_stable_uuidv5_fixture() -> None:
@@ -92,6 +95,99 @@ def test_manifest_and_sidecar_match_golden_fixtures(
 
     assert serialize_json(manifest) == run_manifest_json
     assert serialize_json(sidecar) == ground_truth_json
+
+
+@pytest.mark.parametrize(
+    "invalid_intensity",
+    [float("nan"), float("inf"), float("-inf"), -0.1, 1.1],
+)
+def test_ground_truth_rejects_non_finite_or_out_of_range_intensity(
+    effective_config: dict[str, object], invalid_intensity: float
+) -> None:
+    """Sidecar intensity must be finite, bounded, and match its config.
+
+    Args:
+        effective_config: Shared resolved simulator configuration fixture.
+        invalid_intensity: Invalid sidecar intensity under test.
+    """
+    manifest = create_run_manifest(
+        effective_config, code_revision=None, working_tree_dirty=None
+    )
+    record = create_ground_truth_record(
+        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+    )
+    validated_record = GroundTruthRecord.model_validate_json(json.dumps(record))
+    invalid_record = validated_record.model_dump(mode="python")
+    invalid_record["condition_intensity"] = invalid_intensity
+
+    with pytest.raises(ValidationError):
+        GroundTruthRecord.model_validate(invalid_record)
+
+
+def test_ground_truth_rejects_negative_seed(
+    effective_config: dict[str, object],
+) -> None:
+    """Sidecar seed remains a non-negative integer."""
+    manifest = create_run_manifest(
+        effective_config, code_revision=None, working_tree_dirty=None
+    )
+    record = create_ground_truth_record(
+        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+    )
+    validated_record = GroundTruthRecord.model_validate_json(json.dumps(record))
+    invalid_record = validated_record.model_dump(mode="python")
+    invalid_record["seed"] = -1
+
+    with pytest.raises(ValidationError):
+        GroundTruthRecord.model_validate(invalid_record)
+
+
+def test_manifest_rejects_run_id_that_disagrees_with_effective_config(
+    effective_config: dict[str, object],
+) -> None:
+    """The manifest-level run ID must identify its effective configuration."""
+    manifest = create_run_manifest(
+        effective_config, code_revision=None, working_tree_dirty=None
+    )
+    validated_manifest = RunManifest.model_validate_json(json.dumps(manifest))
+    invalid_manifest = validated_manifest.model_dump(mode="python")
+    invalid_manifest["run_id"] = "another-run"
+
+    with pytest.raises(ValidationError, match="run_id must match"):
+        RunManifest.model_validate(invalid_manifest)
+
+
+@pytest.mark.parametrize("field", ["run_id", "generator_version", "code_revision"])
+@pytest.mark.parametrize("blank_value", ["", " \t\n"])
+def test_manifest_rejects_blank_text_fields(
+    effective_config: dict[str, object], field: str, blank_value: str
+) -> None:
+    """Manifest text fields reject empty and whitespace-only strings."""
+    manifest = create_run_manifest(
+        effective_config, code_revision=None, working_tree_dirty=None
+    )
+    manifest[field] = blank_value
+
+    with pytest.raises(ValidationError):
+        RunManifest.model_validate(manifest)
+
+
+@pytest.mark.parametrize("field", ["run_id", "generator_version", "code_revision"])
+@pytest.mark.parametrize("blank_value", ["", " \t\n"])
+def test_ground_truth_rejects_blank_text_fields(
+    effective_config: dict[str, object], field: str, blank_value: str
+) -> None:
+    """Ground-truth text fields reject empty and whitespace-only strings."""
+    manifest = create_run_manifest(
+        effective_config, code_revision=None, working_tree_dirty=None
+    )
+    record = create_ground_truth_record(
+        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+    )
+    record[field] = blank_value
+
+    with pytest.raises(ValidationError):
+        GroundTruthRecord.model_validate(record)
 
 
 def test_manifest_serialization_is_stable_and_separate_from_telemetry(

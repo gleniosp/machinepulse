@@ -1,29 +1,32 @@
 """Validated models for simulator configuration and reproducibility records."""
 
 from datetime import datetime, timedelta
-from typing import Literal
+from typing import Annotated, Literal
 from pydantic import (
     UUID5,
-    BaseModel,
-    ConfigDict,
     Field,
+    StringConstraints,
     field_validator,
     model_validator,
 )
 
+from machinepulse_simulator.domain import (
+    AxisValues,
+    ConditionName,
+    ImbalanceCondition,
+    MotorConfig,
+    NormalCondition,
+    OperatingCondition,
+    OverheatingCondition,
+    NonNegativeAxisValues,
+    SimulatorModel,
+)
 
-class SimulatorModel(BaseModel):
-    """Base model that rejects undeclared fields and implicit coercion."""
 
-    model_config = ConfigDict(extra="forbid", strict=True)
-
-
-class AxisValues(SimulatorModel):
-    """Finite per-axis numeric values."""
-
-    x: float = Field(allow_inf_nan=False)
-    y: float = Field(allow_inf_nan=False)
-    z: float = Field(allow_inf_nan=False)
+type NonBlankString = Annotated[
+    str,
+    StringConstraints(min_length=1, pattern=r"\S"),
+]
 
 
 class SamplingConfig(SimulatorModel):
@@ -63,10 +66,10 @@ class RunConfig(SimulatorModel):
 class SignalConfig(SimulatorModel):
     """Configurable baseline and condition-specific signal parameters."""
 
-    rotational_peak_m_s2: AxisValues
+    rotational_peak_m_s2: NonNegativeAxisValues
     rotational_phase_rad: AxisValues
     noise_std_m_s2: float = Field(ge=0, allow_inf_nan=False)
-    imbalance_peak_m_s2_at_intensity_1: AxisValues
+    imbalance_peak_m_s2_at_intensity_1: NonNegativeAxisValues
 
 
 class TemperatureConfig(SimulatorModel):
@@ -79,34 +82,48 @@ class TemperatureConfig(SimulatorModel):
 class EffectiveRunConfig(SimulatorModel):
     """Complete, validated simulator configuration for one run."""
 
-    asset_id: str = Field(min_length=1)
-    device_id: str = Field(min_length=1)
-    run_id: str = Field(min_length=1)
+    asset_id: NonBlankString
+    device_id: NonBlankString
+    run_id: NonBlankString
     nominal_rpm: float = Field(gt=0, allow_inf_nan=False)
-    condition: Literal["normal", "imbalance", "overheating"]
+    condition: ConditionName
     condition_intensity: float = Field(ge=0, le=1, allow_inf_nan=False)
     sampling: SamplingConfig
     run: RunConfig
     signal: SignalConfig
     temperature: TemperatureConfig
 
-    @field_validator("asset_id", "device_id", "run_id")
-    @classmethod
-    def require_non_blank_identifier(cls, value: str) -> str:
-        """Reject identifiers that contain only whitespace.
-
-        Args:
-            value: Identifier to validate.
+    @property
+    def motor(self) -> MotorConfig:
+        """Return the domain model for this run's motor and required sensors.
 
         Returns:
-            The original identifier.
-
-        Raises:
-            ValueError: If the identifier is blank.
+            The validated motor model, including the v0.1 sensor groups.
         """
-        if not value.strip():
-            raise ValueError("identifier must not be blank")
-        return value
+        return MotorConfig(nominal_rpm=self.nominal_rpm)
+
+    @property
+    def operating_condition(self) -> OperatingCondition:
+        """Return the condition-specific model derived from this run config.
+
+        Returns:
+            The validated domain model for the selected operating condition.
+        """
+        if self.condition == "normal":
+            return NormalCondition(condition_intensity=self.condition_intensity)
+        if self.condition == "imbalance":
+            return ImbalanceCondition(
+                condition_intensity=self.condition_intensity,
+                peak_m_s2_at_intensity_1=(
+                    self.signal.imbalance_peak_m_s2_at_intensity_1
+                ),
+            )
+        return OverheatingCondition(
+            condition_intensity=self.condition_intensity,
+            temperature_rise_c_at_intensity_1=(
+                self.temperature.overheating_rise_c_at_intensity_1
+            ),
+        )
 
     @model_validator(mode="after")
     def validate_condition_intensity(self) -> "EffectiveRunConfig":
@@ -129,22 +146,59 @@ class RunManifest(SimulatorModel):
     """Versioned provenance and effective configuration for a run."""
 
     manifest_version: Literal["machinepulse.run-manifest.v1"]
-    run_id: str = Field(min_length=1)
-    generator_version: str = Field(min_length=1)
-    code_revision: str | None = Field(min_length=1)
+    run_id: NonBlankString
+    generator_version: NonBlankString
+    code_revision: NonBlankString | None
     working_tree_dirty: bool | None
     effective_config: EffectiveRunConfig
+
+    @model_validator(mode="after")
+    def match_effective_run_id(self) -> "RunManifest":
+        """Keep the manifest identity aligned with its effective config.
+
+        Returns:
+            This validated manifest.
+
+        Raises:
+            ValueError: If the manifest and effective config have different IDs.
+        """
+        if self.run_id != self.effective_config.run_id:
+            raise ValueError("run_id must match effective_config.run_id")
+        return self
 
 
 class GroundTruthRecord(SimulatorModel):
     """Condition label and reproduction metadata for one telemetry event."""
 
     event_id: UUID5
-    run_id: str
-    condition: Literal["normal", "imbalance", "overheating"]
-    condition_intensity: float
-    seed: int
-    generator_version: str
-    code_revision: str | None
+    run_id: NonBlankString
+    condition: ConditionName
+    condition_intensity: float = Field(ge=0, le=1, allow_inf_nan=False)
+    seed: int = Field(ge=0)
+    generator_version: NonBlankString
+    code_revision: NonBlankString | None
     working_tree_dirty: bool | None
     effective_config: EffectiveRunConfig
+
+    @model_validator(mode="after")
+    def match_effective_config(self) -> "GroundTruthRecord":
+        """Keep duplicated sidecar values aligned with the effective config.
+
+        Returns:
+            This validated ground-truth record.
+
+        Raises:
+            ValueError: If a duplicated value differs from the run config.
+        """
+        config = self.effective_config
+        if self.run_id != config.run_id:
+            raise ValueError("run_id must match effective_config.run_id")
+        if self.condition != config.condition:
+            raise ValueError("condition must match effective_config.condition")
+        if self.condition_intensity != config.condition_intensity:
+            raise ValueError(
+                "condition_intensity must match effective_config.condition_intensity"
+            )
+        if self.seed != config.run.seed:
+            raise ValueError("seed must match effective_config.run.seed")
+        return self

@@ -58,13 +58,19 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-003 — Implement the motor and operating-condition domain model
 
-- **Outcome:** A motor and its three initial operating conditions are represented
-  in testable domain logic.
+- **Outcome:** A configured motor and its three initial operating conditions
+  are represented in testable domain logic.
 - **Acceptance criteria:**
-  - [ ] Nominal RPM and sensor groups are configurable.
-  - [ ] Normal, imbalance, and overheating have explicit parameterization.
-  - [ ] Unit tests cover the domain rules.
-- **Tests or evidence:** Unit tests and configuration fixtures.
+  - [x] A motor model validates finite, positive nominal RPM and declares all
+    required v0.1 sensor groups: three-axis vibration, temperature, and RPM.
+    These groups remain required by FR-004 and `telemetry.v1`.
+  - [x] Normal, imbalance, and overheating have typed parameterization and
+    enforce their intensity rules; vibration amplitude values are non-negative,
+    and imbalance peaks and overheating rise scale from their configured values
+    at condition intensity `1.0`.
+  - [x] Unit tests cover motor limits, required groups, condition parameters,
+    intensity rules, and scaling behavior.
+- **Tests or evidence:** [Domain model](../../tools/simulator/src/machinepulse_simulator/domain.py), [domain tests](../../tools/simulator/tests/test_domain.py), reproducibility tests, and `mise run simulator:check` (57 tests passed; lint, type check, and formatting passed).
 - **GitHub issue:** [#13](https://github.com/gleniosp/machinepulse/issues/13).
 - **Dependencies:** P01-001.
 
