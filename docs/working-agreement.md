@@ -53,7 +53,7 @@ If the conflict materially affects scope, architecture, data semantics, or safet
 
 ## Git and repository hygiene
 
-- Each week's work uses one dedicated branch and one pull request. When a week maps directly to a phase, the phase branch and pull request are the same unit of work. Suggest branch names in `phase-XX/short-description` form for phase work (for example, `phase-01/simulated-world`) and `week-XX/short-description` form for other weekly work. The maintainer creates or switches to the branch.
+- Each week's work uses one dedicated branch and one pull request. When a week maps directly to a phase, the phase branch and pull request are the same unit of work. Suggest branch names in `phase-XX/task-description` form for phase work, combining the phase name with a short description of the first task in that phase (for example, `phase-01/vibration-generation`), and `week-XX/short-description` form for other weekly work. The maintainer creates or switches to the branch.
 - The agent does not create branches or commits. Within the weekly or phase branch, each coherent completed task or step should be represented by a commit. The agent proposes commit boundaries and commands; the maintainer decides the commit packages and executes them.
 - The maintainer owns pull-request creation, review, approval, and merging. Keep related GitHub issues open until the pull request containing their changes has been merged; only then may the issue be closed when its acceptance criteria and evidence are complete.
 - Do not reset, revert, delete, or overwrite work unless the maintainer explicitly requests the operation and its target is clear.
