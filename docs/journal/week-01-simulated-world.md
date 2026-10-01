@@ -22,13 +22,15 @@ operating conditions.
 - [P01-009 GitHub issue](https://github.com/gleniosp/machinepulse/issues/79)
 - [P01-010 GitHub issue](https://github.com/gleniosp/machinepulse/issues/83)
 - [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
+- [P01-004 GitHub issue](https://github.com/gleniosp/machinepulse/issues/14)
 - GitHub P01-001 through P01-009
 
 ## Planned outcomes
 
 - [x] P01-001 simulator configuration and condition behavior are specified;
   initial signal defaults remain subject to EXP-0001.
-- [ ] Reproducibility metadata and fixed-seed behavior are implemented.
+- [x] Reproducibility metadata and fixed-seed vibration generation are
+  implemented.
 - [ ] Motor, vibration, temperature, and RPM generation are implemented.
 - [ ] Telemetry serialization and validation are covered by tests.
 - [ ] CLI output and ground-truth sidecar are documented.
@@ -90,9 +92,50 @@ the first deterministic fixtures and parameter experiment.
 
 ### What happened
 
+Implemented `iter_vibration_windows` as a lazy generator over the run's
+configured window count. Each output carries the declared rate, derived sample
+count, window duration, `synthetic: true`, and `simulator.v1` generator version.
+The three axes use configured peak amplitudes and phases, RPM-derived rotational
+frequency, seeded Gaussian noise, and the intensity-scaled imbalance component.
+Sample time uses a run-wide index so rotational phase continues across window
+boundaries. Sampling configurations that imply fractional sample counts are
+rejected before generation. Added unit coverage for sample counts, fractional
+sampling rejection, the RPM/frequency relationship, condition scaling,
+continuous phase, seed repeatability, and a golden simulator.v1 output fixture.
+
+Ran the vibration slice of EXP-0001 and generated reproducible time/frequency
+plots. The setup, measurements, and limitations are recorded in
+[EXP-0001](../experiments/EXP-0001-simulator-parameters.md). It remains in
+progress for broader sampling/noise comparisons and context-generation
+evidence.
+
 ### What I learned
 
+Using the global sample index preserves the signal phase when a run is split
+into telemetry windows.
+
+Run configuration uses [Pydantic models](../../tools/simulator/src/machinepulse_simulator/models.py)
+because those inputs need field and cross-field validation. Generated
+vibration windows use frozen dataclasses: the generator builds them from the
+already-validated configuration, so they serve as immutable output containers
+rather than another input-validation boundary.
+
+The sample-count property uses integer division to return a whole number of
+readings. Configuration validation first confirms that
+`rate_hz * window_duration_ms` is evenly divisible by 1000, so the integer
+division cannot truncate a fractional sample. Sample times in the signal
+still use fractional seconds.
+
 ### Evidence
+
+- [Vibration generator](../../tools/simulator/src/machinepulse_simulator/vibration.py)
+- [Vibration generation tests](../../tools/simulator/tests/test_vibration.py)
+- [Spectrum tests](../../tools/simulator/tests/test_vibration_spectrum.py)
+- [Generator-version golden fixture](../../tools/simulator/tests/fixtures/vibration-window.v1.json)
+- [EXP-0001 vibration results and plots](../experiments/EXP-0001-simulator-parameters.md)
+- `mise run simulator:experiment:vibration` — regenerated both EXP-0001 plots and reproduced the six 30 Hz dominant peaks and recorded summaries.
+- `mise run hooks:check` — simulator formatting, lint, strict type checking, all 68 tests, repository hooks, and the Pixi lock check passed.
+- `mise exec -- pixi run --manifest-path pixi.toml --locked -e dev python -c 'from xml.etree import ElementTree; from pathlib import Path; [ElementTree.parse(path) for path in Path("docs/experiments/artifacts").glob("EXP-0001-vibration-*.svg")]'` — both plot files parsed as XML.
 
 ## Day 3 — Contract serialization and validation
 

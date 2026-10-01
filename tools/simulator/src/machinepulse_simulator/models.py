@@ -21,6 +21,7 @@ from machinepulse_simulator.domain import (
     NonNegativeAxisValues,
     SimulatorModel,
 )
+from machinepulse_simulator.units import MILLISECONDS_PER_SECOND
 
 
 type NonBlankString = Annotated[
@@ -34,6 +35,33 @@ class SamplingConfig(SimulatorModel):
 
     rate_hz: int = Field(gt=0)
     window_duration_ms: int = Field(gt=0)
+
+    @property
+    def sample_count(self) -> int:
+        """Return the number of samples represented by one configured window.
+
+        Returns:
+            The integral samples per axis for this sampling configuration.
+        """
+        return self.rate_hz * self.window_duration_ms // MILLISECONDS_PER_SECOND
+
+    @model_validator(mode="after")
+    def require_integral_sample_count(self) -> "SamplingConfig":
+        """Reject windows that do not contain an integral number of samples.
+
+        Returns:
+            This validated sampling configuration.
+
+        Raises:
+            ValueError: If the rate and duration imply a fractional sample.
+        """
+        sample_count_numerator = self.rate_hz * self.window_duration_ms
+        if sample_count_numerator % MILLISECONDS_PER_SECOND != 0:
+            raise ValueError(
+                "sampling rate and window duration must produce an "
+                "integral sample count"
+            )
+        return self
 
 
 class RunConfig(SimulatorModel):
