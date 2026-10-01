@@ -56,12 +56,17 @@ N_{\mathrm{samples}} = f_s \, \Delta t
 $$
 
 Here $f_s$ is the sampling rate in samples per second and $\Delta t$ is the
-window duration in seconds. For example, $1600 \, \mathrm{samples/s} \times
-1 \, \mathrm{s} = 1600$ samples per axis.
+window duration in seconds.
 
-The result must be a positive integer. A configuration whose rate and window
-duration do not produce an integral sample count is rejected before output is
-generated.
+In plain terms, the rate is how many readings are taken each second. The
+configured 1000 ms window lasts one second, so 1600 readings per second gives
+1600 values in each axis array. Dividing milliseconds by 1000 converts the
+duration to seconds; it does not shorten the window. The simulator accepts a
+configuration only when this calculation gives a whole number of samples: an
+array cannot contain part of a reading, so a fractional count is rejected
+instead of rounded down. This calculation produces a number of samples, not a
+duration; sample times still use fractional seconds as described under
+[Window timing and identity](#window-timing-and-identity).
 
 The initial signal and context parameters are configurable as follows:
 
@@ -129,8 +134,16 @@ f_{\mathrm{rot}} = \frac{\mathrm{RPM}_{\mathrm{nominal}}}{60}
 $$
 
 The division converts revolutions per minute to revolutions per second
-(hertz). For example, the initial setting of $1800$ RPM gives $30$ Hz. For axis
-`j` and sample time `t`, the normal vibration signal is:
+(hertz). At the initial setting of 1800 RPM, the shaft turns 30 times per
+second. This model uses a once-per-turn vibration component, separate from the
+sampling rate:
+
+| Quantity | Value in this example | What it counts |
+|---|---:|---|
+| Sampling rate (`sampling.rate_hz`) | 1600 samples/s | Acceleration readings taken each second on each axis. |
+| Vibration frequency (`f_rot`) | 30 cycles/s (30 Hz) | Repeats of the modeled vibration pattern each second. |
+
+For axis `j` and sample time `t`, the normal vibration signal is:
 
 $$
 a_j(t) = A_j \sin\!\left(2\pi f_{\mathrm{rot}} t + \phi_j\right) + \varepsilon_j(t)
@@ -152,13 +165,16 @@ Here is what each term means:
 
 The sine term describes a smooth repeating vibration once per motor rotation.
 The noise adds small unpredictable variation while the seed keeps the same
-configuration repeatable. The model has no unconfigured harmonics, transients,
-drift, or load changes.
+configuration repeatable. Real machine vibration can include harmonics,
+transients, drift, and effects of changing load. This version models the
+configured once-per-turn sine component, noise, and optional imbalance addition.
 
 Conditions modify that baseline as follows:
 
-- **`normal`:** Uses the normal vibration signal and holds temperature at
-  `temperature.initial_c`. Condition intensity is `0.0`.
+- **`normal`:** Uses the baseline rotational signal plus configured noise and
+  holds temperature at `temperature.initial_c`. Condition intensity is `0.0`. Here
+  `normal` means this synthetic baseline; it does not mean vibration-free or
+  describe a validated healthy range for a physical motor.
 - **`imbalance`:** Adds a rotational-frequency sinusoid on each axis. Its peak
   amplitude is the configured intensity-1 amplitude multiplied by
   `condition_intensity`. It uses the same per-axis phase as the normal
@@ -184,6 +200,13 @@ for $I=1.0$, at the same point in the run.
 The scalar RPM for every window is `nominal_rpm`. These equations define
 controlled synthetic scenarios; they are not validated signatures of
 imbalance, overheating, or normal industrial operation.
+
+The simulator returns vibration samples in a per-window result that includes
+the sampling rate, sample count, window duration, `synthetic: true`, and the
+`generator_version`. The synthetic marker and generator version describe the
+simulator result; they are not additional fields in the device-neutral
+`telemetry.v1` payload. Scenario labels and reproduction metadata remain in the
+separately keyed ground-truth sidecar.
 
 ## Window timing and identity
 

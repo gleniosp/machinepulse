@@ -45,6 +45,10 @@ run = "mise run //tools/simulator:test"
 description = "Run all simulator checks"
 run = "mise run //tools/simulator:check"
 
+[tasks."simulator:experiment:vibration"]
+description = "Generate EXP-0001 vibration plots and summaries"
+run = "mise run //tools/simulator:experiment:vibration"
+
 [tasks.format]
 description = "Format all current projects"
 run = "mise run simulator:format"

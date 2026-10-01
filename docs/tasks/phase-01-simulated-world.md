@@ -52,9 +52,9 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Tests or evidence:** [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py), Pydantic models in `tools/simulator/src/machinepulse_simulator/models.py`, and golden manifest/sidecar fixtures in `tools/simulator/tests/fixtures/`.
 - **GitHub issue:** [#12](https://github.com/gleniosp/machinepulse/issues/12).
 - **Dependencies:** P01-001.
-- **Deferred verification:** Repeatable vibration values belong to P01-004,
-  repeatable temperature/RPM context belongs to P01-005, and identical full-run
-  output is verified by P01-008 after generation is implemented.
+- **Deferred verification:** Repeatable vibration values are covered by
+  P01-004. Repeatable temperature/RPM context belongs to P01-005, and identical
+  full-run output is verified by P01-008 after generation is implemented.
 
 ### P01-003 — Implement the motor and operating-condition domain model
 
@@ -79,13 +79,13 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** The simulator generates three-axis vibration windows with
   configurable rotational and condition-specific components.
 - **Acceptance criteria:**
-  - [ ] Three vibration axes honor the declared rate and sample count.
-  - [ ] Rotational frequency is derived consistently from RPM.
-  - [ ] Noise and condition-specific components are configurable.
-  - [ ] Generated output is marked synthetic.
-  - [ ] Identical effective configuration, seed, and generator version produce
+  - [x] Three vibration axes honor the declared rate and sample count.
+  - [x] Rotational frequency is derived consistently from RPM.
+  - [x] Noise and condition-specific components are configurable.
+  - [x] Generated output is marked synthetic.
+  - [x] Identical effective configuration, seed, and generator version produce
     identical ordered vibration values.
-- **Tests or evidence:** Deterministic fixtures and exploratory plots.
+- **Tests or evidence:** [Vibration generation tests](../../tools/simulator/tests/test_vibration.py), [spectrum tests](../../tools/simulator/tests/test_vibration_spectrum.py), [generator-version fixture](../../tools/simulator/tests/fixtures/vibration-window.v1.json), and [EXP-0001 vibration plots](../experiments/EXP-0001-simulator-parameters.md).
 - **GitHub issue:** [#14](https://github.com/gleniosp/machinepulse/issues/14).
 - **Dependencies:** P01-003.
 

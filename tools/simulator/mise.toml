@@ -5,27 +5,32 @@ dir = "{{config_root}}"
 
 [tasks.format]
 description = "Format simulator Python sources"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format src tests"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.format-check]
 description = "Check simulator formatting"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format --check src tests"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format --check src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.lint]
 description = "Lint simulator Python sources"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff check src tests"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff check src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.typecheck]
 description = "Type-check simulator Python sources"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev mypy src tests"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev mypy src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.test]
 description = "Run simulator tests"
 run = "pixi run --manifest-path ../../pixi.toml --locked -e dev pytest"
+dir = "{{config_root}}"
+
+[tasks."experiment:vibration"]
+description = "Generate EXP-0001 vibration plots and summaries"
+run = "pixi run --manifest-path ../../pixi.toml --locked -e dev python experiments/plot_vibration.py"
 dir = "{{config_root}}"
 
 [tasks.check]

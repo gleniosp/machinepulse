@@ -72,14 +72,18 @@ The shortened arrays in the example are illustrative only. A valid event must sa
 | `asset_id` | Yes | Asset associated with the window at production time. |
 | `occurred_at` | Yes | UTC time of the first vibration sample in the represented window. This is not gateway receipt time. |
 | `sequence` | Yes | Device-local sequence number used for ordering and gap detection. |
-| `sampling.rate_hz` | Yes | Sampling rate for each vibration axis. |
-| `sampling.sample_count` | Yes | Number of samples expected in each vibration axis. |
-| `sampling.window_duration_ms` | Yes | Intended duration represented by the window. |
+| `sampling.rate_hz` | Yes | Sampling rate in samples per second for each vibration axis. |
+| `sampling.sample_count` | Yes | Number of values in each vibration-axis array for this window. |
+| `sampling.window_duration_ms` | Yes | Intended time span represented by the vibration samples. |
 | `measurements.temperature_c` | Yes | Temperature context in degrees Celsius, representative of the window midpoint. |
 | `measurements.rpm` | Yes | Rotational speed context in revolutions per minute, representative of the window midpoint. |
 | `measurements.vibration_m_s2.x` | Yes | X-axis acceleration samples in metres per second squared. |
 | `measurements.vibration_m_s2.y` | Yes | Y-axis acceleration samples in metres per second squared. |
 | `measurements.vibration_m_s2.z` | Yes | Z-axis acceleration samples in metres per second squared. |
+
+For evenly spaced samples, adjacent readings are separated by `1 / rate_hz`
+seconds. The simulator's rule for deriving an integer sample count is in the
+[simulator behavior specification](simulator.md#run-configuration).
 
 ## Producer-side rules
 

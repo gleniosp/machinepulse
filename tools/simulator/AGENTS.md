@@ -1,7 +1,8 @@
 # Simulator guidance
 
 - `src/machinepulse_simulator/` contains the Python package; `tests/` contains
-  tests and golden fixtures.
+  tests and golden fixtures; `experiments/` contains reproducible experiment
+  runners.
 - `pyproject.toml` owns package metadata, runtime dependencies
   (`project.dependencies`), build configuration, and Python tooling config.
   This project's `mise.toml` owns its task names and runs project commands in
@@ -10,9 +11,12 @@
 - Use the repository's mise-provided Pixi CLI, then run native checks from this
   folder with the root manifest: `pixi run --manifest-path ../../pixi.toml
   --locked -e dev pytest`, `pixi run --manifest-path ../../pixi.toml --locked
-  -e dev ruff check src tests`, `pixi run --manifest-path ../../pixi.toml
-  --locked -e dev mypy src tests`, and `pixi run --manifest-path
-  ../../pixi.toml --locked -e dev ruff format --check src tests`.
+  -e dev ruff check src tests experiments`, `pixi run --manifest-path
+  ../../pixi.toml --locked -e dev mypy src tests experiments`, and `pixi run
+  --manifest-path ../../pixi.toml --locked -e dev ruff format --check src
+  tests experiments`.
+- Run `mise run simulator:experiment:vibration` from the repository root to
+  regenerate the EXP-0001 vibration plots and summaries.
 - The Pixi `default` environment is for runtime use; `dev` adds test and quality
   tools. In VS Code, use `.pixi/envs/dev` at the repository root; if VS Code
   already selected another interpreter, select the Pixi interpreter explicitly.

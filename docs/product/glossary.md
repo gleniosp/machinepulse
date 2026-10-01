@@ -23,11 +23,14 @@ This glossary owns shared vocabulary that crosses document boundaries. The [doma
 
 | Term | Meaning in MachinePulse |
 |---|---|
+| **Vibration** | Mechanical movement that changes over time. Running rotating machinery generally has some vibration, though its level and pattern depend on the machine and how it is operating. Vibration can be described by displacement, velocity, or acceleration; the version 0.1 telemetry representation is defined in the [telemetry contract](../specs/telemetry-contract.md). |
+| **Acceleration** | Change in velocity per unit time. See the [telemetry contract](../specs/telemetry-contract.md) for its role in version 0.1 vibration measurements. |
+| **Frequency (hertz, Hz)** | How many cycles of a repeating signal occur per second. |
 | **Sample** | One value observed for a signal at a point in time. |
 | **Event time** | The time at which a producer says the measurement occurred. |
 | **Receipt time** | The time at which a platform component received the event. |
 | **Sequence number** | A producer-local ordering value used to identify gaps or out-of-order delivery. |
-| **Sampling rate** | The number of samples captured per second for a signal. |
+| **Sampling rate** | How many samples are captured per second for a signal. |
 | **Operating condition** | A simulator-controlled scenario, such as normal or imbalance; it is not automatically a real fault diagnosis. |
 | **Ground truth** | The simulator's reference label for the scenario it generated, used to evaluate analysis results; see [Simulator condition](domain-model.md#simulator-condition). |
 | **Condition intensity** | A simulator input from `0.0` to `1.0` that scales a synthetic condition effect; it is ground-truth metadata, not an analytical result. |
