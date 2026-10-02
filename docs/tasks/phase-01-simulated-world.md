@@ -248,10 +248,41 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **GitHub issue:** [#90](https://github.com/gleniosp/machinepulse/issues/90).
 - **Dependencies:** P01-010.
 - **Out of scope:** Automating GitHub authentication, changing repository
-  permissions, or adding GitHub Actions workflows.
+  permissions, or adding GitHub Actions workflows (tracked separately in
+  [P01-012](#p01-012--run-repository-checks-on-pull-requests)).
 - **Definition of done:** A clean setup installs the pinned GitHub CLI from the
   committed mise lockfile, and its availability and authentication boundary
   are documented.
+
+### P01-012 — Run repository checks on pull requests
+
+- **Outcome:** Pull requests to `main` run the locked repository checks and
+  tests and report their result without changing merge rules.
+- **Acceptance criteria:**
+  - [ ] A GitHub Actions workflow runs when a pull request to `main` is opened,
+    updated, reopened, or marked ready for review.
+  - [ ] The workflow installs the pinned repository toolchain and locked
+    project environment using `mise.lock` and `pixi.lock`.
+  - [ ] The workflow runs `mise run hooks:check` from the repository root,
+    exercising all configured repository hooks, simulator checks and tests,
+    and the Pixi lock validation.
+  - [ ] The workflow uses read-only repository permissions and does not build,
+    publish, or deploy artifacts.
+  - [ ] Setup or check failures produce a failed PR status with diagnostic
+    logs.
+  - [ ] Setup or check failures produce a failed PR status with diagnostic
+    logs; successful runs report success.
+- **Tests or evidence:** A passing PR workflow run and a failing-check result.
+- **GitHub issue:** [#93](https://github.com/gleniosp/machinepulse/issues/93).
+- **Dependencies:** P01-009 ([#79](https://github.com/gleniosp/machinepulse/issues/79))
+  and P01-010 ([#83](https://github.com/gleniosp/machinepulse/issues/83)).
+- **Deferred follow-up:** Configure the workflow status as a required check
+  when the project begins accepting outside contributions.
+- **Out of scope:** Release, publishing, deployment, scheduled workflows, and
+  workflow triggers other than pull requests to `main`.
+- **Definition of done:** The locked checks run and report a stable PR status,
+  and successful and failing run evidence is recorded. Merge blocking remains
+  deferred until the project begins accepting outside contributions.
 
 ## Required experiments
 

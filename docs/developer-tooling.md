@@ -112,6 +112,10 @@ by contributors, and publish enough output to diagnose failures. The active
 check set grows with the projects in the repository; implementation status and
 remaining readiness evidence belong in the [task plan](tasks/README.md) and
 [readiness checklist](project-readiness.md).
+The initial GitHub Actions workflow for pull-request checks is tracked in
+[P01-012](tasks/phase-01-simulated-world.md#p01-012--run-repository-checks-on-pull-requests).
+Requiring that status check for merging is deferred until the project begins
+accepting outside contributions.
 
 ## References
 
