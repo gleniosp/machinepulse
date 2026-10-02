@@ -450,8 +450,10 @@ status a merge requirement; required-check gating is deferred until the project
 begins accepting outside contributions.
 
 The workflow uses commit-pinned checkout and mise setup actions. Local YAML
-syntax validation and repository checks passed. Passing and failing GitHub
-Actions runs remain pending a PR run.
+syntax validation and repository checks passed. On PR #94, the repository
+checks passed on the final commit. A temporary `exit 1` step then produced a
+failed run with a diagnostic log, confirming that failed steps make the PR
+status fail. The temporary step was removed and the final run passed.
 
 ### Evidence
 
@@ -460,5 +462,6 @@ Actions runs remain pending a PR run.
 - `mise run hooks:check` — all eligible repository hooks passed, including simulator checks and Pixi lock validation. The all-files YAML hook did not select the new untracked workflow file.
 - `mise exec -- prek run check-yaml --files .github/workflows/pr-checks.yml` — passed for the new workflow.
 - `git diff --check` — passed.
-- Passing and failing GitHub Actions runs remain pending a PR run.
+- [Passing PR workflow run](https://github.com/gleniosp/machinepulse/actions/runs/37012019762) — all setup, environment, and repository check steps passed on the final PR commit.
+- [Failing check result](https://github.com/gleniosp/machinepulse/actions/runs/37011227086) — the temporary failure probe exited with code 1, and GitHub marked the workflow failed while retaining the diagnostic log.
 - [P01-012 GitHub issue](https://github.com/gleniosp/machinepulse/issues/93)

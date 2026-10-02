@@ -259,18 +259,18 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Pull requests to `main` run the locked repository checks and
   tests and report their result without changing merge rules.
 - **Acceptance criteria:**
-  - [ ] A GitHub Actions workflow runs when a pull request to `main` is opened,
+  - [x] A GitHub Actions workflow runs when a pull request to `main` is opened,
     updated, reopened, or marked ready for review.
-  - [ ] The workflow installs the pinned repository toolchain and locked
+  - [x] The workflow installs the pinned repository toolchain and locked
     project environment using `mise.lock` and `pixi.lock`.
-  - [ ] The workflow runs `mise run hooks:check` from the repository root,
+  - [x] The workflow runs `mise run hooks:check` from the repository root,
     exercising all configured repository hooks, simulator checks and tests,
     and the Pixi lock validation.
-  - [ ] The workflow uses read-only repository permissions and does not build,
+  - [x] The workflow uses read-only repository permissions and does not build,
     publish, or deploy artifacts.
-  - [ ] Setup or check failures produce a failed PR status with diagnostic
+  - [x] Setup or check failures produce a failed PR status with diagnostic
     logs; successful runs report success.
-- **Tests or evidence:** A passing PR workflow run and a failing-check result.
+- **Tests or evidence:** [Passing PR workflow run](https://github.com/gleniosp/machinepulse/actions/runs/37012019762) and [failing-check result](https://github.com/gleniosp/machinepulse/actions/runs/37011227086).
 - **GitHub issue:** [#93](https://github.com/gleniosp/machinepulse/issues/93).
 - **Dependencies:** P01-009 ([#79](https://github.com/gleniosp/machinepulse/issues/79))
   and P01-010 ([#83](https://github.com/gleniosp/machinepulse/issues/83)).
