@@ -269,8 +269,6 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
   - [ ] The workflow uses read-only repository permissions and does not build,
     publish, or deploy artifacts.
   - [ ] Setup or check failures produce a failed PR status with diagnostic
-    logs.
-  - [ ] Setup or check failures produce a failed PR status with diagnostic
     logs; successful runs report success.
 - **Tests or evidence:** A passing PR workflow run and a failing-check result.
 - **GitHub issue:** [#93](https://github.com/gleniosp/machinepulse/issues/93).
