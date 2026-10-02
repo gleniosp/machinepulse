@@ -38,10 +38,11 @@ credentials for the local workflow.
 
 ## Toolchain policy
 
-The root mise config currently pins Pixi and prek. Python and its environments
-come from the root Pixi workspace; Go, Node.js, and pnpm remain unpinned until
-projects in those ecosystems need them. Exact versions and dependency ranges
-belong in the manifests and lockfiles named in the ownership table.
+The root mise config currently pins GitHub CLI, Pixi, and prek. Python and its
+environments come from the root Pixi workspace; Go, Node.js, and pnpm remain
+unpinned until projects in those ecosystems need them. Exact versions and
+dependency ranges belong in the manifests and lockfiles named in the ownership
+table.
 
 Pixi owns Python environment dependencies: the root manifest provides Python,
 and its development feature provides Ruff, mypy, and pytest. The simulator's
@@ -75,6 +76,10 @@ the locked mise tools, installs the Pixi development environment, and installs
 the managed Git pre-commit hook. Each step is safe to repeat. Run
 `mise run hooks:install` separately only when the hook needs to be installed or
 refreshed.
+
+Use the mise-managed GitHub CLI for repository issue and pull-request
+workflows. See the [README](../README.md#github-cli) for authentication and
+least-privilege token guidance.
 
 Root mise tasks are the contributor and CI entry points; project-specific
 tasks and native commands remain in each project's configuration. Use
