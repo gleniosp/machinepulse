@@ -94,11 +94,11 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Scalar context accompanies each telemetry window with explicit
   units and documented condition behavior.
 - **Acceptance criteria:**
-  - [ ] Temperature and RPM values use valid units.
-  - [ ] Operating-condition changes affect context according to documented
+  - [x] Temperature and RPM values use valid units.
+  - [x] Operating-condition changes affect context according to documented
     rules.
-  - [ ] Output is reproducible under a fixed seed.
-- **Tests or evidence:** Unit tests and labeled sample windows.
+  - [x] Output is reproducible under a fixed seed.
+- **Tests or evidence:** [Context generation tests](../../tools/simulator/tests/test_context.py), labeled sample windows and [context generator](../../tools/simulator/src/machinepulse_simulator/context.py) in the [Week 01 journal](../journal/week-01-simulated-world.md#p01-005-temperature-and-rpm-context--2026-10-02), and `mise run simulator:check` (74 tests passed; lint, type check, and formatting passed).
 - **GitHub issue:** [#15](https://github.com/gleniosp/machinepulse/issues/15).
 - **Dependencies:** P01-003.
 
