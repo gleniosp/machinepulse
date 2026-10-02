@@ -21,6 +21,7 @@ operating conditions.
 - [P01-001 GitHub issue](https://github.com/gleniosp/machinepulse/issues/11)
 - [P01-009 GitHub issue](https://github.com/gleniosp/machinepulse/issues/79)
 - [P01-010 GitHub issue](https://github.com/gleniosp/machinepulse/issues/83)
+- [P01-011 GitHub issue](https://github.com/gleniosp/machinepulse/issues/90)
 - [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
 - [P01-004 GitHub issue](https://github.com/gleniosp/machinepulse/issues/14)
 - GitHub P01-001 through P01-009
@@ -387,3 +388,18 @@ developer tooling baseline remains the detailed owner of setup and tool policy.
   move leaves old `simulator/` paths in Git's index, so the new path-filtered
   local hooks skipped; `mise run simulator:check` and
   `mise run pixi:lock-check` passed independently.
+
+## GitHub CLI toolchain — 2026-10-02
+
+Pinned GitHub CLI 2.98.0 in the root mise configuration and regenerated the
+multi-platform mise lockfile. The developer tooling baseline now directs
+contributors to use the mise-managed CLI and authenticate per user; repository
+credentials and authentication state remain out of scope.
+
+### Evidence
+
+- `mise lock` — updated the lockfile with checksums and provenance metadata for
+  GitHub CLI across the configured platforms.
+- `mise run setup` — completed locked tool installation, Pixi development
+  environment setup, and Git hook installation.
+- `mise exec -- gh --version` — reported GitHub CLI 2.98.0.

@@ -230,6 +230,29 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
   remaining limitations. pnpm workspace implementation is deferred until the
   first JavaScript/TypeScript project is added.
 
+### P01-011 — Pin the GitHub CLI in the repository toolchain
+
+- **Outcome:** Contributors can use a repository-managed GitHub CLI version for
+  issue and pull-request workflows without relying on a global installation.
+- **Acceptance criteria:**
+  - [x] Add a pinned GitHub CLI tool version to the root mise configuration and
+    refresh the committed mise lockfile.
+  - [x] Verify the CLI is available through the locked mise environment and
+    `gh --version` succeeds after setup.
+  - [x] Document that GitHub authentication remains a per-user setup step and
+    is not stored in the repository.
+- **Tests or evidence:** `mise run setup` completed, installing from the locked
+  tool versions and configuring Pixi and the Git hook; `mise exec -- gh
+  --version` reported GitHub CLI 2.98.0. Authentication remains per-user and no
+  credentials or authentication state were added to the repository.
+- **GitHub issue:** [#90](https://github.com/gleniosp/machinepulse/issues/90).
+- **Dependencies:** P01-010.
+- **Out of scope:** Automating GitHub authentication, changing repository
+  permissions, or adding GitHub Actions workflows.
+- **Definition of done:** A clean setup installs the pinned GitHub CLI from the
+  committed mise lockfile, and its availability and authentication boundary
+  are documented.
+
 ## Required experiments
 
 - [EXP-0001](../experiments/EXP-0001-simulator-parameters.md): choose useful
