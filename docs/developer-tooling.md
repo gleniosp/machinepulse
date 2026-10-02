@@ -112,6 +112,13 @@ by contributors, and publish enough output to diagnose failures. The active
 check set grows with the projects in the repository; implementation status and
 remaining readiness evidence belong in the [task plan](tasks/README.md) and
 [readiness checklist](project-readiness.md).
+The initial [GitHub Actions workflow](../.github/workflows/pr-checks.yml) runs
+on pull requests targeting `main`. It installs the locked repository tools and
+simulator environment, then runs `mise run hooks:check`. The result is
+informational for merging; requiring the status check is deferred until the
+project begins accepting outside contributions. Track the remaining work and
+PR evidence in
+[P01-012](tasks/phase-01-simulated-world.md#p01-012--run-repository-checks-on-pull-requests).
 
 ## References
 

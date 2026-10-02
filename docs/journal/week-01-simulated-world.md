@@ -437,3 +437,31 @@ the context records.
 - [Context generation tests](../../tools/simulator/tests/test_context.py)
 - Focused run: `pixi run --manifest-path ../../pixi.toml --locked -e dev pytest tests/test_context.py` from `tools/simulator` — 6 passed.
 - `mise run simulator:check` — formatting, lint, strict type checks, and all 74 simulator tests passed.
+
+## P01-012 pull-request checks workflow — 2026-10-02
+
+Added a GitHub Actions workflow for pull requests targeting `main`. It uses
+read-only repository permissions, checks out without persisting credentials,
+installs the pinned mise toolchain from the repository lockfile, prepares the
+locked simulator development environment, and runs `mise run hooks:check`.
+That command covers all-files repository hooks, simulator checks and tests, and
+the Pixi lock validation. The workflow reports pass/fail but does not make its
+status a merge requirement; required-check gating is deferred until the project
+begins accepting outside contributions.
+
+The workflow uses commit-pinned checkout and mise setup actions. Local YAML
+syntax validation and repository checks passed. On PR #94, the repository
+checks passed on the final commit. A temporary `exit 1` step then produced a
+failed run with a diagnostic log, confirming that failed steps make the PR
+status fail. The temporary step was removed and the final run passed.
+
+### Evidence
+
+- [Pull-request workflow](../../.github/workflows/pr-checks.yml)
+- Pinned action releases: [actions/checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1) and [jdx/mise-action v5.0.1](https://github.com/jdx/mise-action/releases/tag/v5.0.1).
+- `mise run hooks:check` — all eligible repository hooks passed, including simulator checks and Pixi lock validation. The all-files YAML hook did not select the new untracked workflow file.
+- `mise exec -- prek run check-yaml --files .github/workflows/pr-checks.yml` — passed for the new workflow.
+- `git diff --check` — passed.
+- [Passing PR workflow run](https://github.com/gleniosp/machinepulse/actions/runs/37012019762) — all setup, environment, and repository check steps passed on the final PR commit.
+- [Failing check result](https://github.com/gleniosp/machinepulse/actions/runs/37011227086) — the temporary failure probe exited with code 1, and GitHub marked the workflow failed while retaining the diagnostic log.
+- [P01-012 GitHub issue](https://github.com/gleniosp/machinepulse/issues/93)
