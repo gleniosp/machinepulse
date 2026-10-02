@@ -39,10 +39,11 @@ reach, and grant these repository permissions:
 
 | Permission    | Access         |
 | ------------- | -------------- |
+| Actions       | Read-only      |
 | Contents      | Read and write |
 | Issues        | Read and write |
-| Pull requests | Read and write |
 | Metadata      | Read-only      |
+| Pull requests | Read and write |
 
 For token details, see GitHub CLI's [`GH_TOKEN` documentation](https://cli.github.com/manual/gh_help_environment), [fine-grained token guidance](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens), and [permission reference](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens).
 
