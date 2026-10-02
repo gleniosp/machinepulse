@@ -38,3 +38,6 @@ jobs:
 
       - name: Run repository checks and tests
         run: mise run hooks:check
+
+      - name: Temporary failure-path probe
+        run: exit 1
