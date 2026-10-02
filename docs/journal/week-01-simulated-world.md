@@ -32,7 +32,7 @@ operating conditions.
   initial signal defaults remain subject to EXP-0001.
 - [x] Reproducibility metadata and fixed-seed vibration generation are
   implemented.
-- [ ] Motor, vibration, temperature, and RPM generation are implemented.
+- [x] Motor, vibration, temperature, and RPM generation are implemented.
 - [ ] Telemetry serialization and validation are covered by tests.
 - [ ] CLI output and ground-truth sidecar are documented.
 - [ ] Plots, limitations, and experiment results are recorded.
@@ -403,3 +403,37 @@ credentials and authentication state remain out of scope.
 - `mise run setup` — completed locked tool installation, Pixi development
   environment setup, and Git hook installation.
 - `mise exec -- gh --version` — reported GitHub CLI 2.98.0.
+
+## P01-005 temperature and RPM context — 2026-10-02
+
+Added a deterministic context iterator that yields one zero-based context
+record per configured run window. Each record carries temperature in degrees
+Celsius and rotational speed in RPM, and its index aligns it with the matching
+vibration window. Normal and imbalance scenarios retain the configured initial
+temperature; overheating applies the configured intensity-scaled rise at each
+window midpoint. RPM remains at nominal speed for every condition. Context
+generation uses no random values, so the same effective run configuration
+produces identical ordered context.
+
+Added coverage for all three conditions, midpoint values, units in the output
+field names, ordered window association, repeated generation, and non-finite
+calculated temperature. The context implementation and checks follow the
+existing simulator specification; no contract or condition rules changed.
+
+These labeled synthetic examples show the generated context values. The
+condition and intensity columns are ground-truth labels; they are not fields in
+the context records.
+
+| Condition | Intensity | Window index | Temperature (°C) | RPM (rev/min) |
+|---|---:|---:|---:|---:|
+| normal | 0.0 | 0 | 40.0 | 1800.0 |
+| imbalance | 0.7 | 0 | 40.0 | 1800.0 |
+| overheating | 0.5 | 0 | 40.625 | 1800.0 |
+| overheating | 0.5 | 3 | 44.375 | 1800.0 |
+
+### Evidence
+
+- [Context generator](../../tools/simulator/src/machinepulse_simulator/context.py)
+- [Context generation tests](../../tools/simulator/tests/test_context.py)
+- Focused run: `pixi run --manifest-path ../../pixi.toml --locked -e dev pytest tests/test_context.py` from `tools/simulator` — 6 passed.
+- `mise run simulator:check` — formatting, lint, strict type checks, and all 74 simulator tests passed.
