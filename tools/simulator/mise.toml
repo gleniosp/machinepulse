@@ -1,36 +1,36 @@
 [tasks.setup]
 description = "Install the simulator development environment from the root Pixi lock"
-run = "pixi install --manifest-path ../../pixi.toml --locked -e dev"
+run = "mise exec -- pixi install --manifest-path ../../pixi.toml --locked -e dev"
 dir = "{{config_root}}"
 
 [tasks.format]
 description = "Format simulator Python sources"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format src tests experiments"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.format-check]
 description = "Check simulator formatting"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format --check src tests experiments"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format --check src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.lint]
 description = "Lint simulator Python sources"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev ruff check src tests experiments"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev ruff check src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.typecheck]
 description = "Type-check simulator Python sources"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev mypy src tests experiments"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev mypy src tests experiments"
 dir = "{{config_root}}"
 
 [tasks.test]
 description = "Run simulator tests"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev pytest"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev pytest"
 dir = "{{config_root}}"
 
 [tasks."experiment:vibration"]
 description = "Generate EXP-0001 vibration plots and summaries"
-run = "pixi run --manifest-path ../../pixi.toml --locked -e dev python experiments/plot_vibration.py"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev python experiments/plot_vibration.py"
 dir = "{{config_root}}"
 
 [tasks.check]

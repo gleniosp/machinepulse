@@ -6,7 +6,7 @@
 - **Related product requirements:** FR-001 through FR-005, NFR-001, NFR-008, NFR-009, NFR-010
 - **Related product document:** [Domain model — Telemetry window](../product/domain-model.md#telemetry-window)
 - **Related specifications:** [Telemetry contract](telemetry-contract.md)
-- **Related ADR:** [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md)
+- **Related ADRs:** [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md), [ADR-0003 — Device and asset identifiers](../adr/0003-device-and-asset-identifiers.md)
 - **Related tasks:** [P01-001 — Specify simulator behavior and configuration](../tasks/phase-01-simulated-world.md), [Phase 01 — Simulated industrial world](../tasks/phase-01-simulated-world.md)
 - **Related experiments:** [EXP-0001](../experiments/EXP-0001-simulator-parameters.md), [EXP-0002](../experiments/EXP-0002-condition-separation.md)
 
@@ -36,8 +36,8 @@ will evaluate the signal defaults before the simulator phase is complete.
 
 | Field | Meaning and constraints | Default |
 |---|---|---|
-| `asset_id` | Non-empty asset identifier used in telemetry. | Required |
-| `device_id` | Non-empty producer identifier used in telemetry. | Required |
+| `asset_id` | Canonical uppercase ULID identifying the maintainable asset. | Required |
+| `device_id` | Canonical uppercase ULID identifying the producer. | Required |
 | `run_id` | Non-empty identifier for this generated run. Reuse it to reproduce event IDs; use a new value for a distinct run. | Required |
 | `nominal_rpm` | Finite, positive motor speed in RPM. It stays constant for the run. | `1800.0` |
 | `condition` | One of `normal`, `imbalance`, or `overheating`. | `normal` |
@@ -48,6 +48,13 @@ will evaluate the signal defaults before the simulator phase is complete.
 | `run.seed` | Non-negative integer controlling all generated random values. | Required |
 | `run.start_time_utc` | UTC time of the first window. If omitted, the simulator resolves it once at run start and records the resolved value in the effective configuration. | Current UTC time |
 | `run.execution_mode` | `accelerated` or `real_time`. | `accelerated` |
+
+[ADR-0003](../adr/0003-device-and-asset-identifiers.md) defines the accepted
+[device and asset ID profile](telemetry-contract.md#device-and-asset-id-profile)
+using canonical ULIDs. Runs receive fixed entity IDs through configuration
+rather than allocate them while generating telemetry. Examples and
+repeatability fixtures use canonical ULIDs; a release must address
+compatibility with any consumer that uses the former free-form identifiers.
 
 The number of samples in each vibration axis is derived as:
 
@@ -91,8 +98,8 @@ initial amplitudes and sampling defaults remain subject to EXP-0001.
 
 ```json
 {
-  "asset_id": "asset-0001",
-  "device_id": "simulator-0001",
+  "asset_id": "01M00000004D2PF28AQKFF28T5",
+  "device_id": "01M000000028T5CY4GNF6YY4HM",
   "run_id": "run-0001",
   "nominal_rpm": 1800.0,
   "condition": "normal",
@@ -317,8 +324,9 @@ values include non-positive RPM, sampling rate, window duration, or window
 count; a rate and duration that produce a non-integral sample count; a negative
 seed; non-finite numeric parameters; a condition intensity outside `0.0`
 through `1.0`; or a condition intensity inconsistent with the selected
-condition. Identifiers must be non-empty and start time must be a valid UTC
-timestamp.
+condition. `asset_id` and `device_id` must match the canonical uppercase ULID
+profile in the [telemetry contract](telemetry-contract.md#device-and-asset-id-profile);
+`run_id` must be non-empty, and start time must be a valid UTC timestamp.
 
 Serialization or contract-validation failures identify the run and event that
 failed. A failed run must not silently present incomplete output as a complete

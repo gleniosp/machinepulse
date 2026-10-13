@@ -107,12 +107,14 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Simulator output conforms to `telemetry.v1` and invalid fixtures
   are rejected with useful reasons.
 - **Acceptance criteria:**
-  - [ ] Simulator output conforms to `telemetry.v1`.
-  - [ ] Sample counts, timestamps, identifiers, units, and finite numeric
+  - [x] Simulator output conforms to `telemetry.v1`.
+  - [x] Sample counts, timestamps, identifiers, units, and finite numeric
     values are validated.
-  - [ ] `event_id` uses the canonical UUID form.
-  - [ ] Invalid fixture cases are included.
-- **Tests or evidence:** Contract tests and invalid-payload fixtures.
+  - [x] `event_id` uses the canonical UUID form.
+  - [x] `device_id` and `asset_id` use the accepted canonical ULID profile;
+    configuration and telemetry validation reject noncanonical values.
+  - [x] Invalid fixture cases are included.
+- **Tests or evidence:** [Telemetry contract models and generator](../../tools/simulator/src/machinepulse_simulator/telemetry.py), [ULID validator](../../tools/simulator/src/machinepulse_simulator/identifiers.py), [configuration tests](../../tools/simulator/tests/test_domain.py), [contract tests](../../tools/simulator/tests/test_telemetry.py), [valid payload fixture](../../tools/simulator/tests/fixtures/telemetry.v1.json), and invalid-payload fixtures under `tools/simulator/tests/fixtures/telemetry-invalid/`. `mise run simulator:check` passed with 123 tests, formatting, lint, and strict type checking; `mise run hooks:check` passed all configured hooks, including simulator checks and the Pixi lock check.
 - **GitHub issue:** [#16](https://github.com/gleniosp/machinepulse/issues/16).
 - **Dependencies:** P00-005, P01-004, P01-005.
 
@@ -160,13 +162,17 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
     workspace/package metadata changes verify the root Pixi lock.
   - [x] Add root mise tasks to install the local Git hook and run all configured
     checks across the repository.
+  - [x] Invoke the pinned `prek` executable through `mise exec` in root hook
+    tasks so an earlier global PATH entry does not override the repository tool.
   - [x] Document contributor setup and the manual all-files check; make the
     check command reusable by CI.
   - [x] Run the checks across the existing repository and resolve or explicitly
     tune findings so the all-files check passes.
 - **Tests or evidence:** `mise install --locked`, the hook installation task,
-  and the all-files check from a fresh isolated checkout snapshot; record the
-  resulting command output in the Week 01 journal.
+  and the all-files check from a fresh isolated checkout snapshot; `mise run
+  hooks:check` passes all configured hooks, including simulator checks and
+  Pixi lock validation. `mise exec -- prek --version` reports pinned version
+  0.5.3. The Week 01 journal records the PATH resolution issue and fix.
 - **Dependencies:** P00-010. Coordinate the shared check command with P01-008.
 - **Out of scope:** Markdown-specific linting or formatting, third-party hook
   repositories, language-specific hooks, and selecting or introducing a CI
@@ -204,6 +210,8 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
     project-prefixed tasks, show which projects ran, and fail when a selected
     task fails. Direct simulator tasks use the `simulator:` prefix. Document
     `dev` and `build` as common task names to add when projects define them.
+  - [x] Invoke Pixi through `mise exec` in root and simulator tasks so the
+    repository-selected version takes precedence over an earlier PATH entry.
   - [x] Add a Pixi lock-check task that verifies the root Pixi lockfile is
     current.
   - [x] Keep each project's native setup, lint, test, and build commands
@@ -215,8 +223,11 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
     JavaScript/TypeScript project is added.
 - **Tests or evidence:** Setup and root checks from a fresh isolated checkout
   snapshot, locked Pixi workspace installation, native simulator task runs,
-  root mise task runs, and Week 01 journal evidence. Record pnpm workspace
-  evidence with the first JavaScript/TypeScript project.
+  root mise task runs, and Week 01 journal evidence. `mise run simulator:check`
+  passed with 123 tests, formatting, lint, and strict type checking; `mise run
+  hooks:check` passed all configured hooks and Pixi lock validation.
+  `mise exec -- pixi --version` reports pinned version 0.76.1. Record pnpm
+  workspace evidence with the first JavaScript/TypeScript project.
 - **GitHub issue:** [#83](https://github.com/gleniosp/machinepulse/issues/83).
 - **Dependencies:** P00-010, accepted ADR-0002, and P01-009
   ([#79](https://github.com/gleniosp/machinepulse/issues/79)). Complete before

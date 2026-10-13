@@ -147,9 +147,84 @@ constraints, and add invalid fixtures.
 
 ### What happened
 
+Implemented P01-006 on 2026-10-13. The simulator now combines each vibration
+window with its temperature/RPM context, assigns the deterministic event ID
+and first-sample timestamp, and builds a validated `telemetry.v1` event. A
+stable JSON serializer validates its input and emits compact JSON with sorted
+keys. Contract validation checks required and undeclared fields, the supported
+schema version, canonical event UUIDs, non-empty device/asset identifiers, UTC
+timestamps, non-negative sequence and RPM values, finite measurements,
+sampling metadata, and the exact sample count on all three axes. Sampling
+duration may differ from the sample-count-derived duration by less than one
+sample interval; that tolerance is now explicit in the
+[telemetry contract](../specs/telemetry-contract.md).
+
+Added a valid `telemetry.v1` fixture and invalid fixtures for missing fields,
+unsupported versions, non-canonical IDs, naive/non-UTC timestamps, axis and
+duration mismatches, negative RPM, and invalid numeric input. Duplicate event
+detection and configurable operating bounds remain ingestion responsibilities
+because they require retained state or deployment policy.
+
 ### What I learned
 
+Pydantic's strict models can accept JSON integers as measurement numbers by
+normalizing only finite integer/float inputs before validation. This preserves
+JSON's number semantics without accepting booleans, numeric strings, or
+non-finite values.
+
 ### Evidence
+
+- [Telemetry event model, serializer, and simulator integration](../../tools/simulator/src/machinepulse_simulator/telemetry.py)
+- [Contract tests](../../tools/simulator/tests/test_telemetry.py) — 17 focused tests passed.
+- [Valid payload fixture](../../tools/simulator/tests/fixtures/telemetry.v1.json)
+  and invalid payload fixtures under
+  `tools/simulator/tests/fixtures/telemetry-invalid/`.
+- `mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev
+  pytest` — all 91 simulator tests passed.
+- Pinned Pixi 0.76.1: `ruff check src tests experiments`,
+  `ruff format --check src tests experiments`, and `mypy src tests experiments`
+  — all passed.
+- [P01-006 GitHub issue](https://github.com/gleniosp/machinepulse/issues/16).
+
+The original `mise run simulator:test` task wrapper resolved Pixi 0.81.0 from
+the active shell path, outside the repository's `>=0.76.1,<0.77` requirement.
+Running checks through `mise exec -- pixi` selected pinned Pixi 0.76.1 and
+passed. Repository tasks now invoke Pixi and prek through `mise exec` to use
+the configured tools despite an earlier standalone executable on PATH. The
+existing `.miserc.toml` excludes the named user-global mise config file.
+After this change, `mise run simulator:test` passed all 91 tests and
+`mise run pixi:lock-check` confirmed the lockfile is current, with standalone
+Pixi 0.81.0 still ahead of the mise installation on PATH.
+
+### Identifier design review — 2026-10-13
+
+Researched device and asset identifier options at the maintainer's request
+before the P01-006 PR. Prepared
+[ADR-0003](../adr/0003-device-and-asset-identifiers.md) comparing ULID, UUIDv7,
+UUIDv4, and derived/readable identifiers, using the canonical ULID spec,
+RFC 9562, and PostgreSQL documentation. Initially proposed UUIDv7, then
+reevaluated each entity independently of the event-ID format and proposed
+UUIDv4. After reviewing the maintainer's preference for shorter text, compared
+ULID's size and timestamp trade-offs with UUIDv4 and Nano ID. Read Tractian's
+guidance on data standardization, asset tagging, numbering, registers, and
+hierarchies alongside OPC UA/AAS identity guidance, NIST product-data research,
+and AWS IoT lifecycle guidance. The maintainer accepted ULID for both device
+and asset IDs on 2026-10-13. The Tractian material supports separating stable
+record identity from customer labels, physical tags, and asset hierarchy; it
+does not prescribe an ID format. The scale review records collision
+assumptions, timestamp disclosure, storage choice, and tenant-scope concerns.
+
+ADR-0003 is Accepted. This branch validates canonical ULIDs in simulator
+configuration and telemetry payloads, and migrates the examples,
+configuration fixtures, and identity-dependent UUIDv5 golden output. The
+telemetry event ID format remains governed by ADR-0001. Review compatibility
+for any consumer of the former free-form IDs before release. The collision
+estimate is theoretical evidence, not a benchmark. Added regression cases for
+both IDs at the configuration and telemetry boundaries, rejecting lowercase,
+invalid alphabet, wrong lengths, overflow, whitespace, prefixes, and
+non-string values. `mise run simulator:check` passed: 123 tests, formatting,
+lint, and strict type checking. `mise run hooks:check` passed all configured
+hooks, including simulator checks and the Pixi lock check.
 
 ## Day 4 — CLI, sidecar, and reproducibility
 

@@ -77,6 +77,14 @@ the managed Git pre-commit hook. Each step is safe to repeat. Run
 `mise run hooks:install` separately only when the hook needs to be installed or
 refreshed.
 
+Task commands invoke selected tools directly through `mise exec -- <tool> ...`
+(for example, `mise exec -- pixi ...`) so an earlier standalone executable on
+`PATH` does not shadow the repository's selected tool. A nested shell may
+resolve another copy from inherited `PATH`; if a tool is missing and mise's
+auto-install is disabled, it may also fall back to `PATH`. The root
+`.miserc.toml` excludes the named user-global mise config file from project
+commands; this controls mise config loading, not `PATH` isolation.
+
 Use the mise-managed GitHub CLI for repository issue and pull-request
 workflows. See the [README](../README.md#github-cli) for authentication and
 least-privilege token guidance.

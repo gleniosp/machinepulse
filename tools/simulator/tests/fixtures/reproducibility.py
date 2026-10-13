@@ -16,10 +16,10 @@ def effective_config() -> dict[str, Any]:
         A fresh simulator configuration for each test.
     """
     return {
-        "asset_id": "asset-0001",
+        "asset_id": "01M00000004D2PF28AQKFF28T5",
         "condition": "imbalance",
         "condition_intensity": 0.7,
-        "device_id": "simulator-0001",
+        "device_id": "01M000000028T5CY4GNF6YY4HM",
         "nominal_rpm": 1800.0,
         "run": {
             "execution_mode": "accelerated",

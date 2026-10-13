@@ -21,6 +21,7 @@ from machinepulse_simulator.domain import (
     NonNegativeAxisValues,
     SimulatorModel,
 )
+from machinepulse_simulator.identifiers import CanonicalULID
 from machinepulse_simulator.units import MILLISECONDS_PER_SECOND
 
 
@@ -110,8 +111,8 @@ class TemperatureConfig(SimulatorModel):
 class EffectiveRunConfig(SimulatorModel):
     """Complete, validated simulator configuration for one run."""
 
-    asset_id: NonBlankString
-    device_id: NonBlankString
+    asset_id: CanonicalULID
+    device_id: CanonicalULID
     run_id: NonBlankString
     nominal_rpm: float = Field(gt=0, allow_inf_nan=False)
     condition: ConditionName

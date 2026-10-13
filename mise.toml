@@ -79,12 +79,12 @@ run = [
 
 [tasks."pixi:lock-check"]
 description = "Check that the root Pixi lockfile is current"
-run = "pixi lock --check --manifest-path pixi.toml"
+run = "mise exec -- pixi lock --check --manifest-path pixi.toml"
 
 [tasks."hooks:install"]
 description = "Install the repository's prek Git hook"
-run = "prek install"
+run = "mise exec -- prek install"
 
 [tasks."hooks:check"]
 description = "Run all configured repository hooks across all files"
-run = "prek run --all-files"
+run = "mise exec -- prek run --all-files"
