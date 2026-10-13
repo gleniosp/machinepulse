@@ -1,0 +1,18 @@
+{
+  "schema_version": "telemetry.v1",
+  "event_id": "550E8400-E29B-41D4-A716-446655440000",
+  "device_id": "simulator-0001",
+  "asset_id": "asset-0001",
+  "occurred_at": "2026-09-24T12:00:00Z",
+  "sequence": 0,
+  "sampling": {"rate_hz": 4, "sample_count": 4, "window_duration_ms": 1000},
+  "measurements": {
+    "temperature_c": 40.0,
+    "rpm": 1800.0,
+    "vibration_m_s2": {
+      "x": [0.1, -0.1, 0.0, 0.2],
+      "y": [0.0, 0.1, -0.2, 0.1],
+      "z": [-0.1, 0.0, 0.1, 0.0]
+    }
+  }
+}

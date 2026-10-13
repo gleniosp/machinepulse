@@ -107,12 +107,12 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** Simulator output conforms to `telemetry.v1` and invalid fixtures
   are rejected with useful reasons.
 - **Acceptance criteria:**
-  - [ ] Simulator output conforms to `telemetry.v1`.
-  - [ ] Sample counts, timestamps, identifiers, units, and finite numeric
+  - [x] Simulator output conforms to `telemetry.v1`.
+  - [x] Sample counts, timestamps, identifiers, units, and finite numeric
     values are validated.
-  - [ ] `event_id` uses the canonical UUID form.
-  - [ ] Invalid fixture cases are included.
-- **Tests or evidence:** Contract tests and invalid-payload fixtures.
+  - [x] `event_id` uses the canonical UUID form.
+  - [x] Invalid fixture cases are included.
+- **Tests or evidence:** [Telemetry contract models and generator](../../tools/simulator/src/machinepulse_simulator/telemetry.py), [contract tests](../../tools/simulator/tests/test_telemetry.py), [valid payload fixture](../../tools/simulator/tests/fixtures/telemetry.v1.json), and invalid-payload fixtures under `tools/simulator/tests/fixtures/telemetry-invalid/`. The simulator suite passed with 91 tests; lint, formatting, and strict type checks passed with Pixi 0.76.1.
 - **GitHub issue:** [#16](https://github.com/gleniosp/machinepulse/issues/16).
 - **Dependencies:** P00-005, P01-004, P01-005.
 

@@ -147,9 +147,54 @@ constraints, and add invalid fixtures.
 
 ### What happened
 
+Implemented P01-006 on 2026-10-13. The simulator now combines each vibration
+window with its temperature/RPM context, assigns the deterministic event ID
+and first-sample timestamp, and builds a validated `telemetry.v1` event. A
+stable JSON serializer validates its input and emits compact JSON with sorted
+keys. Contract validation checks required and undeclared fields, the supported
+schema version, canonical UUIDs, non-empty device/asset identifiers, UTC
+timestamps, non-negative sequence and RPM values, finite measurements,
+sampling metadata, and the exact sample count on all three axes. Sampling
+duration may differ from the sample-count-derived duration by less than one
+sample interval; that tolerance is now explicit in the
+[telemetry contract](../specs/telemetry-contract.md).
+
+Added a valid `telemetry.v1` fixture and invalid fixtures for missing fields,
+unsupported versions, non-canonical IDs, naive/non-UTC timestamps, axis and
+duration mismatches, negative RPM, and invalid numeric input. Duplicate event
+detection and configurable operating bounds remain ingestion responsibilities
+because they require retained state or deployment policy.
+
 ### What I learned
 
+Pydantic's strict models can accept JSON integers as measurement numbers by
+normalizing only finite integer/float inputs before validation. This preserves
+JSON's number semantics without accepting booleans, numeric strings, or
+non-finite values.
+
 ### Evidence
+
+- [Telemetry event model, serializer, and simulator integration](../../tools/simulator/src/machinepulse_simulator/telemetry.py)
+- [Contract tests](../../tools/simulator/tests/test_telemetry.py) — 17 focused tests passed.
+- [Valid payload fixture](../../tools/simulator/tests/fixtures/telemetry.v1.json)
+  and invalid payload fixtures under
+  `tools/simulator/tests/fixtures/telemetry-invalid/`.
+- `mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev
+  pytest` — all 91 simulator tests passed.
+- Pinned Pixi 0.76.1: `ruff check src tests experiments`,
+  `ruff format --check src tests experiments`, and `mypy src tests experiments`
+  — all passed.
+- [P01-006 GitHub issue](https://github.com/gleniosp/machinepulse/issues/16).
+
+The original `mise run simulator:test` task wrapper resolved Pixi 0.81.0 from
+the active shell path, outside the repository's `>=0.76.1,<0.77` requirement.
+Running checks through `mise exec -- pixi` selected pinned Pixi 0.76.1 and
+passed. Repository tasks now invoke Pixi and prek through `mise exec` to use
+the configured tools despite an earlier standalone executable on PATH. The
+existing `.miserc.toml` excludes the named user-global mise config file.
+After this change, `mise run simulator:test` passed all 91 tests and
+`mise run pixi:lock-check` confirmed the lockfile is current, with standalone
+Pixi 0.81.0 still ahead of the mise installation on PATH.
 
 ## Day 4 — CLI, sidecar, and reproducibility
 

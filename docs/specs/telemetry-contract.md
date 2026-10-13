@@ -33,7 +33,9 @@ JSON is the initial wire representation because it is inspectable and simple for
 
 ## Event shape
 
-The following is the proposed `telemetry.v1` shape. Field names and units are subject to review before implementation begins.
+The following is the `telemetry.v1` shape accepted for the Phase 01 simulator
+implementation. The contract remains Draft while the follow-up questions below
+are assigned to later capability work.
 
 ```json
 {
@@ -71,7 +73,7 @@ The shortened arrays in the example are illustrative only. A valid event must sa
 | `device_id` | Yes | Identity of the producer that captured or generated the window. |
 | `asset_id` | Yes | Asset associated with the window at production time. |
 | `occurred_at` | Yes | UTC time of the first vibration sample in the represented window. This is not gateway receipt time. |
-| `sequence` | Yes | Device-local sequence number used for ordering and gap detection. |
+| `sequence` | Yes | Non-negative device-local integer used for ordering and gap detection. |
 | `sampling.rate_hz` | Yes | Sampling rate in samples per second for each vibration axis. |
 | `sampling.sample_count` | Yes | Number of values in each vibration-axis array for this window. |
 | `sampling.window_duration_ms` | Yes | Intended time span represented by the vibration samples. |
@@ -139,23 +141,31 @@ The UUID generation profiles and their rationale are recorded in
 
 ## Validation rules
 
-The initial validator should check at least:
+The simulator's stateless producer validator checks the payload shape and
+values that can be evaluated from one event:
 
-- required fields are present;
-- `event_id` is a valid UUID in canonical lowercase, hyphenated form, and
-  other identifiers are non-empty and conform to their selected formats;
-- `schema_version` is supported;
-- `occurred_at` is parseable and has timezone information;
-- `sampling.rate_hz` is positive;
-- `sampling.sample_count` is positive;
-- `window_duration_ms` is positive and consistent with the sampling configuration within the chosen tolerance;
-- all three vibration axes contain the declared sample count;
-- all numeric values are finite;
-- RPM is not negative;
-- temperature and acceleration values are within configurable ingestion bounds; and
-- the event identity has not already been accepted as a duplicate.
+- all required fields are present, undeclared fields are rejected, and
+  `schema_version` is `telemetry.v1`;
+- `event_id` is a canonical lowercase, hyphenated UUID; `device_id` and
+  `asset_id` are non-empty identifiers;
+- `occurred_at` is a timezone-aware UTC timestamp for the first vibration
+  sample in the window;
+- `sequence` is a non-negative integer;
+- `sampling.rate_hz`, `sampling.sample_count`, and
+  `sampling.window_duration_ms` are positive integers;
+- the count and duration agree to less than one sample interval, using
+  `abs(sample_count × 1000 − rate_hz × window_duration_ms) < 1000`;
+- every vibration axis contains exactly `sample_count` values;
+- temperature, RPM, and acceleration values are finite numbers; and
+- RPM is non-negative.
 
-Bounds should be configurable rather than presented as universal physical truths. A value outside a configured bound may be quarantined for investigation instead of being silently clamped.
+Units are fixed by the field names and meanings in this contract. The producer
+validator does not convert values between units or apply physical operating
+bounds. Ingestion applies its configured temperature and acceleration bounds
+and handles duplicate event IDs because those checks depend on deployment
+policy or previously accepted events. Bounds should not be presented as
+universal physical truths; a value outside a configured bound may be
+quarantined for investigation instead of being silently clamped.
 
 ## Ordering and duplicates
 
