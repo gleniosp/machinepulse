@@ -41,9 +41,10 @@ The sequence should not be reused, even if a decision is later rejected or super
 
 - [ADR-0001 — Telemetry event identifiers](0001-telemetry-event-identifiers.md)
 - [ADR-0002 — Polyglot monorepo workspaces and task interface](0002-polyglot-monorepo-workspaces.md)
+- [ADR-0003 — Device and asset identifiers](0003-device-and-asset-identifiers.md)
 
 ### Proposed decisions
 
-No proposed decisions.
+None currently.
 
 Use the [ADR template](template.md) for new records.

@@ -26,8 +26,8 @@ from machinepulse_simulator.models import GroundTruthRecord, RunManifest
 def test_event_id_matches_stable_uuidv5_fixture() -> None:
     """Keep UUIDv5 output stable against its golden vector."""
     assert (
-        event_id_for_window("simulator-0001", "run-0001", 0)
-        == "52b0000c-29e7-59c3-8695-9aad56cd00ef"
+        event_id_for_window("01M000000028T5CY4GNF6YY4HM", "run-0001", 0)
+        == "d2c6881f-4172-5282-ad46-bc4360473b47"
     )
 
 
@@ -90,7 +90,7 @@ def test_manifest_and_sidecar_match_golden_fixtures(
         effective_config, code_revision=None, working_tree_dirty=None
     )
     sidecar = create_ground_truth_record(
-        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+        event_id_for_window("01M000000028T5CY4GNF6YY4HM", "run-0001", 0), manifest
     )
 
     assert serialize_json(manifest) == run_manifest_json
@@ -114,7 +114,7 @@ def test_ground_truth_rejects_non_finite_or_out_of_range_intensity(
         effective_config, code_revision=None, working_tree_dirty=None
     )
     record = create_ground_truth_record(
-        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+        event_id_for_window("01M000000028T5CY4GNF6YY4HM", "run-0001", 0), manifest
     )
     validated_record = GroundTruthRecord.model_validate_json(json.dumps(record))
     invalid_record = validated_record.model_dump(mode="python")
@@ -132,7 +132,7 @@ def test_ground_truth_rejects_negative_seed(
         effective_config, code_revision=None, working_tree_dirty=None
     )
     record = create_ground_truth_record(
-        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+        event_id_for_window("01M000000028T5CY4GNF6YY4HM", "run-0001", 0), manifest
     )
     validated_record = GroundTruthRecord.model_validate_json(json.dumps(record))
     invalid_record = validated_record.model_dump(mode="python")
@@ -182,7 +182,7 @@ def test_ground_truth_rejects_blank_text_fields(
         effective_config, code_revision=None, working_tree_dirty=None
     )
     record = create_ground_truth_record(
-        event_id_for_window("simulator-0001", "run-0001", 0), manifest
+        event_id_for_window("01M000000028T5CY4GNF6YY4HM", "run-0001", 0), manifest
     )
     record[field] = blank_value
 
@@ -209,7 +209,7 @@ def test_manifest_serialization_is_stable_and_separate_from_telemetry(
         code_revision="abc123",
         working_tree_dirty=False,
     )
-    event_id = event_id_for_window("simulator-0001", "run-0001", 0)
+    event_id = event_id_for_window("01M000000028T5CY4GNF6YY4HM", "run-0001", 0)
     sidecar = create_ground_truth_record(event_id, manifest)
     repeated_sidecar = create_ground_truth_record(event_id, repeated_manifest)
 

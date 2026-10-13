@@ -97,6 +97,33 @@ def test_effective_config_rejects_blank_identifiers(
         EffectiveRunConfig.model_validate(invalid_config)
 
 
+@pytest.mark.parametrize("identifier_field", ["asset_id", "device_id"])
+@pytest.mark.parametrize(
+    "invalid_ulid",
+    [
+        pytest.param("01m000000028t5cy4gnf6yy4hm", id="lowercase"),
+        pytest.param("01M000000028T5CY4GNF6YY4HI", id="invalid-alphabet"),
+        pytest.param("01M000000028T5CY4GNF6YY4H", id="too-short"),
+        pytest.param("01M000000028T5CY4GNF6YY4HMM", id="too-long"),
+        pytest.param("81M000000028T5CY4GNF6YY4HM", id="overflow"),
+        pytest.param(" 01M000000028T5CY4GNF6YY4HM", id="whitespace"),
+        pytest.param("device-01M000000028T5CY4GNF6YY4HM", id="prefix"),
+        pytest.param(17, id="non-string"),
+    ],
+)
+def test_effective_config_rejects_noncanonical_entity_ulids(
+    effective_config: dict[str, object],
+    identifier_field: str,
+    invalid_ulid: object,
+) -> None:
+    """Device and asset IDs must match the strict canonical ULID profile."""
+    invalid_config = effective_config.copy()
+    invalid_config[identifier_field] = invalid_ulid
+
+    with pytest.raises(ValidationError):
+        EffectiveRunConfig.model_validate(invalid_config)
+
+
 @pytest.mark.parametrize(
     "sensor_groups",
     [

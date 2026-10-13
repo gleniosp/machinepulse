@@ -3,7 +3,7 @@
 - **Status:** Draft
 - **Contract version:** `telemetry.v1`
 - **Scope:** Simulator and future physical edge producers
-- **Related ADR:** [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md)
+- **Related ADRs:** [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md), [ADR-0003 — Device and asset identifiers](../adr/0003-device-and-asset-identifiers.md)
 
 This is the first producer-facing contract for MachinePulse. The product
 [domain model](../product/domain-model.md#telemetry-window) defines what a
@@ -41,8 +41,8 @@ are assigned to later capability work.
 {
   "schema_version": "telemetry.v1",
   "event_id": "550e8400-e29b-41d4-a716-446655440000",
-  "device_id": "device-0001",
-  "asset_id": "asset-0001",
+  "device_id": "01M000000028T5CY4GNF6YY4HM",
+  "asset_id": "01M00000004D2PF28AQKFF28T5",
   "occurred_at": "2026-09-02T12:20:31.112Z",
   "sequence": 42,
   "sampling": {
@@ -86,6 +86,40 @@ The shortened arrays in the example are illustrative only. A valid event must sa
 For evenly spaced samples, adjacent readings are separated by `1 / rate_hz`
 seconds. The simulator's rule for deriving an integer sample count is in the
 [simulator behavior specification](simulator.md#run-configuration).
+
+## Device and asset ID profile
+
+The accepted [ADR-0003](../adr/0003-device-and-asset-identifiers.md) defines
+the device and asset ID profile implemented by the simulator and telemetry
+validator.
+
+- Both fields contain a canonical uppercase ULID: exactly 26 characters from
+  the Crockford Base32 alphabet, with the first character in `0` through `7`.
+  Do not accept lowercase, whitespace, prefixes, or silent normalization.
+  Reject values above `7ZZZZZZZZZZZZZZZZZZZZZZZZZ` and human-readable labels.
+- Allocate distinct IDs for distinct entity records and retain them according
+  to the [domain identity lifecycle](../product/domain-model.md#entity-identity-lifecycle).
+  A device and an asset are separate entities even if they are associated.
+- Validate syntax at the producer boundary. Enrollment, entity existence,
+  reference integrity, and authorized device-to-asset association require
+  ingestion/operational state and cannot be proved by parsing the payload.
+- Preserve both IDs across retries and historical replay. A forwarding gateway
+  preserves the originating device ID. Historical `asset_id` identifies the
+  asset associated with that window, rather than the device's current asset.
+
+Illustrative field values are
+`"device_id": "01M000000028T5CY4GNF6YY4HM"` and
+`"asset_id": "01M00000004D2PF28AQKFF28T5"`.
+These are opaque MachinePulse entity keys. Their ULID timestamp represents
+approximate allocation time; it does not replace explicit domain or event
+timestamps. External industrial identities are mapped separately as described
+in the domain model. Examples and fixtures use this profile; older payloads
+with human-readable IDs need a migration or compatibility plan before release.
+
+This profile narrows the accepted ID inputs. Review the compatibility and
+fixture migration steps in
+[ADR-0003](../adr/0003-device-and-asset-identifiers.md#follow-up-work) before
+releasing it; do not silently reinterpret an existing published contract.
 
 ## Producer-side rules
 
@@ -147,7 +181,7 @@ values that can be evaluated from one event:
 - all required fields are present, undeclared fields are rejected, and
   `schema_version` is `telemetry.v1`;
 - `event_id` is a canonical lowercase, hyphenated UUID; `device_id` and
-  `asset_id` are non-empty identifiers;
+  `asset_id` are canonical uppercase ULIDs under this profile;
 - `occurred_at` is a timezone-aware UTC timestamp for the first vibration
   sample in the window;
 - `sequence` is a non-negative integer;

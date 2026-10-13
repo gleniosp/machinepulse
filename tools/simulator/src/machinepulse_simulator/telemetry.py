@@ -10,7 +10,6 @@ from uuid import UUID
 from pydantic import (
     BeforeValidator,
     Field,
-    StringConstraints,
     ValidationError,
     field_validator,
     model_validator,
@@ -18,6 +17,7 @@ from pydantic import (
 
 from machinepulse_simulator.context import iter_context_windows
 from machinepulse_simulator.domain import SimulatorModel
+from machinepulse_simulator.identifiers import CanonicalULID
 from machinepulse_simulator.models import EffectiveRunConfig
 from machinepulse_simulator.reproducibility import event_id_for_window
 from machinepulse_simulator.units import MILLISECONDS_PER_SECOND
@@ -48,10 +48,6 @@ def _finite_number(value: object) -> float:
 
 
 type FiniteNumber = Annotated[float, BeforeValidator(_finite_number)]
-type TelemetryIdentifier = Annotated[
-    str,
-    StringConstraints(min_length=1, pattern=r"\S"),
-]
 
 
 class TelemetrySampling(SimulatorModel):
@@ -104,8 +100,8 @@ class TelemetryWindow(SimulatorModel):
 
     schema_version: Literal["telemetry.v1"]
     event_id: str
-    device_id: TelemetryIdentifier
-    asset_id: TelemetryIdentifier
+    device_id: CanonicalULID
+    asset_id: CanonicalULID
     occurred_at: datetime = Field(strict=False)
     sequence: int = Field(ge=0)
     sampling: TelemetrySampling

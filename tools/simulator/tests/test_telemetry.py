@@ -130,6 +130,33 @@ def test_invalid_payload_fixtures_are_rejected_with_field_reasons(
         validate_telemetry(payload)
 
 
+@pytest.mark.parametrize("identifier_field", ["asset_id", "device_id"])
+@pytest.mark.parametrize(
+    "invalid_ulid",
+    [
+        pytest.param("01m000000028t5cy4gnf6yy4hm", id="lowercase"),
+        pytest.param("01M000000028T5CY4GNF6YY4HI", id="invalid-alphabet"),
+        pytest.param("01M000000028T5CY4GNF6YY4H", id="too-short"),
+        pytest.param("01M000000028T5CY4GNF6YY4HMM", id="too-long"),
+        pytest.param("81M000000028T5CY4GNF6YY4HM", id="overflow"),
+        pytest.param(" 01M000000028T5CY4GNF6YY4HM", id="whitespace"),
+        pytest.param("device-01M000000028T5CY4GNF6YY4HM", id="prefix"),
+        pytest.param(17, id="non-string"),
+    ],
+)
+def test_telemetry_rejects_noncanonical_entity_ulids(
+    identifier_field: str, invalid_ulid: object
+) -> None:
+    """Telemetry entity IDs must match the strict canonical ULID profile."""
+    payload = _read_json_fixture(FIXTURE_DIR / "telemetry.v1.json")
+    payload[identifier_field] = invalid_ulid
+
+    with pytest.raises(
+        TelemetryValidationError, match="must be a canonical uppercase ULID"
+    ):
+        validate_telemetry(payload)
+
+
 def test_json_integer_measurements_are_accepted_as_finite_numbers() -> None:
     """JSON integer values are valid numbers for scalar and array measurements."""
     payload = _read_json_fixture(FIXTURE_DIR / "telemetry.v1.json")

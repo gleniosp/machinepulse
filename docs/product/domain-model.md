@@ -155,6 +155,48 @@ work order
 
 The trace should remain possible after retries, reprocessing, or model-version changes.
 
+### Entity identity lifecycle
+
+The accepted [ADR-0003](../adr/0003-device-and-asset-identifiers.md) defines
+the telemetry contract's [device and asset ID profile](../specs/telemetry-contract.md#device-and-asset-id-profile)
+and the domain identity rules:
+
+- An asset ID identifies the maintainable object, not its name, location, or
+  position in a production line. Renaming, relocation, and repair retain it;
+  replacing that object creates a new asset ID, even when the name is reused.
+- A device ID identifies a physical producer unit or a configured logical
+  simulator producer. Restart, software update, credential rotation, and
+  reassignment retain it. A replacement producer receives a new device ID.
+  Restoring the same device's configuration retains its ID; cloning it into
+  a distinct producer must allocate a new identity.
+- Record device-to-asset assignment separately. Moving a device to another
+  asset changes its association, not either entity's identity. Historical
+  telemetry and its derived records retain the identities recorded at
+  production time.
+- Entity creation/provisioning assigns and persists IDs before telemetry is
+  emitted. Retired IDs are not reassigned to new entities. Unknown references
+  or conflicting registrations must be handled explicitly rather than merged
+  because names match.
+- Display labels, vendor serial numbers, and external-system identifiers are
+  separate references with their own scheme/issuer scope. Preserve a trusted
+  manufacturer product-instance URI or global asset identifier when available;
+  a scoped serial number alone need not be globally unique. Customer asset
+  numbers and physical tags also remain separate from the canonical entity ID.
+- Customer ownership, site/location hierarchy, and asset relationships are
+  modeled as explicit data, not encoded into entity IDs. If multi-tenancy is
+  introduced, enforce tenant scope on lookup and write paths; possessing a
+  syntactically valid or unpredictable ID does not grant access.
+- MachinePulse IDs identify entity records. Independently enrolling the same
+  physical motor in two installations does not automatically produce the same
+  ID. Reconciliation uses trusted external identities or a reviewed mapping;
+  importing an existing MachinePulse record preserves its key, while an
+  identity conflict is resolved explicitly. Do not silently merge records or
+  replace an established key with a newly discovered external identifier.
+
+Enrollment and association storage/API mechanics belong to the later
+ingestion and operational-storage specifications; these rules do not add an
+online registry requirement to local simulator runs.
+
 ## Domain boundaries
 
 - A **device** produces observations; it does not own maintenance policy.

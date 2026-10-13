@@ -68,8 +68,8 @@ def _experiment_config(condition: str) -> EffectiveRunConfig:
     intensity = 0.0 if condition == "normal" else 1.0
     return EffectiveRunConfig.model_validate(
         {
-            "asset_id": "asset-exp-0001",
-            "device_id": "simulator-exp-0001",
+            "asset_id": "01M00000008NKRJ2NWVVRJ6HB7",
+            "device_id": "01M00000006HB7H45BSQQH4D2P",
             "run_id": f"run-exp-0001-{condition}",
             "nominal_rpm": 1800.0,
             "condition": condition,
