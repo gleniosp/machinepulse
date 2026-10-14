@@ -34,7 +34,10 @@ contains one two-window run for each supported initial condition: `normal`,
 condition differences easier to inspect; distinct IDs and seeds keep event
 identities and generated noise reproducible. The short runs make a quick local
 walkthrough, not a parameter evaluation; use the linked experiments for
-evidence about signal defaults and condition separation.
+evidence about signal defaults and condition separation. The
+[experiment guide](../experiments/README.md#running-the-simulator-experiments)
+explains how to rerun EXP-0001 and EXP-0002 and how those analyses relate to the
+CLI dataset-generation path.
 
 Update this canonical file when changing the small end-to-end example or adding
 another supported condition. Add a separate configuration only for a distinct

@@ -35,6 +35,7 @@ Phases 00 and 01 are currently drafted in detail. Create or refine later task fi
 Each task should have:
 
 - a stable identifier preserved in its GitHub issue title;
+- a local status that reflects task and evidence completion;
 - a clear outcome;
 - links to requirements and specifications;
 - acceptance criteria written as separate, verifiable Markdown checkboxes;
@@ -45,7 +46,11 @@ Each task should have:
 
 Leave acceptance checkboxes unchecked until their evidence satisfies the
 criterion. Check each item when it is complete; a task is complete when all of
-its criteria are checked and the required evidence is recorded.
+its criteria are checked and the required evidence is recorded. Set its local
+status to **Complete** as soon as those conditions are met, before opening the
+pull request. Local completion does not wait for the pull request to merge;
+GitHub issue closure follows the merged pull request under the
+[working agreement](../working-agreement.md).
 
 Suggested identifiers are `P00-001`, `P01-001`, and so on. A journal entry should reference these identifiers rather than copy the task text.
 
@@ -54,9 +59,16 @@ Suggested identifiers are `P00-001`, `P01-001`, and so on. A journal entry shoul
 - **Planned** — identified but not ready to implement.
 - **Ready** — specification and dependencies are clear.
 - **In progress** — actively being implemented.
+- **In review** — phase-level plan or evidence is awaiting maintainer review;
+  finished local tasks remain **Complete**.
 - **Blocked** — requires a decision, experiment, or external input.
 - **Complete** — acceptance criteria and evidence are satisfied.
 - **Deferred** — intentionally moved out of the current scope.
+
+Task-level and phase-level statuses track local work. Mark a phase **Complete**
+when its local definition of done is satisfied, even if its pull request has not
+merged. Track pull-request and issue state in GitHub; do not change a local task
+or phase status after merge only to record that delivery state.
 
 ## Open-source task hygiene
 

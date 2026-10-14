@@ -17,6 +17,7 @@ What should be true when this phase is complete?
 
 ### PNN-001 — Task title
 
+- **Status:** Planned
 - **Outcome:**
 - **Acceptance criteria:**
   - [ ] _First independently verifiable criterion._

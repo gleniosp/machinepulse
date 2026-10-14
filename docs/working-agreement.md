@@ -55,7 +55,7 @@ If the conflict materially affects scope, architecture, data semantics, or safet
 
 - Each week's work uses one dedicated branch and one pull request. When a week maps directly to a phase, the phase branch and pull request are the same unit of work. Suggest branch names in `phase-XX/task-description` form for phase work, combining the phase name with a short description of the first task in that phase (for example, `phase-01/vibration-generation`), and `week-XX/short-description` form for other weekly work. The maintainer creates or switches to the branch.
 - The agent does not create branches or commits. Within the weekly or phase branch, each coherent completed task or step should be represented by a commit. The agent proposes commit boundaries and commands; the maintainer decides the commit packages and executes them.
-- The maintainer owns pull-request creation, review, approval, and merging. Keep related GitHub issues open until the pull request containing their changes has been merged; only then may the issue be closed when its acceptance criteria and evidence are complete.
+- Mark a local task **Complete** as soon as its acceptance criteria and required evidence are satisfied, before raising its pull request. Local completion does not wait for merge. The maintainer owns pull-request creation, review, approval, and merging. Keep related GitHub issues open until the pull request containing their changes has merged; close them only after that merge and when their acceptance criteria and evidence are complete.
 - Do not reset, revert, delete, or overwrite work unless the maintainer explicitly requests the operation and its target is clear.
 - When a commit is requested, use a Conventional Commit / Commitizen-compatible message with a lowercase imperative subject and a short explanation of why the change exists.
 - Keep secrets, private information, proprietary data, and unlicensed external material out of the repository. Record provenance and licensing for external datasets, models, documents, images, and code.
@@ -100,7 +100,9 @@ GitHub issue
     → tests or other evidence
     → journal entry
     → ADR or experiment when needed
-    → GitHub issue update and closure
+    → local task marked Complete
+    → maintainer raises, reviews, and merges the pull request
+    → related GitHub issue closed
 ```
 
 A new document is warranted when it answers a question that would otherwise be repeated, records a decision with lasting consequences, defines behavior needed by implementation, or preserves evidence needed to evaluate the result.
@@ -115,8 +117,10 @@ Write each acceptance criterion as a separate, verifiable Markdown checkbox
 (`- [ ]`) in the phase task and its GitHub issue. Leave it unchecked until
 evidence shows the criterion is satisfied; then check it in both places and
 link the supporting evidence. A task is complete only when every acceptance
-criterion is checked and the required evidence is recorded. Keep the GitHub
-issue open until its pull request has merged.
+criterion is checked and the required evidence is recorded. Set the local task
+status to **Complete** at that point, even if the pull request has not yet been
+raised or merged. Keep the related GitHub issue open until its pull request has
+merged; close it only after merge.
 
 ## Review and direction changes
 
@@ -142,7 +146,8 @@ The agent may perform routine repository work autonomously when it is within an 
 - implement code and tests;
 - run documented validation;
 - update issue comments, labels, milestones, and issue state through `gh`; and
-- close an issue after its evidence is complete.
+- close a related issue only after its pull request has merged and its
+  acceptance criteria and evidence are complete.
 
 Ask for maintainer input before:
 
@@ -157,17 +162,29 @@ Ask for maintainer input before:
 
 ## Completion and handoff
 
-An issue is complete only when:
+A local task is **Complete** when:
 
 - every acceptance criterion has supporting evidence and is checked in the task and GitHub issue;
 - relevant tests, measurements, screenshots, plots, or other evidence are available;
 - affected specifications and task files are current;
 - the journal records what happened and any limitations;
-- required ADRs or experiments are linked; and
-- the change is merged through the maintainer-approved weekly or phase pull request; and
-- the GitHub issue is updated and closed by the maintainer after that merge.
+- required ADRs or experiments are linked.
 
-A milestone is complete only when all mapped issues are complete, its exit evidence is recorded, and no scope change is being hidden as completion.
+Set the local task status to **Complete** as soon as these conditions are met.
+Do not hold it open while waiting for a pull request.
+
+The related GitHub issue remains open while its pull request is pending. After
+the maintainer-approved weekly or phase pull request is merged, close the issue
+if its acceptance criteria and evidence are complete.
+
+A phase is locally **Complete** when all mapped local tasks are complete and
+its local exit evidence is recorded. Mark it complete before the pull request
+merges; do not update the phase document after merge only to record delivery
+state. Track pull-request and issue state in GitHub, and close related issues
+after their pull requests merge.
+
+A GitHub milestone is complete only when all mapped issues are closed, its exit
+evidence is recorded, and no scope change is being hidden as completion.
 
 Every handoff should summarize:
 

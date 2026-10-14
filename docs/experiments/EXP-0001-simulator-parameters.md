@@ -1,13 +1,13 @@
 # EXP-0001 — Simulator parameter ranges
 
-- **Status:** In progress
+- **Status:** Complete
 - **Date started:** 2026-10-01
-- **Date completed:**
+- **Date completed:** 2026-10-14
 - **Owner:** Phase 01 implementation
 - **Related requirements:** FR-002, FR-003, FR-004, NFR-001
 - **Related specifications:** [Simulator behavior](../specs/simulator.md)
 - **Related ADRs:**
-- **Code revision:** `ec1bee2e9bb7f4982c62382d259b6b2162b5149d` (working tree contained the P01-004 implementation and experiment script)
+- **Code revision:** `bb6a3410547ba091aa8796173f356e16b1252168` (working tree included the P01-008 sweep and plot scripts)
 - **Dataset or generator version:** `simulator.v1`
 
 ## Question
@@ -25,9 +25,10 @@ plots.
 ## Setup
 
 Generate fixed-seed windows across normal, imbalance, and overheating settings
-as their generators are implemented. The P01-004 slice compares normal and
-imbalance vibration. Compare time-domain summaries, spectra, output size, and
-repeatability.
+as their generators are implemented. Compare normal and imbalance vibration
+while changing one of sample rate, window duration, or noise at a time. Use the
+time-domain summaries and spectra to select inspectable initial values without
+claiming physical validity.
 
 ## Variables
 
@@ -37,12 +38,15 @@ repeatability.
 
 ### Independent variables
 
-- Window duration, sample rate, noise level, and condition intensity.
+- Sample rate (400, 800, and 1600 Hz), window duration (250, 500, and 1000 ms),
+  noise standard deviation (0.005, 0.01, and 0.02 m/s²), and condition (normal
+  or intensity-1.0 imbalance). Each comparison changes one signal setting at a
+  time from the 1600 Hz, 1000 ms, 0.01 m/s² baseline.
 
 ### Measured variables
 
-- Generation time, output size, RMS/peak summaries, dominant spectral peaks,
-  and qualitative plot readability.
+- RMS/peak summaries, dominant spectral peaks, and qualitative plot
+  readability.
 
 ## Reproduction command
 
@@ -94,22 +98,43 @@ neighboring bins. A two-second window at the same 1600 samples/s would contain
 over two seconds. In this run the 30 Hz component falls directly on a bin, so
 its peak is clear.
 
+The one-factor-at-a-time comparison on 2026-10-14 found:
+
+| Setting | Normal X-axis result | Imbalance X-axis result | Observation |
+|---|---|---|---|
+| Sample rate 400, 800, 1600 Hz; 1000 ms | Dominant 30 Hz amplitude 0.049764–0.050545 m/s² | Dominant 30 Hz amplitude 0.149759–0.150543 m/s² | All three rates put the modeled 30 Hz component on a 1 Hz DFT bin in this synthetic one-second window. |
+| Window 250 ms; 1600 Hz | Dominant bin 28 Hz, amplitude 0.034854 m/s² | Dominant bin 28 Hz, amplitude 0.100695 m/s² | The 4 Hz bin spacing does not include 30 Hz and spreads its amplitude across bins. |
+| Window 500 ms; 1600 Hz | Dominant 30 Hz amplitude 0.050390 m/s² | Dominant 30 Hz amplitude 0.150390 m/s² | The 2 Hz bin spacing includes 30 Hz. |
+| Window 1000 ms; 1600 Hz | Dominant 30 Hz amplitude 0.050545 m/s² | Dominant 30 Hz amplitude 0.150543 m/s² | The 1 Hz bin spacing makes the modeled peak easy to inspect. |
+| Noise standard deviation 0.005–0.02 m/s²; 1600 Hz, 1000 ms | X-axis RMS 0.035893–0.041231 m/s²; 30 Hz amplitude 0.050272–0.051099 m/s² | X-axis RMS 0.106374–0.108666 m/s²; 30 Hz amplitude 0.150271–0.151088 m/s² | Higher noise increases time-domain RMS and peak variation; the modeled component remains visible in this fixed one-second comparison. |
+
+Temperature and RPM context are deterministic and were checked separately in
+P01-005. Overheating changes the temperature context while retaining the same
+seeded vibration as normal. That result is detailed in
+[EXP-0002](EXP-0002-condition-separation.md).
+
 ## Interpretation
 
-The first settings yield a visible 30 Hz component and distinguish the
-configured normal and maximum-intensity imbalance amplitudes in these
-synthetic signals. This is a preliminary engineering check, not evidence of
-physical condition separation. Alternate duration, sampling-rate, and noise
-settings, and temperature/RPM context behavior, remain to be compared before
-deciding whether to retain the defaults.
+The selected 1600 Hz, 1000 ms, and 0.01 m/s² settings make the synthetic 30 Hz
+component easy to inspect. A half-second window also resolves 30 Hz exactly in
+this configuration; a quarter-second window does not. All tested rates
+preserved the modeled peak, so the 1600 Hz rate is a conservative initial
+engineering setting rather than a demonstrated minimum. The noise sweep
+increased time-domain variation while leaving the one-second 30 Hz amplitude
+near its configured value. These measurements support keeping the current
+settings for repeatable engineering examples, not as recommended physical
+motor settings.
 
 ## Limitations
 
-This experiment evaluates engineering usefulness of synthetic signals, not
-physical fault-model validity.
+This experiment evaluates inspectability of deterministic synthetic signals
+for one RPM, seed, and set of amplitudes. It does not test real sensor noise,
+changing loads, a physical fault model, or diagnostic performance.
 
 ## Decision or next action
 
-Keep the defaults provisional. Complete the sampling/noise comparison and
-context-generation slice before deciding whether the specification defaults
-should change.
+Retain the configured values as initial synthetic settings in the simulator
+specification. No physical operating ranges or diagnostic claims follow from
+this experiment. The context slice is recorded in P01-005 and condition
+comparison evidence in EXP-0002; later work may revisit these settings against
+feature requirements or physical telemetry.

@@ -36,8 +36,13 @@ dir = "{{config_root}}/../.."
 
 [tasks."experiment:vibration"]
 description = "Generate EXP-0001 vibration plots and summaries"
-run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev python tools/simulator/experiments/plot_vibration.py"
-dir = "{{config_root}}/../.."
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev python -m experiments.plot_vibration"
+dir = "{{config_root}}"
+
+[tasks."experiment:conditions"]
+description = "Generate EXP-0002 condition comparison plots and summaries"
+run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev python -m experiments.evaluate_conditions"
+dir = "{{config_root}}"
 
 [tasks.check]
 description = "Run simulator formatting, lint, type, and test checks"

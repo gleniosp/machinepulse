@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520">
+<title>Synthetic temperature context by window midpoint</title>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,sans-serif;fill:#202124}.grid{stroke:#d9dde3;stroke-width:1}.axis{stroke:#363b42;stroke-width:1.5}.trace{fill:none;stroke-width:2}</style>
+<text x="490.0" y="34" text-anchor="middle" font-size="20" font-weight="600">Synthetic temperature context by window midpoint</text>
+<line class="grid" x1="92.00" y1="70" x2="92.00" y2="422"/>
+<text x="92.00" y="446" text-anchor="middle" font-size="12">0</text>
+<line class="grid" x1="259.00" y1="70" x2="259.00" y2="422"/>
+<text x="259.00" y="446" text-anchor="middle" font-size="12">1</text>
+<line class="grid" x1="426.00" y1="70" x2="426.00" y2="422"/>
+<text x="426.00" y="446" text-anchor="middle" font-size="12">2</text>
+<line class="grid" x1="593.00" y1="70" x2="593.00" y2="422"/>
+<text x="593.00" y="446" text-anchor="middle" font-size="12">3</text>
+<line class="grid" x1="760.00" y1="70" x2="760.00" y2="422"/>
+<text x="760.00" y="446" text-anchor="middle" font-size="12">4</text>
+<line class="grid" x1="92" y1="382.89" x2="760" y2="382.89"/>
+<text x="80" y="386.89" text-anchor="end" font-size="12">40</text>
+<line class="grid" x1="92" y1="304.67" x2="760" y2="304.67"/>
+<text x="80" y="308.67" text-anchor="end" font-size="12">42</text>
+<line class="grid" x1="92" y1="226.44" x2="760" y2="226.44"/>
+<text x="80" y="230.44" text-anchor="end" font-size="12">44</text>
+<line class="grid" x1="92" y1="148.22" x2="760" y2="148.22"/>
+<text x="80" y="152.22" text-anchor="end" font-size="12">46</text>
+<line class="grid" x1="92" y1="70.00" x2="760" y2="70.00"/>
+<text x="80" y="74.00" text-anchor="end" font-size="12">48</text>
+<line class="axis" x1="92" y1="422" x2="760" y2="422"/>
+<line class="axis" x1="92" y1="70" x2="92" y2="422"/>
+<text x="426.0" y="492" text-anchor="middle" font-size="14">Time from run start (s)</text>
+<text x="25" y="246.0" text-anchor="middle" font-size="14" transform="rotate(-90 25 246.0)">Temperature (°C)</text>
+<path class="trace" d="M 175.50 382.89 L 342.50 382.89 L 509.50 382.89 L 676.50 382.89" stroke="#0072b2"/>
+<line x1="785" y1="88" x2="820" y2="88" stroke="#0072b2" stroke-width="2"/>
+<text x="828" y="92" font-size="12">normal</text>
+<path class="trace" d="M 175.50 382.89 L 342.50 382.89 L 509.50 382.89 L 676.50 382.89" stroke="#d55e00" stroke-dasharray="5 3"/>
+<line x1="785" y1="113" x2="820" y2="113" stroke="#d55e00" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="828" y="117" font-size="12">imbalance</text>
+<path class="trace" d="M 175.50 348.67 L 342.50 280.22 L 509.50 211.78 L 676.50 143.33" stroke="#009e73"/>
+<line x1="785" y1="138" x2="820" y2="138" stroke="#009e73" stroke-width="2"/>
+<text x="828" y="142" font-size="12">overheating</text>
+</svg>

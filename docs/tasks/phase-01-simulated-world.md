@@ -1,6 +1,6 @@
 # Phase 01 — Simulated Industrial World
 
-- **Status:** In progress
+- **Status:** Complete
 - **Goal:** Produce deterministic, contract-compliant motor telemetry and evidence without physical hardware.
 - **Related specifications:** [Simulator behavior](../specs/simulator.md), [Telemetry contract](../specs/telemetry-contract.md)
 - **Related tooling:** [Developer tooling baseline](../developer-tooling.md)
@@ -23,6 +23,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-001 — Specify simulator behavior and configuration
 
+- **Status:** Complete
 - **Outcome:** Simulator parameters, conditions, execution modes, limitations,
   and reproducibility expectations are normative.
 - **Acceptance criteria:**
@@ -38,6 +39,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-002 — Define simulator reproducibility metadata
 
+- **Status:** Complete
 - **Outcome:** Run metadata and event identities make generated runs traceable
   and replayable.
 - **Acceptance criteria:**
@@ -58,6 +60,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-003 — Implement the motor and operating-condition domain model
 
+- **Status:** Complete
 - **Outcome:** A configured motor and its three initial operating conditions
   are represented in testable domain logic.
 - **Acceptance criteria:**
@@ -76,6 +79,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-004 — Implement sampled vibration generation
 
+- **Status:** Complete
 - **Outcome:** The simulator generates three-axis vibration windows with
   configurable rotational and condition-specific components.
 - **Acceptance criteria:**
@@ -91,6 +95,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-005 — Implement temperature and RPM context generation
 
+- **Status:** Complete
 - **Outcome:** Scalar context accompanies each telemetry window with explicit
   units and documented condition behavior.
 - **Acceptance criteria:**
@@ -104,6 +109,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-006 — Build the telemetry-window serializer and validator
 
+- **Status:** Complete
 - **Outcome:** Simulator output conforms to `telemetry.v1` and invalid fixtures
   are rejected with useful reasons.
 - **Acceptance criteria:**
@@ -120,6 +126,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-007 — Add the simulator CLI and labeled dataset output
 
+- **Status:** Complete
 - **Outcome:** A documented command generates telemetry and its ground-truth
   sidecar for one or more motors.
 - **Acceptance criteria:**
@@ -133,23 +140,25 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-008 — Add simulator tests, plots, and Week 01 evidence
 
+- **Status:** Complete
 - **Outcome:** Phase 01 behavior is evaluated and its limitations are recorded.
 - **Acceptance criteria:**
-  - [ ] Unit and contract tests cover normal and simulated conditions.
-  - [ ] Repeated runs with identical effective configuration, seed, and
+  - [x] Unit and contract tests cover normal and simulated conditions.
+  - [x] Repeated runs with identical effective configuration, seed, and
     generator version produce identical ordered telemetry and sidecar output.
-  - [ ] Time-domain and frequency-domain exploratory plots are produced.
-  - [ ] Week 01 records commands, results, and limitations.
-  - [ ] The first technical article draft is based on evidence.
-  - [ ] Project validation commands run for the checks implemented in this
+  - [x] Time-domain and frequency-domain exploratory plots are produced.
+  - [x] Week 01 records commands, results, and limitations.
+  - [x] The first technical article draft is based on evidence.
+  - [x] Project validation commands run for the checks implemented in this
     phase.
-- **Tests or evidence:** Test output, plots, journal, article outline/draft, and
-  the Phase 01 validation command run.
+- **Tests or evidence:** [CLI repeatability and sidecar test](../../tools/simulator/tests/test_cli.py), [EXP-0001 parameter sweep and plots](../experiments/EXP-0001-simulator-parameters.md), [EXP-0002 condition plots and results](../experiments/EXP-0002-condition-separation.md), [Week 01 journal](../journal/week-01-simulated-world.md#day-5--evaluation-and-communication), and [technical article draft](../blog/week-01-simulator.md).
+  `mise run simulator:check` and `mise run hooks:check` pass.
 - **GitHub issue:** [#18](https://github.com/gleniosp/machinepulse/issues/18).
 - **Dependencies:** P01-003 through P01-007.
 
 ### P01-009 — Add repository hooks for baseline checks
 
+- **Status:** Complete
 - **GitHub issue:** [#79](https://github.com/gleniosp/machinepulse/issues/79).
 
 - **Outcome:** Contributors can install and run a small, repeatable set of
@@ -181,6 +190,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-010 — Establish the polyglot workspace and mise task interface
 
+- **Status:** Complete
 - **Outcome:** The repository has a root Pixi workspace, a pinned mise toolchain,
   the simulator engineering tool under the ADR's `tools/` area, and common root
   tasks that delegate to self-contained project tasks. Go, Node.js, and pnpm are
@@ -244,6 +254,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-011 — Pin the GitHub CLI in the repository toolchain
 
+- **Status:** Complete
 - **Outcome:** Contributors can use a repository-managed GitHub CLI version for
   issue and pull-request workflows without relying on a global installation.
 - **Acceptance criteria:**
@@ -268,6 +279,7 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ### P01-012 — Run repository checks on pull requests
 
+- **Status:** Complete
 - **Outcome:** Pull requests to `main` run the locked repository checks and
   tests and report their result without changing merge rules.
 - **Acceptance criteria:**
@@ -296,11 +308,12 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ## Required experiments
 
-- [EXP-0001](../experiments/EXP-0001-simulator-parameters.md): choose useful
-  initial window, sampling, noise, and condition parameter ranges.
-- [EXP-0002](../experiments/EXP-0002-condition-separation.md): test whether the
-  synthetic conditions are distinguishable in exploratory feature and spectral
-  views without claiming physical validity.
+- [EXP-0001](../experiments/EXP-0001-simulator-parameters.md): evaluated
+  initial window, sampling, noise, and condition parameter settings. The
+  selected values remain synthetic engineering settings, not physical ranges.
+- [EXP-0002](../experiments/EXP-0002-condition-separation.md): compared the
+  synthetic conditions in time, frequency, and temperature-context views
+  without claiming physical validity.
 
 ## Out of scope
 
@@ -310,8 +323,8 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 
 ## Definition of done
 
-- [ ] All Phase 01 acceptance criteria are checked and their evidence is linked.
-- [ ] Reproducibility and contract tests pass.
-- [ ] Generated telemetry and ground truth are separate and traceable.
-- [ ] Plots, limitations, and open questions are recorded in the Week 01 journal.
-- [ ] Follow-up decisions are assigned to the next owning specification or ADR.
+- [x] All Phase 01 acceptance criteria are checked and their evidence is linked.
+- [x] Reproducibility and contract tests pass.
+- [x] Generated telemetry and ground truth are separate and traceable.
+- [x] Plots, limitations, and open questions are recorded in the Week 01 journal.
+- [x] Follow-up decisions are assigned to the next owning specification or ADR.

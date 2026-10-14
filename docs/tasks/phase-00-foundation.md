@@ -21,6 +21,7 @@
 
 ### P00-001 — Review the project identity
 
+- **Status:** Complete
 - **Outcome:** The project purpose, principles, intended users, and constraints are accepted.
 - **Acceptance criteria:**
   - [x] `vision.md` has been reviewed.
@@ -30,6 +31,7 @@
 
 ### P00-002 — Review version 0.1 scope
 
+- **Status:** Complete
 - **Outcome:** The first release boundary is clear enough to protect implementation focus.
 - **Acceptance criteria:**
   - [x] In-scope capabilities are accepted.
@@ -39,6 +41,7 @@
 
 ### P00-003 — Review the domain model and workflows
 
+- **Status:** Complete
 - **Outcome:** The core nouns and user-visible workflows are shared before schemas are implemented.
 - **Acceptance criteria:**
   - [x] Asset, device, sensor, telemetry, analytical, and maintenance concepts are understood.
@@ -48,6 +51,7 @@
 
 ### P00-004 — Review the initial architecture
 
+- **Status:** Complete
 - **Outcome:** The initial Go, Python, TypeScript, infrastructure, and data-store responsibilities are clear.
 - **Acceptance criteria:**
   - [x] Logical boundaries are accepted without requiring one process per component.
@@ -58,6 +62,7 @@
 
 ### P00-005 — Accept the first telemetry contract
 
+- **Status:** Complete
 - **Outcome:** The simulator can be implemented against a reviewed contract.
 - **Acceptance criteria:**
   - [x] Required fields and units are accepted.
@@ -69,6 +74,7 @@
 
 ### P00-006 — Establish documentation workflows
 
+- **Status:** Complete
 - **Outcome:** Future implementation work has consistent task, journal, ADR, experiment, and blog formats.
 - **Acceptance criteria:**
   - [x] Templates are available.
@@ -80,6 +86,7 @@
 
 ### P00-007 — Prepare Phase 01
 
+- **Status:** Complete
 - **Outcome:** The simulator phase is ready to implement without unresolved foundational ambiguity.
 - **Acceptance criteria:**
   - [x] Simulator capability specification is drafted.
@@ -90,6 +97,7 @@
 
 ### P00-008 — Complete the pre-implementation readiness review
 
+- **Status:** Complete
 - **Outcome:** The project has explicit governance, tooling, quality, data, and agent-readiness expectations before runtime code is added.
 - **Acceptance criteria:**
   - [x] The [readiness checklist](../project-readiness.md) has been reviewed.
@@ -102,6 +110,7 @@
 
 ### P00-009 — Select the open-source license and governance baseline
 
+- **Status:** Complete
 - **Outcome:** The public repository has a clear legal and collaboration baseline.
 - **Acceptance criteria:**
   - [x] A project license is selected and documented.
@@ -111,6 +120,7 @@
 
 ### P00-010 — Define the developer-tooling and validation baseline
 
+- **Status:** Complete
 - **Outcome:** Contributors and agents have repeatable commands for the first implementation phase.
 - **Acceptance criteria:**
   - [x] Supported Go, Python, Node.js, and package-manager versions are selected or tracked as open decisions.
