@@ -1,6 +1,6 @@
 # Week 01 — Simulated Industrial World
 
-- **Status:** In progress
+- **Status:** Complete
 - **Phase:** 01
 - **Theme:** Generate reproducible motor telemetry before hardware exists
 
@@ -23,6 +23,7 @@ operating conditions.
 - [P01-010 GitHub issue](https://github.com/gleniosp/machinepulse/issues/83)
 - [P01-011 GitHub issue](https://github.com/gleniosp/machinepulse/issues/90)
 - [P01-007 GitHub issue](https://github.com/gleniosp/machinepulse/issues/17)
+- [P01-008 GitHub issue](https://github.com/gleniosp/machinepulse/issues/18)
 - [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
 - [P01-004 GitHub issue](https://github.com/gleniosp/machinepulse/issues/14)
 - GitHub P01-001 through P01-009
@@ -30,17 +31,15 @@ operating conditions.
 ## Planned outcomes
 
 - [x] P01-001 simulator configuration and condition behavior are specified;
-  initial signal defaults remain subject to EXP-0001.
+  EXP-0001 records the selected synthetic settings and their limits.
 - [x] Reproducibility metadata and fixed-seed vibration generation are
   implemented.
 - [x] Motor, vibration, temperature, and RPM generation are implemented.
 - [x] Telemetry serialization and validation are covered by tests.
 - [x] CLI output and ground-truth sidecar are documented.
-- [ ] Plots, limitations, and experiment results are recorded.
+- [x] Plots, limitations, and experiment results are recorded.
 - [x] The mise/Pixi tooling foundation and repository hooks are installed and
   pass their current checks.
-- [ ] Deferred follow-up: add the pnpm workspace and Vite+ catalog when the
-  first JavaScript/TypeScript package is introduced.
 
 ## Day 1 — Configuration and domain model
 
@@ -341,28 +340,91 @@ turn the evidence into the first technical article draft.
 
 ### What happened
 
+Completed the fixed-seed parameter comparison in EXP-0001. The tested 400,
+800, and 1600 Hz rates all retained the modeled 30 Hz peak in one-second
+windows; a 250 ms window's 4 Hz spectrum grid missed the peak, while 500 ms
+resolved it. The tested noise values changed time-domain variation but left the
+modeled one-second spectral amplitude near its configured value. Kept the
+current 1600 Hz, one-second, 0.01 m/s² settings as synthetic engineering
+defaults, not physical operating recommendations.
+
+Completed EXP-0002 with four matched windows for normal, imbalance, and
+overheating runs. At intensity 0.7, imbalance raised the measured X-axis
+30 Hz amplitude from 0.050545 to 0.120543 m/s². Overheating left seeded
+vibration identical to normal and changed only the temperature context, which
+rose from 40.875 °C at the first window midpoint to 46.125 °C at the last.
+Generated time-domain, frequency-domain, and temperature-context SVGs.
+
+Added a CLI test that runs the same three-condition configuration twice,
+compares each output manifest and JSONL file byte-for-byte, and checks ordered
+event identities and the separation of scenario labels from production
+telemetry. Wrote the first evidence-based article draft and linked its figures.
+
 ### What I learned
+
+With a four-hertz frequency grid, the modeled 30 Hz component does not land on
+a DFT bin; halving that window to 500 ms gives a two-hertz grid that does.
+Overheating is represented by context alone in this simulator, so a vibration
+plot cannot distinguish it from the normal baseline. The output contract and
+ground-truth sidecar make that boundary explicit for downstream consumers.
 
 ### Evidence
 
+- [CLI repeatability and sidecar test](../../tools/simulator/tests/test_cli.py)
+- [EXP-0001 results and plots](../experiments/EXP-0001-simulator-parameters.md)
+- [EXP-0002 results and plots](../experiments/EXP-0002-condition-separation.md)
+- [Technical article draft](../blog/week-01-simulator.md)
+- `mise run simulator:experiment:vibration` — regenerated EXP-0001 SVGs and
+  printed the fixed-seed sample-rate, window-duration, and noise comparisons.
+- `mise run simulator:experiment:conditions` — generated all three EXP-0002
+  SVGs and printed ordered context and per-axis RMS summaries.
+- `mise run simulator:check` — 124 tests passed; formatting, Ruff lint, and
+  strict mypy checks passed.
+- `mise run hooks:check` — all repository hooks passed, including simulator
+  checks and the Pixi lock check.
+- Parsed all three EXP-0002 SVGs as XML.
+
 ## Decisions and open questions
 
-- Record final simulator parameter defaults after EXP-0001.
-- Record whether the condition components remain useful and non-misleading
-  after EXP-0002.
-- Record real-time lag behavior and any changes to the simulator specification.
+- Retain current simulator settings as initial synthetic engineering defaults;
+  revisit them against feature requirements or physical telemetry, not as
+  validated motor ranges.
+- Keep the EXP-0002 condition labels in ground truth and out of production
+  telemetry. The overheating case has no vibration-specific component.
+- Measure real-time delivery lateness under representative load in the later
+  reliability work ([P07-005](https://github.com/gleniosp/machinepulse/issues/62)
+  and [P07-006](https://github.com/gleniosp/machinepulse/issues/63)).
 
 ## Blog post outline
 
-See [From Machines to Data: Modeling Industrial Sensor Telemetry Without Hardware](../blog/week-01-simulator-outline.md).
+See the [article outline](../blog/week-01-simulator-outline.md) and its
+[evidence-based draft](../blog/week-01-simulator.md).
 
 ## Weekly review
 
 ### Completed
 
+P01-008 local implementation and test, experiment, journal, and article
+evidence are complete. The CLI repeatability test covers normal, imbalance,
+and overheating runs. GitHub issue #18 has all six acceptance criteria checked
+and remains open while this local branch awaits its maintainer-owned pull
+request and merge.
+
 ### Deferred
 
+Physical signal validity and sensor comparison remain outside Phase 01. Real-
+time delivery-lateness measurements are assigned to the Phase 07 reliability
+benchmark work.
+
+The pnpm workspace and Vite+ catalog are intentionally deferred until the
+first JavaScript/TypeScript package is introduced. This follow-up is already
+owned by [P01-010](../tasks/phase-01-simulated-world.md)
+and the [developer tooling baseline](../developer-tooling.md).
+
 ### Changed assumptions
+
+None. The selected parameters remain synthetic values, and condition labels
+remain separate from production telemetry.
 
 ### Next week
 

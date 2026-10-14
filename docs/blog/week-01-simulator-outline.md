@@ -1,6 +1,6 @@
 # From Machines to Data: Modeling Industrial Sensor Telemetry Without Hardware
 
-- **Status:** Planned outline
+- **Status:** Source outline for the [evidence-based article draft](week-01-simulator.md)
 - **Related journal:** [Week 01](../journal/week-01-simulated-world.md)
 - **Related specification:** [Simulator behavior](../specs/simulator.md)
 
@@ -22,7 +22,7 @@ condition-monitoring pipeline without pretending to reproduce a real motor?
 5. **Separating truth from telemetry:** explain why condition labels live in a
    sidecar and are not inference features.
 6. **Evidence:** include time-domain plots, spectra, contract-test output, and a
-   repeatability comparison once available.
+   repeatability comparison.
 7. **Limitations:** distinguish synthetic engineering behavior from validated
    fault physics and safety-critical diagnosis.
 8. **What comes next:** connect the simulator to MQTT without changing the
@@ -30,8 +30,8 @@ condition-monitoring pipeline without pretending to reproduce a real motor?
 
 ## Evidence checklist
 
-- [ ] Reproducible command and configuration manifest.
-- [ ] Normal, imbalance, and overheating plots.
-- [ ] Contract validation output and invalid fixtures.
-- [ ] Ground-truth sidecar example.
-- [ ] Experiment results and limitations.
+- [x] Reproducible command and configuration manifest.
+- [x] Normal, imbalance, and overheating plots.
+- [x] Contract validation output and invalid fixtures.
+- [x] Ground-truth sidecar example.
+- [x] Experiment results and limitations.

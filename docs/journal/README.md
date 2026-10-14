@@ -54,4 +54,8 @@ Everything committed to this journal is public. Do not include:
 
 ## Journal status
 
-Use `Planned`, `In progress`, `Complete`, `Blocked`, or `Archived` at the top of each weekly entry.
+Use `Planned`, `In progress`, `Complete`, `Blocked`, or `Archived` at the top
+of each weekly entry. Mark a week **Complete** when its planned local work and
+evidence are complete. This may happen before the related pull request merges;
+track delivery and GitHub issue closure under the
+[working agreement](../working-agreement.md).

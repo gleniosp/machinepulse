@@ -1,10 +1,6 @@
 """Generate reproducible time- and frequency-domain vibration plots."""
 
-from __future__ import annotations
-
-from collections.abc import Sequence
-from html import escape
-from math import ceil, cos, hypot, sin, sqrt, tau
+from math import ceil
 from pathlib import Path
 from typing import Final, Literal
 
@@ -15,8 +11,8 @@ from machinepulse_simulator.vibration import (
     iter_vibration_windows,
 )
 
-type Point = tuple[float, float]
-type PlotSeries = tuple[str, str, str, Sequence[Point]]
+from .plot_utils import PlotSeries, compute_spectrum, render_svg, root_mean_square
+
 type Axis = Literal["x", "y", "z"]
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -24,9 +20,6 @@ ARTIFACTS = ROOT / "docs/experiments/artifacts"
 AXES: Final[tuple[Axis, ...]] = ("x", "y", "z")
 AXIS_COLORS = {"x": "#0072b2", "y": "#d55e00", "z": "#009e73"}
 NORMAL_TRACE_DASH_PATTERN: Final[str] = "6 4"
-FIRST_POSITIVE_FREQUENCY_BIN: Final[int] = 1
-ONE_SIDED_NON_NYQUIST_AMPLITUDE_SCALE: Final[float] = 2.0
-NYQUIST_AMPLITUDE_SCALE: Final[float] = 1.0
 TIME_PLOT_DURATION_MS: Final[int] = 100
 TIME_PLOT_ACCELERATION_LIMIT_M_S2: Final[float] = 0.24
 TIME_PLOT_TICKS_MS: Final[tuple[int, ...]] = (0, 20, 40, 60, 80, 100)
@@ -56,11 +49,20 @@ SPECTRUM_AMPLITUDE_TICKS_M_S2: Final[tuple[float, ...]] = (
 )
 
 
-def _experiment_config(condition: str) -> EffectiveRunConfig:
+def _experiment_config(
+    condition: str,
+    *,
+    sampling_rate_hz: int = 1600,
+    window_duration_ms: int = 1000,
+    noise_std_m_s2: float = 0.01,
+) -> EffectiveRunConfig:
     """Build the fixed configuration used by EXP-0001's vibration slice.
 
     Args:
         condition: Either ``normal`` or ``imbalance``.
+        sampling_rate_hz: Samples per second for each axis.
+        window_duration_ms: Duration represented by the generated window.
+        noise_std_m_s2: Standard deviation of the seeded vibration noise.
 
     Returns:
         A fully validated one-window signal configuration.
@@ -74,7 +76,10 @@ def _experiment_config(condition: str) -> EffectiveRunConfig:
             "nominal_rpm": 1800.0,
             "condition": condition,
             "condition_intensity": intensity,
-            "sampling": {"rate_hz": 1600, "window_duration_ms": 1000},
+            "sampling": {
+                "rate_hz": sampling_rate_hz,
+                "window_duration_ms": window_duration_ms,
+            },
             "run": {
                 "window_count": 1,
                 "seed": 1234,
@@ -84,7 +89,7 @@ def _experiment_config(condition: str) -> EffectiveRunConfig:
             "signal": {
                 "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
                 "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "noise_std_m_s2": 0.01,
+                "noise_std_m_s2": noise_std_m_s2,
                 "imbalance_peak_m_s2_at_intensity_1": {
                     "x": 0.10,
                     "y": 0.05,
@@ -109,116 +114,74 @@ def _samples(window: SyntheticVibrationWindow, axis: Axis) -> tuple[float, ...]:
     return vibration.z
 
 
-def _spectrum(
-    samples: Sequence[float], sampling_rate_hz: int, max_frequency_hz: int
-) -> list[Point]:
-    """Compute a one-sided DFT through the requested frequency limit.
-
-    Frequency bins are spaced by ``sampling_rate_hz / len(samples)``. Only
-    positive bins at or below the limit and Nyquist frequency are included.
-    """
-    sample_count = len(samples)
-    frequency_bin_spacing_hz = sampling_rate_hz / sample_count
-    highest_one_sided_frequency_bin = sample_count // 2
-    last_frequency_bin = min(
-        max_frequency_hz * sample_count // sampling_rate_hz,
-        highest_one_sided_frequency_bin,
-    )
-    result: list[Point] = []
-    for frequency_bin in range(FIRST_POSITIVE_FREQUENCY_BIN, last_frequency_bin + 1):
-        real = 0.0
-        imaginary = 0.0
-        for sample_index, sample in enumerate(samples):
-            angle = tau * frequency_bin * sample_index / sample_count
-            real += sample * cos(angle)
-            imaginary -= sample * sin(angle)
-        amplitude_scale = ONE_SIDED_NON_NYQUIST_AMPLITUDE_SCALE
-        if sample_count % 2 == 0 and frequency_bin == highest_one_sided_frequency_bin:
-            amplitude_scale = NYQUIST_AMPLITUDE_SCALE
-        amplitude = amplitude_scale * hypot(real, imaginary) / sample_count
-        frequency_hz = frequency_bin * frequency_bin_spacing_hz
-        result.append((frequency_hz, amplitude))
-    return result
-
-
-def _rms(samples: Sequence[float]) -> float:
-    """Return the root-mean-square acceleration for one axis."""
-    return sqrt(sum(sample * sample for sample in samples) / len(samples))
-
-
-def _plot_svg(
+def _signal_summary(
+    condition: str,
     *,
-    title: str,
-    x_label: str,
-    y_label: str,
-    x_min: float,
-    x_max: float,
-    y_min: float,
-    y_max: float,
-    x_ticks: Sequence[float],
-    y_ticks: Sequence[float],
-    series: Sequence[PlotSeries],
-) -> str:
-    """Render a small, self-contained SVG line chart using only stdlib code."""
-    width, height = 980, 520
-    left, right, top, bottom = 92, 760, 70, 422
-    plot_width, plot_height = right - left, bottom - top
+    sampling_rate_hz: int,
+    window_duration_ms: int,
+    noise_std_m_s2: float,
+) -> tuple[float, float, float, float]:
+    """Measure X-axis RMS, peak, dominant frequency, and amplitude.
 
-    def x_pixel(value: float) -> float:
-        return left + (value - x_min) * plot_width / (x_max - x_min)
+    Args:
+        condition: ``normal`` or ``imbalance``.
+        sampling_rate_hz: Samples per second for each axis.
+        window_duration_ms: Duration represented by the generated window.
+        noise_std_m_s2: Standard deviation of the seeded vibration noise.
 
-    def y_pixel(value: float) -> float:
-        return bottom - (value - y_min) * plot_height / (y_max - y_min)
-
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
-        f"<title>{escape(title)}</title>",
-        '<rect width="100%" height="100%" fill="#ffffff"/>',
-        "<style>text{font-family:system-ui,sans-serif;fill:#202124}.grid{stroke:#d9dde3;stroke-width:1}.axis{stroke:#363b42;stroke-width:1.5}.trace{fill:none;stroke-width:2}</style>",
-        f'<text x="{width / 2}" y="34" text-anchor="middle" font-size="20" font-weight="600">{escape(title)}</text>',
-    ]
-    for tick in x_ticks:
-        x = x_pixel(tick)
-        parts.extend(
-            [
-                f'<line class="grid" x1="{x:.2f}" y1="{top}" x2="{x:.2f}" y2="{bottom}"/>',
-                f'<text x="{x:.2f}" y="{bottom + 24}" text-anchor="middle" font-size="12">{tick:g}</text>',
-            ]
-        )
-    for tick in y_ticks:
-        y = y_pixel(tick)
-        parts.extend(
-            [
-                f'<line class="grid" x1="{left}" y1="{y:.2f}" x2="{right}" y2="{y:.2f}"/>',
-                f'<text x="{left - 12}" y="{y + 4:.2f}" text-anchor="end" font-size="12">{tick:g}</text>',
-            ]
-        )
-    parts.extend(
-        [
-            f'<line class="axis" x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}"/>',
-            f'<line class="axis" x1="{left}" y1="{top}" x2="{left}" y2="{bottom}"/>',
-            f'<text x="{(left + right) / 2}" y="{height - 28}" text-anchor="middle" font-size="14">{escape(x_label)}</text>',
-            f'<text x="25" y="{(top + bottom) / 2}" text-anchor="middle" font-size="14" transform="rotate(-90 25 {(top + bottom) / 2})">{escape(y_label)}</text>',
-        ]
+    Returns:
+        RMS, absolute peak, dominant frequency, and dominant amplitude.
+    """
+    config = _experiment_config(
+        condition,
+        sampling_rate_hz=sampling_rate_hz,
+        window_duration_ms=window_duration_ms,
+        noise_std_m_s2=noise_std_m_s2,
     )
-    for index, (label, color, dash, points) in enumerate(series):
-        path = " ".join(
-            f"{'M' if point_index == 0 else 'L'} {x_pixel(x):.2f} {y_pixel(y):.2f}"
-            for point_index, (x, y) in enumerate(points)
-        )
-        dash_attribute = f' stroke-dasharray="{dash}"' if dash else ""
-        parts.append(
-            f'<path class="trace" d="{path}" stroke="{color}"{dash_attribute}/>'
-        )
-        legend_y = top + 18 + index * 25
-        parts.extend(
-            [
-                f'<line x1="785" y1="{legend_y}" x2="820" y2="{legend_y}" stroke="{color}" stroke-width="2"{dash_attribute}/>',
-                f'<text x="828" y="{legend_y + 4}" font-size="12">{escape(label)}</text>',
-            ]
-        )
-    parts.append("</svg>")
-    return "\n".join(parts) + "\n"
+    window = next(iter_vibration_windows(config))
+    values = _samples(window, "x")
+    spectrum = compute_spectrum(
+        values,
+        sampling_rate_hz=sampling_rate_hz,
+        max_frequency_hz=SPECTRUM_MAX_FREQUENCY_HZ,
+    )
+    dominant_frequency, dominant_amplitude = max(spectrum, key=lambda point: point[1])
+    return (
+        root_mean_square(values),
+        max(abs(value) for value in values),
+        dominant_frequency,
+        dominant_amplitude,
+    )
+
+
+def _print_parameter_sweep() -> None:
+    """Print fixed-seed, one-factor-at-a-time parameter comparisons."""
+    settings = (
+        ("rate_hz", (400, 800, 1600), 1000, 0.01),
+        ("window_duration_ms", (250, 500, 1000), 1600, 0.01),
+        ("noise_std_m_s2", (0.005, 0.01, 0.02), 1600, 0.01),
+    )
+    print("EXP-0001 parameter comparison (fixed seed 1234, X axis)")
+    print(
+        "parameter\tvalue\tcondition\trms_m_s2\tpeak_m_s2\t"
+        "dominant_frequency_hz\tdominant_amplitude_m_s2"
+    )
+    for parameter, values, default_rate, default_noise in settings:
+        for value in values:
+            rate = int(value) if parameter == "rate_hz" else default_rate
+            duration = int(value) if parameter == "window_duration_ms" else 1000
+            noise = float(value) if parameter == "noise_std_m_s2" else default_noise
+            for condition in ("normal", "imbalance"):
+                rms, peak, dominant_frequency, dominant_amplitude = _signal_summary(
+                    condition,
+                    sampling_rate_hz=rate,
+                    window_duration_ms=duration,
+                    noise_std_m_s2=noise,
+                )
+                print(
+                    f"{parameter}\t{value}\t{condition}\t{rms:.6f}\t{peak:.6f}\t"
+                    f"{dominant_frequency:.1f}\t{dominant_amplitude:.6f}"
+                )
 
 
 def main() -> None:
@@ -249,7 +212,7 @@ def main() -> None:
                 for sample_index, value in enumerate(values[:time_sample_count])
             ]
             time_series.append((label, colors[axis], dash, time_points))
-            spectrum = _spectrum(
+            spectrum = compute_spectrum(
                 values,
                 sampling_rate_hz=sampling_rate_hz,
                 max_frequency_hz=SPECTRUM_MAX_FREQUENCY_HZ,
@@ -261,7 +224,7 @@ def main() -> None:
                 spectrum, key=lambda item: item[1]
             )
             print(
-                f"{scenario}; axis={axis}; rms_m_s2={_rms(values):.6f}; "
+                f"{scenario}; axis={axis}; rms_m_s2={root_mean_square(values):.6f}; "
                 f"peak_m_s2={max(abs(value) for value in values):.6f}; "
                 f"dominant_frequency_hz={dominant_frequency:.1f}; "
                 f"dominant_amplitude_m_s2={dominant_amplitude:.6f}"
@@ -269,7 +232,7 @@ def main() -> None:
 
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     (ARTIFACTS / "EXP-0001-vibration-time.svg").write_text(
-        _plot_svg(
+        render_svg(
             title=f"Synthetic vibration, first {TIME_PLOT_DURATION_MS} ms",
             x_label="Time from window start (ms)",
             y_label="Acceleration (m/s²)",
@@ -284,7 +247,7 @@ def main() -> None:
         encoding="utf-8",
     )
     (ARTIFACTS / "EXP-0001-vibration-spectrum.svg").write_text(
-        _plot_svg(
+        render_svg(
             title="Synthetic vibration amplitude spectrum",
             x_label="Frequency (Hz)",
             y_label="One-sided amplitude (m/s²)",
@@ -298,6 +261,7 @@ def main() -> None:
         ),
         encoding="utf-8",
     )
+    _print_parameter_sweep()
 
 
 if __name__ == "__main__":

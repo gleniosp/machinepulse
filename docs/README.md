@@ -1,6 +1,6 @@
 # MachinePulse Documentation Hub
 
-- **Status:** Phase 01 implementation in progress
+- **Status:** Phase 01 local implementation complete
 - **Product version:** 0.1 proposal
 
 This file is the documentation map. It explains where information belongs; it does not restate the product definition, architecture, contracts, task details, or journal evidence maintained by the linked documents.

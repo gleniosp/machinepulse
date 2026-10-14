@@ -32,7 +32,7 @@ The repository can keep the source draft even if the canonical published version
 
 | Week | Working title | Status |
 |---|---|---|
-| 01 | From Machines to Data: Modeling Industrial Sensor Telemetry Without Hardware | Planned |
+| 01 | [From Machines to Data: Modeling Industrial Sensor Telemetry Without Hardware](week-01-simulator.md) | Draft |
 | 02 | Designing an Event-Driven Telemetry Pipeline for Industrial IoT | Planned |
 | 03 | Storing Industrial Telemetry: PostgreSQL vs. ClickHouse | Planned |
 | 04 | What Vibration Data Actually Tells Us About a Machine | Planned |
