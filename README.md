@@ -51,6 +51,8 @@ For token details, see GitHub CLI's [`GH_TOKEN` documentation](https://cli.githu
 
 The end-to-end monitoring workflow is not available yet. See:
 
+- [Simulator quickstart](docs/guides/simulator-quickstart.md) — generate a
+  small local dataset and understand its files.
 - [Documentation hub](docs/README.md) — document map and current project status.
 - [Product vision](docs/product/vision.md) — purpose, users, and principles.
 - [Product scope](docs/product/scope.md) — version 0.1 boundaries and non-goals.

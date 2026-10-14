@@ -91,45 +91,52 @@ signals inspectable. They are not expected operating ranges for a real motor.
 Changing a configured value or seed must be visible in the effective run
 configuration and sidecar.
 
-## Configuration example
+## Configuration examples
 
-This JSON example uses a normal run. Field names and units are normative; the
-initial amplitudes and sampling defaults remain subject to EXP-0001.
+The runnable [multi-run example](../../tools/simulator/examples/runs.v1.json)
+contains one short configuration for each initial condition. This file is the
+canonical end-to-end example; the field meanings, constraints, and defaults are
+specified in the tables above rather than duplicated in another JSON block.
+The [simulator quickstart](../guides/simulator-quickstart.md) explains why the
+scenarios are grouped and how to run them.
 
-```json
-{
-  "asset_id": "01M00000004D2PF28AQKFF28T5",
-  "device_id": "01M000000028T5CY4GNF6YY4HM",
-  "run_id": "run-0001",
-  "nominal_rpm": 1800.0,
-  "condition": "normal",
-  "condition_intensity": 0.0,
-  "sampling": {
-    "rate_hz": 1600,
-    "window_duration_ms": 1000
-  },
-  "run": {
-    "window_count": 10,
-    "seed": 1234,
-    "start_time_utc": "2026-09-24T12:00:00Z",
-    "execution_mode": "accelerated"
-  },
-  "signal": {
-    "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
-    "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
-    "noise_std_m_s2": 0.01,
-    "imbalance_peak_m_s2_at_intensity_1": {"x": 0.10, "y": 0.05, "z": 0.05}
-  },
-  "temperature": {
-    "initial_c": 40.0,
-    "overheating_rise_c_at_intensity_1": 10.0
-  }
-}
-```
+## CLI and generated-output contract
 
-An `imbalance` example changes `condition` to `imbalance` and sets
-`condition_intensity` between `0.0` and `1.0`, exclusive of `0.0`. An
-`overheating` example does the same with `condition` set to `overheating`.
+The CLI exposes `machinepulse-sim generate` with a required `--config PATH` and
+an optional `--output-dir PATH` option. The
+[simulator quickstart](../guides/simulator-quickstart.md#run-the-example) owns
+the contributor command and invocation steps.
+
+`--config` accepts one effective run configuration, an array of configurations,
+or an object with a `runs` array. Each entry follows the field definitions
+above. Set `run.window_count`, `sampling.window_duration_ms`, and
+`sampling.rate_hz` to control run duration and sampling. Set `nominal_rpm`,
+`condition`, `condition_intensity`, `run.seed`, and `run.execution_mode` per
+run. Different entries can describe different motors or scenarios.
+
+When `--output-dir` is omitted, the CLI creates a new directory under
+`simulator-output/` relative to its current working directory, using the
+current UTC time in `YYYYMMDDTHHMMSSZ` format (UTC to second precision). If that
+timestamped directory already exists, it appends an incrementing numeric suffix
+until it finds a new directory. When `--output-dir` is supplied, its path is
+used exactly and must not already exist; missing parent directories are
+created. Neither mode overwrites prior output.
+
+The command creates one numbered directory per input entry, preserving input
+order. Each directory contains:
+
+- `telemetry.jsonl`: one serialized `telemetry.v1` event per line;
+- `ground-truth.jsonl`: one separately stored sidecar record per line, in the
+  same order and keyed to the event by `event_id`; and
+- `manifest.json`: the canonical run manifest, including the resolved
+  configuration and source revision metadata.
+
+The command validates every configuration before creating output. It stages a
+run's three files and publishes that run directory only after generation
+finishes. If a later run fails, the command reports the failed run and the
+locations of any earlier complete runs. It prints each run's elapsed time and
+maximum observed release lateness; real-time pacing uses a monotonic clock and
+does not change event timestamps or generated values.
 
 ## Signal and condition behavior
 

@@ -22,6 +22,7 @@ operating conditions.
 - [P01-009 GitHub issue](https://github.com/gleniosp/machinepulse/issues/79)
 - [P01-010 GitHub issue](https://github.com/gleniosp/machinepulse/issues/83)
 - [P01-011 GitHub issue](https://github.com/gleniosp/machinepulse/issues/90)
+- [P01-007 GitHub issue](https://github.com/gleniosp/machinepulse/issues/17)
 - [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
 - [P01-004 GitHub issue](https://github.com/gleniosp/machinepulse/issues/14)
 - GitHub P01-001 through P01-009
@@ -33,8 +34,8 @@ operating conditions.
 - [x] Reproducibility metadata and fixed-seed vibration generation are
   implemented.
 - [x] Motor, vibration, temperature, and RPM generation are implemented.
-- [ ] Telemetry serialization and validation are covered by tests.
-- [ ] CLI output and ground-truth sidecar are documented.
+- [x] Telemetry serialization and validation are covered by tests.
+- [x] CLI output and ground-truth sidecar are documented.
 - [ ] Plots, limitations, and experiment results are recorded.
 - [x] The mise/Pixi tooling foundation and repository hooks are installed and
   pass their current checks.
@@ -540,3 +541,103 @@ status fail. The temporary step was removed and the final run passed.
 - [Passing PR workflow run](https://github.com/gleniosp/machinepulse/actions/runs/37012019762) — all setup, environment, and repository check steps passed on the final PR commit.
 - [Failing check result](https://github.com/gleniosp/machinepulse/actions/runs/37011227086) — the temporary failure probe exited with code 1, and GitHub marked the workflow failed while retaining the diagnostic log.
 - [P01-012 GitHub issue](https://github.com/gleniosp/machinepulse/issues/93)
+
+## P01-007 Simulator CLI and labeled dataset output (2026-10-14)
+
+Added the `machinepulse-sim generate` console command and a multi-run JSON
+configuration example. Each run configuration controls its motor and device
+IDs, run ID, RPM, condition and intensity, sampling, window count, seed, start
+time, execution mode, signal settings, and temperature settings. The command
+requires a new output directory and writes a canonical run manifest,
+contract-validated telemetry JSONL, and a separate ground-truth JSONL into a
+numbered directory for each run. Telemetry and sidecar records are written in
+the same order and share their event IDs. Run directories are staged and only
+published when their files are complete. Real-time runs use monotonic pacing;
+the CLI reports elapsed time and maximum release lateness.
+
+The documented example generated the normal and imbalance configurations,
+with two telemetry windows per run. The normal run's event IDs were
+`09f5ca55-ec6a-50cb-9dc0-caa53d0d4171` and
+`2ee2457e-ce49-588b-875e-10d9a63a09c1`; both IDs matched in telemetry and
+ground truth. The imbalance run's IDs were `26d9358a-59b7-55f2-9978-0533f3b40d6f`
+and `4aedd109-4d63-5964-ab63-7747ea6e7907`, also matched in both outputs. Each
+run directory included its versioned manifest with effective configuration,
+seed, generator version, and source revision state.
+
+### Evidence
+
+- [Simulator CLI](../../tools/simulator/src/machinepulse_simulator/cli.py)
+- [Multi-run example configuration](../../tools/simulator/examples/runs.v1.json)
+- [CLI usage and output format](../specs/simulator.md#cli-and-generated-output-contract)
+- `machinepulse-sim generate --help` — displayed the required config and new
+  output-directory options.
+- `mise exec -- pixi run --manifest-path pixi.toml --locked -e default
+  machinepulse-sim generate --config tools/simulator/examples/runs.v1.json
+  --output-dir /tmp/machinepulse-p01-007-example-20261014` — generated both
+  example runs successfully;
+  each output contained two telemetry rows, two matching ground-truth rows,
+  and one run manifest.
+- `mise run pixi:lock-check` — the root Pixi lockfile was already up to date.
+- `git diff --check` — passed.
+
+The simulator test suite was not run for the CLI implementation.
+
+### Contributor entry point and output handling — 2026-10-14
+
+Added a repository-facing [simulator quickstart](../guides/simulator-quickstart.md)
+and root/project mise tasks for the CLI. The project task owns the simulator
+command; the root `simulator:run` alias forwards arguments and resolves paths
+from the repository root. Updated the canonical multi-run example to cover all
+three supported conditions. The guide explains why these short scenarios are
+grouped, how the current local JSONL output relates to the telemetry contract
+and future transport path, and what each generated file is useful for.
+
+Routine output under root `simulator-output/` is gitignored. The runnable
+configuration, test fixtures, and curated experiment artifacts remain
+versioned in their owning locations; a generated run should be preserved only
+when it supports a documented experiment or fixture.
+
+### Evidence
+
+- [Simulator quickstart](../guides/simulator-quickstart.md)
+- [Runtime boundaries](../architecture/runtime-boundaries.md)
+- [Root and project mise tasks](../../mise.toml) and
+  [simulator task configuration](../../tools/simulator/mise.toml)
+- `mise run simulator:run generate --help` — the root alias forwarded the CLI
+  arguments and displayed the simulator's options.
+- `mise run simulator:run generate --config tools/simulator/examples/runs.v1.json --output-dir /tmp/machinepulse-p01-007-three-scenarios-20261014`
+  — generated normal, imbalance, and overheating runs, each with two telemetry
+  windows, a matching ground-truth sidecar, and a manifest.
+- `mise run run generate --config tools/simulator/examples/runs.v1.json --output-dir /tmp/machinepulse-p01-007-three-scenarios-project-20261014`
+  from `tools/simulator/` — the project task generated the same three scenarios.
+- The simulator test suite was not run for this documentation and tooling follow-up.
+
+### Root-based tasks and default output folders — 2026-10-14
+
+Aligned every simulator project mise task to run from the repository root and
+updated its Pixi, Ruff, mypy, pytest, and experiment paths accordingly. Mypy
+now resolves the simulator's source and namespace-package roots from the project
+configuration file. `--output-dir` is optional: without it, each invocation
+creates a unique UTC timestamp directory below `simulator-output/` using
+`YYYYMMDDTHHMMSSZ` (UTC to second precision); a numeric suffix handles a
+timestamp collision. An explicitly supplied output path still selects the
+exact new directory.
+
+### Evidence
+
+The default-output runs below were generated before adopting second-precision
+folder names, so their directory names retain microseconds.
+
+- `mise run simulator:format-check` — 19 files were already formatted.
+- `mise run simulator:lint` — all checks passed.
+- `mise run simulator:typecheck` — no issues in 19 source files.
+- Two default runs created separate output directories:
+  `simulator-output/20261014T094921.081295Z/` and
+  `simulator-output/20261014T094923.676267Z/`; each contains all three
+  scenarios with two telemetry windows per run.
+- `mise run run generate --config tools/simulator/examples/runs.v1.json` from
+  `tools/simulator/` created `simulator-output/20261014T095046.766377Z/` at the
+  repository root, confirming the project task uses the same working directory.
+- `mise run simulator:run generate --config tools/simulator/examples/runs.v1.json --output-dir /tmp/machinepulse-p01-007-explicit-output-20261014`
+  — the explicit destination override generated all three scenarios.
+- The simulator test suite was not run for this task.

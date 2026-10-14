@@ -1,0 +1,100 @@
+{
+  "runs": [
+    {
+      "asset_id": "01M00000004D2PF28AQKFF28T5",
+      "device_id": "01M000000028T5CY4GNF6YY4HM",
+      "run_id": "normal-example",
+      "nominal_rpm": 1800.0,
+      "condition": "normal",
+      "condition_intensity": 0.0,
+      "sampling": {
+        "rate_hz": 1600,
+        "window_duration_ms": 1000
+      },
+      "run": {
+        "window_count": 2,
+        "seed": 1234,
+        "start_time_utc": "2026-09-24T12:00:00Z",
+        "execution_mode": "accelerated"
+      },
+      "signal": {
+        "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
+        "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
+        "noise_std_m_s2": 0.01,
+        "imbalance_peak_m_s2_at_intensity_1": {
+          "x": 0.1,
+          "y": 0.05,
+          "z": 0.05
+        }
+      },
+      "temperature": {
+        "initial_c": 40.0,
+        "overheating_rise_c_at_intensity_1": 10.0
+      }
+    },
+    {
+      "asset_id": "01M00000004D2PF28AQKFF28T6",
+      "device_id": "01M000000028T5CY4GNF6YY4HN",
+      "run_id": "imbalance-example",
+      "nominal_rpm": 1800.0,
+      "condition": "imbalance",
+      "condition_intensity": 0.7,
+      "sampling": {
+        "rate_hz": 1600,
+        "window_duration_ms": 1000
+      },
+      "run": {
+        "window_count": 2,
+        "seed": 5678,
+        "start_time_utc": "2026-09-24T12:00:00Z",
+        "execution_mode": "accelerated"
+      },
+      "signal": {
+        "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
+        "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
+        "noise_std_m_s2": 0.01,
+        "imbalance_peak_m_s2_at_intensity_1": {
+          "x": 0.1,
+          "y": 0.05,
+          "z": 0.05
+        }
+      },
+      "temperature": {
+        "initial_c": 40.0,
+        "overheating_rise_c_at_intensity_1": 10.0
+      }
+    },
+    {
+      "asset_id": "01M00000004D2PF28AQKFF28T7",
+      "device_id": "01M000000028T5CY4GNF6YY4HP",
+      "run_id": "overheating-example",
+      "nominal_rpm": 1800.0,
+      "condition": "overheating",
+      "condition_intensity": 0.7,
+      "sampling": {
+        "rate_hz": 1600,
+        "window_duration_ms": 1000
+      },
+      "run": {
+        "window_count": 2,
+        "seed": 9012,
+        "start_time_utc": "2026-09-24T12:00:00Z",
+        "execution_mode": "accelerated"
+      },
+      "signal": {
+        "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
+        "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
+        "noise_std_m_s2": 0.01,
+        "imbalance_peak_m_s2_at_intensity_1": {
+          "x": 0.1,
+          "y": 0.05,
+          "z": 0.05
+        }
+      },
+      "temperature": {
+        "initial_c": 40.0,
+        "overheating_rise_c_at_intensity_1": 10.0
+      }
+    }
+  ]
+}

@@ -1,39 +1,45 @@
 [tasks.setup]
 description = "Install the simulator development environment from the root Pixi lock"
-run = "mise exec -- pixi install --manifest-path ../../pixi.toml --locked -e dev"
-dir = "{{config_root}}"
+run = "mise exec -- pixi install --manifest-path pixi.toml --locked -e dev"
+dir = "{{config_root}}/../.."
+
+[tasks.run]
+description = "Run the simulator CLI"
+raw_args = true
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e default machinepulse-sim"
+dir = "{{config_root}}/../.."
 
 [tasks.format]
 description = "Format simulator Python sources"
-run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format src tests experiments"
-dir = "{{config_root}}"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev ruff format --config tools/simulator/pyproject.toml tools/simulator/src tools/simulator/tests tools/simulator/experiments"
+dir = "{{config_root}}/../.."
 
 [tasks.format-check]
 description = "Check simulator formatting"
-run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev ruff format --check src tests experiments"
-dir = "{{config_root}}"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev ruff format --check --config tools/simulator/pyproject.toml tools/simulator/src tools/simulator/tests tools/simulator/experiments"
+dir = "{{config_root}}/../.."
 
 [tasks.lint]
 description = "Lint simulator Python sources"
-run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev ruff check src tests experiments"
-dir = "{{config_root}}"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev ruff check --config tools/simulator/pyproject.toml tools/simulator/src tools/simulator/tests tools/simulator/experiments"
+dir = "{{config_root}}/../.."
 
 [tasks.typecheck]
 description = "Type-check simulator Python sources"
-run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev mypy src tests experiments"
-dir = "{{config_root}}"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev mypy --config-file tools/simulator/pyproject.toml tools/simulator/src tools/simulator/tests tools/simulator/experiments"
+dir = "{{config_root}}/../.."
 
 [tasks.test]
 description = "Run simulator tests"
-run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev pytest"
-dir = "{{config_root}}"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev pytest -c tools/simulator/pyproject.toml tools/simulator/tests"
+dir = "{{config_root}}/../.."
 
 [tasks."experiment:vibration"]
 description = "Generate EXP-0001 vibration plots and summaries"
-run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev python experiments/plot_vibration.py"
-dir = "{{config_root}}"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev python tools/simulator/experiments/plot_vibration.py"
+dir = "{{config_root}}/../.."
 
 [tasks.check]
 description = "Run simulator formatting, lint, type, and test checks"
 depends = [":format-check", ":lint", ":typecheck", ":test"]
-dir = "{{config_root}}"
+dir = "{{config_root}}/../.."
