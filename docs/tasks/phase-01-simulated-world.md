@@ -123,10 +123,11 @@ telemetry-window contract, and write a separately keyed ground-truth dataset.
 - **Outcome:** A documented command generates telemetry and its ground-truth
   sidecar for one or more motors.
 - **Acceptance criteria:**
-  - [ ] A documented command generates telemetry for one or more motors.
-  - [ ] Seed, duration, RPM, condition, and output settings are configurable.
-  - [ ] Telemetry and sidecar records associate by event ID.
-- **Tests or evidence:** CLI help output, example run, and reproducibility manifest.
+  - [x] A documented command generates telemetry for one or more motors.
+  - [x] Seed, duration, RPM, condition, and output settings are configurable.
+  - [x] Telemetry and sidecar records associate by event ID.
+- **Tests or evidence:** [Simulator quickstart](../guides/simulator-quickstart.md), [CLI and output contract](../specs/simulator.md#cli-and-generated-output-contract), [multi-run example configuration](../../tools/simulator/examples/runs.v1.json), CLI help output, an example run, and its reproducibility manifest,
+  recorded in the [Week 01 journal](../journal/week-01-simulated-world.md#p01-007-simulator-cli-and-labeled-dataset-output-2026-10-14).
 - **GitHub issue:** [#17](https://github.com/gleniosp/machinepulse/issues/17).
 - **Dependencies:** P01-002, P01-006.
 

@@ -5,9 +5,10 @@
   runners.
 - `pyproject.toml` owns package metadata, runtime dependencies
   (`project.dependencies`), build configuration, and Python tooling config.
-  This project's `mise.toml` owns its task names and runs project commands in
-  the shared root Pixi environment; commit the root `pixi.lock`. `.pixi/` at the
-  repository root is local environment state.
+  This project's `mise.toml` owns its task names; its tasks use the repository
+  root as their working directory and the shared root Pixi environment. Commit
+  the root `pixi.lock`. `.pixi/` at the repository root is local environment
+  state.
 - Use the repository's mise-provided Pixi CLI, then run native checks from this
   folder with the root manifest: `pixi run --manifest-path ../../pixi.toml
   --locked -e dev pytest`, `pixi run --manifest-path ../../pixi.toml --locked

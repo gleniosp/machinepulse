@@ -95,6 +95,12 @@ tasks and native commands remain in each project's configuration. Use
 task must propagate project failures instead of silently skipping required
 checks. Root verbs such as `format`, `test`, and `check` apply to all current
 projects; use `mise run simulator:<task>` to target the simulator directly.
+The simulator CLI is owned by its project task and exposed from the root as
+`mise run simulator:run`; its command-line arguments are forwarded unchanged,
+and input/output paths resolve from the repository root.
+All simulator project tasks also run from the repository root and address
+project files through `tools/simulator/` paths, keeping direct and root-alias
+invocations consistent.
 `mise run pixi:lock-check` verifies that the root Pixi lockfile is current.
 Pre-commit hooks run file checks on eligible changed files, simulator checks
 when simulator files or root Pixi manifests change, and the Pixi lock check

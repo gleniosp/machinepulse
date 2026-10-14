@@ -18,6 +18,8 @@ This file is the documentation map. It explains where information belongs; it do
 
 The active milestone is Phase 01: build and evaluate the simulated industrial world. Its task breakdown is in [Phase 01](tasks/phase-01-simulated-world.md), its simulator contract is in [Simulator Behavior](specs/simulator.md), and its current evidence belongs in [Week 01](journal/week-01-simulated-world.md). The Phase 00 foundation and readiness record remains in [Week 00](journal/week-00-foundation.md).
 
+To generate and inspect a local synthetic dataset, start with the [simulator quickstart](guides/simulator-quickstart.md). It links the current file output to the telemetry contract and target architecture without repeating their definitions.
+
 ## Document ownership
 
 | Area | Owner | Responsibility |
@@ -32,6 +34,7 @@ The active milestone is Phase 01: build and evaluate the simulated industrial wo
 | Architecture | [Data flow](architecture/data-flow.md) | How data moves, changes meaning, fails, and is replayed |
 | Architecture | [Runtime boundaries](architecture/runtime-boundaries.md) | Component ownership and cross-boundary rules |
 | Specifications | [Specifications index](specs/README.md) | Specification lifecycle and contract registry |
+| Guide | [Simulator quickstart](guides/simulator-quickstart.md) | Simulator purpose, invocation, and interpretation of generated files |
 | Project operations | [Working agreement](working-agreement.md) | Maintainer-agent collaboration and delivery lifecycle |
 | Project operations | [Developer tooling baseline](developer-tooling.md) | Tool, environment, setup, and root task ownership |
 | Project operations | [Readiness checklist](project-readiness.md) | Evidence that the project is ready for the next phase |

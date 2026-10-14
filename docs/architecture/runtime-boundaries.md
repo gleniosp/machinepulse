@@ -9,7 +9,7 @@ This document owns provisional component responsibilities, language direction, i
 
 | Component | Primary responsibility | Initial language | Main inputs | Main outputs |
 |---|---|---|---|---|
-| Simulator | Generate reproducible synthetic machine telemetry | Python | Configuration, seed, condition | MQTT telemetry windows and dataset fixtures |
+| Simulator | Generate reproducible synthetic machine telemetry | Python | Configuration, seed, condition | Contract-compliant telemetry windows and labeled datasets; the current CLI writes local files (see the [simulator specification](../specs/simulator.md)) |
 | Edge producer | Acquire, buffer, timestamp, and publish physical measurements | To be selected | Sensor readings, device configuration | MQTT telemetry windows |
 | MQTT boundary | Device-oriented publish/subscribe transport | Infrastructure | Producer messages | Gateway deliveries |
 | Telemetry gateway | Validate external messages and enter the internal platform | Go | MQTT messages | Valid and invalid event outcomes |

@@ -22,6 +22,11 @@ run = [
 description = "Install the simulator development environment"
 run = "mise run //tools/simulator:setup"
 
+[tasks."simulator:run"]
+description = "Run the simulator CLI"
+raw_args = true
+run = "mise run //tools/simulator:run"
+
 [tasks."simulator:format"]
 description = "Format the simulator"
 run = "mise run //tools/simulator:format"
