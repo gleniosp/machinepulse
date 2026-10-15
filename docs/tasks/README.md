@@ -20,7 +20,7 @@ A task should not introduce behavior absent from the relevant specification unle
 |---|---|---|
 | 00 | Documentation foundation and project setup | [Week 00](../journal/week-00-foundation.md) |
 | 01 | Simulated industrial world and polyglot workspace foundation | Week 01 |
-| 02 | Telemetry transport and ingestion | Week 02 |
+| 02 | [Telemetry transport and ingestion](phase-02-telemetry-transport.md) | [Week 02](../journal/week-02-telemetry-ingestion.md) |
 | 03 | Storage and data quality | Week 03 |
 | 04 | Signal processing | Week 04 |
 | 05 | Anomaly detection and health scoring | Week 05 |

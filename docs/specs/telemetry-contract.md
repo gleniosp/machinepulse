@@ -214,7 +214,7 @@ The initial system assumes at-least-once delivery. A retry must reuse `event_id`
 
 ## Transport and downstream boundaries
 
-MQTT is the initial device-facing transport, but broker topic naming, subscriptions, retained messages, and QoS are ingestion concerns rather than payload fields. They should be defined in the ingestion specification and an ADR before implementation.
+MQTT is the initial device-facing transport, but broker topic naming, subscriptions, retained messages, and QoS are ingestion concerns rather than payload fields. Their accepted semantics are recorded in the [ingestion specification](ingestion.md) and [ADR-0004](../adr/0004-mqtt-delivery-semantics.md); runtime behavior is implemented and verified by the Phase 02 tasks.
 
 Internal event envelopes and derived-event schemas are separate contracts. The [architecture data flow](../architecture/data-flow.md) describes their role; the relevant capability specifications will define their fields when those phases are prepared. They must preserve the source event identity and contract version.
 
@@ -248,7 +248,7 @@ capability work that needs each decision:
 | Scalar temperature and RPM window semantics | P01-001 proposes midpoint semantics for the simulator; P04-001 confirms or revises the contract-wide convention |
 | Producer event time and gateway receipt time | P02-001 ingestion specification |
 | MQTT QoS and session behavior | P02-001 ingestion specification and its transport ADR |
-| JSON as the initial internal encoding | P02-001 ingestion specification and its transport ADR |
+| JSON as the initial internal encoding | P02-005 internal event specification; record a durable encoding choice in an ADR if needed |
 
 These assignments keep the contract review complete without silently resolving
 decisions that belong to the simulator or ingestion phases.

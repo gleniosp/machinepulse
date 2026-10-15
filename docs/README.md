@@ -1,6 +1,6 @@
 # MachinePulse Documentation Hub
 
-- **Status:** Phase 01 local implementation complete
+- **Status:** Phase 02 implementation in progress; P02-001 complete
 - **Product version:** 0.1 proposal
 
 This file is the documentation map. It explains where information belongs; it does not restate the product definition, architecture, contracts, task details, or journal evidence maintained by the linked documents.
@@ -16,7 +16,7 @@ This file is the documentation map. It explains where information belongs; it do
 
 ## Current work
 
-The active milestone is Phase 01: build and evaluate the simulated industrial world. Its task breakdown is in [Phase 01](tasks/phase-01-simulated-world.md), its simulator contract is in [Simulator Behavior](specs/simulator.md), and its current evidence belongs in [Week 01](journal/week-01-simulated-world.md). The Phase 00 foundation and readiness record remains in [Week 00](journal/week-00-foundation.md).
+The active milestone is Phase 02: move simulated telemetry through MQTT and the Go gateway into the internal event stream. Its task breakdown is in [Phase 02](tasks/phase-02-telemetry-transport.md), the accepted transport contract is in [Ingestion and Internal Event Boundaries](specs/ingestion.md), and current evidence belongs in [Week 02](journal/week-02-telemetry-ingestion.md). P02-001 is complete; the remaining phase tasks cover runtime implementation and integration. The completed simulator foundation and evidence remain in [Phase 01](tasks/phase-01-simulated-world.md) and [Week 01](journal/week-01-simulated-world.md).
 
 To generate and inspect a local synthetic dataset, start with the [simulator quickstart](guides/simulator-quickstart.md). It links the current file output to the telemetry contract and target architecture without repeating their definitions.
 
