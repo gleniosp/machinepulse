@@ -125,6 +125,11 @@ malformed derived event
 
 The exact retry and acknowledgement behavior must be tested rather than inferred from the diagram.
 
+The device-facing MQTT topic and gateway acknowledgement boundary are
+defined in the [ingestion specification](../specs/ingestion.md). Internal
+event-stream names and envelope fields remain a separate contract owned by
+P02-005.
+
 ## Data retention and reproducibility
 
 Retention periods are initially configuration values, not product promises. The project should document:
