@@ -38,3 +38,6 @@ jobs:
 
       - name: Run repository checks and tests
         run: mise run hooks:check
+
+      - name: Verify local broker startup and persistence
+        run: mise run infra:test

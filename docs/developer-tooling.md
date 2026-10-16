@@ -108,6 +108,14 @@ when Pixi manifests or simulator package metadata change.
 `mise run hooks:check` applies the configured hooks across all eligible
 tracked repository files.
 
+The [local infrastructure guide](../infra/README.md) owns Docker/Compose host
+prerequisites and broker lifecycle commands. `mise run infra:check` validates
+the Compose configuration without a daemon; it is included in the root
+`check` task and runs in pre-commit when infrastructure or root tasks change.
+`mise run infra:test` proves broker persistence with disposable services and
+is included in root `test`; it requires a running Docker daemon. Broker data
+and image pins remain owned by `infra/`.
+
 ## Dependency and lockfile policy
 
 - Commit the root mise and Pixi lockfiles with their workspace manifests.

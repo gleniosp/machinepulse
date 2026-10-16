@@ -77,14 +77,39 @@ run = "mise run simulator:typecheck"
 
 [tasks.test]
 description = "Test all current projects"
-run = "mise run simulator:test"
+run = ["mise run simulator:test", "mise run infra:test"]
 
 [tasks.check]
 description = "Run all current repository checks"
 run = [
   "mise run simulator:check",
   "mise run pixi:lock-check",
+  "mise run infra:check",
 ]
+
+[tasks."infra:check"]
+description = "Validate the local infrastructure configuration (no daemon needed)"
+run = "docker compose --file infra/compose.yaml config --quiet"
+
+[tasks."infra:up"]
+description = "Start local MQTT and Kafka services and wait for readiness"
+run = "docker compose --file infra/compose.yaml up --detach --wait --wait-timeout 180"
+
+[tasks."infra:down"]
+description = "Stop local infrastructure, preserving its data volumes"
+run = "docker compose --file infra/compose.yaml down"
+
+[tasks."infra:status"]
+description = "Show local infrastructure service and health state"
+run = "docker compose --file infra/compose.yaml ps --all"
+
+[tasks."infra:logs"]
+description = "Show recent local infrastructure logs"
+run = "docker compose --file infra/compose.yaml logs --tail 100"
+
+[tasks."infra:test"]
+description = "Prove MQTT session and Kafka record persistence in disposable services"
+run = "bash infra/smoke-test.sh"
 
 [tasks."pixi:lock-check"]
 description = "Check that the root Pixi lockfile is current"

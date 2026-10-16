@@ -43,6 +43,7 @@ The sequence should not be reused, even if a decision is later rejected or super
 - [ADR-0002 — Polyglot monorepo workspaces and task interface](0002-polyglot-monorepo-workspaces.md)
 - [ADR-0003 — Device and asset identifiers](0003-device-and-asset-identifiers.md)
 - [ADR-0004 — MQTT delivery semantics](0004-mqtt-delivery-semantics.md)
+- [ADR-0005 — Local telemetry brokers](0005-local-telemetry-brokers.md)
 
 ### Proposed decisions
 
