@@ -51,16 +51,20 @@ and any later physical producer use the same producer contract.
 
 ### P02-002 — Add the local MQTT and event-stream environment
 
-- **Status:** Planned
+- **Status:** Complete
 - **Outcome:** A clean local environment starts the selected MQTT broker and
   Kafka-compatible stream without committed secrets.
 - **Acceptance criteria:**
-  - [ ] A clean local environment starts the MQTT broker and Kafka-compatible
+  - [x] A clean local environment starts the MQTT broker and Kafka-compatible
     stream.
-  - [ ] Configuration is documented and does not require committed secrets.
-  - [ ] Health checks or readiness behavior are documented.
-- **Tests or evidence:** Compose/service startup from the documented clean
-  environment, health/readiness output, and configuration review.
+  - [x] Configuration is documented and does not require committed secrets.
+  - [x] Health checks or readiness behavior are documented.
+- **Tests or evidence:** [Local infrastructure guide](../../infra/README.md),
+  [Compose configuration](../../infra/compose.yaml),
+  [persistence smoke test](../../infra/smoke-test.sh), and
+  [Week 02 Day 2 results](../journal/week-02-telemetry-ingestion.md#day-2--local-broker-environment).
+  Broker selection is recorded in
+  [accepted ADR-0005](../adr/0005-local-telemetry-brokers.md).
 - **GitHub issue:** [#20](https://github.com/gleniosp/machinepulse/issues/20).
 - **Dependencies:** P00-010, P02-001.
 - **Out of scope:** Production deployment, cloud brokers, and external managed

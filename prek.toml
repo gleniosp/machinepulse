@@ -28,6 +28,15 @@ pass_filenames = false
 stages = ["pre-commit"]
 
 [[repos.hooks]]
+id = "infra-config-check"
+name = "infrastructure configuration"
+language = "system"
+entry = "mise run infra:check"
+files = '^(infra/|mise\.toml$)'
+pass_filenames = false
+stages = ["pre-commit"]
+
+[[repos.hooks]]
 id = "pixi-lock-check"
 name = "Pixi lock check"
 language = "system"
