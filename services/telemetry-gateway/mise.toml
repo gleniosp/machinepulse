@@ -1,0 +1,49 @@
+[tasks.setup]
+description = "Download pinned Go module dependencies"
+run = "mise exec -- go mod download"
+dir = "{{config_root}}"
+
+[tasks.run]
+description = "Observe local MQTT telemetry (durable sinks pending)"
+raw_args = true
+run = "mise exec -- go run ./cmd/telemetry-gateway"
+dir = "{{config_root}}"
+
+[tasks.format]
+description = "Format gateway Go files"
+run = "mise exec -- gofmt -w ."
+dir = "{{config_root}}"
+
+[tasks.format-check]
+description = "Require gofmt-clean gateway source"
+run = 'files=$(mise exec -- gofmt -l .); if [ -n "$files" ]; then printf "%s\n" "$files"; exit 1; fi'
+dir = "{{config_root}}"
+
+[tasks.lint]
+description = "Vet gateway Go code"
+run = "mise exec -- go vet ./..."
+dir = "{{config_root}}"
+
+[tasks.typecheck]
+description = "Build all gateway packages"
+run = "mise exec -- go build ./..."
+dir = "{{config_root}}"
+
+[tasks.test]
+description = "Run gateway unit tests with the race detector"
+run = "mise exec -- go test -race ./..."
+dir = "{{config_root}}"
+
+[tasks."test:integration"]
+description = "Run the real-broker gateway integration test in disposable Compose services"
+run = "mise exec -- go test -race -tags=integration -run TestBrokerSessionAndDeferredAcknowledgement -count=1 -v ./internal/gateway"
+dir = "{{config_root}}"
+
+[tasks."deps:check"]
+description = "Verify Go dependency checksums"
+run = "mise exec -- go mod verify"
+dir = "{{config_root}}"
+
+[tasks.check]
+description = "Run gateway formatting, vet, build, checksum, and unit checks"
+depends = [":format-check", ":lint", ":typecheck", ":deps:check", ":test"]

@@ -43,6 +43,7 @@ and keep them set for later commands:
 
 ```sh
 export MACHINEPULSE_MQTT_PORT=21883
+export MACHINEPULSE_MQTT_ADDRESS=127.0.0.1:21883
 export MACHINEPULSE_KAFKA_PORT=29092
 mise run infra:up
 ```
@@ -50,6 +51,13 @@ mise run infra:up
 The Kafka override changes both the published host port and advertised host
 address. Container client addresses stay as listed above. Use positive port
 numbers for a usable host Kafka listener.
+
+The same overrides can be kept in a gitignored root `.env`, copied from
+`.env.example`; mise loads it consistently for root and project commands.
+Already exported environment values take precedence. The MQTT address is
+client configuration, so keep it aligned with the published MQTT port when
+running a gateway on the host. See the
+[gateway configuration guide](../services/telemetry-gateway/README.md#configuration).
 
 Both published ports bind to IPv4 loopback. MQTT permits anonymous clients;
 Kafka uses plaintext without authentication. This is a trusted local development

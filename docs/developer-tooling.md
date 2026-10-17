@@ -38,8 +38,8 @@ credentials for the local workflow.
 
 ## Toolchain policy
 
-The root mise config currently pins GitHub CLI, Pixi, and prek. Python and its
-environments come from the root Pixi workspace; Go, Node.js, and pnpm remain
+The root mise config currently pins GitHub CLI, Go, Pixi, and prek. Python and its
+environments come from the root Pixi workspace; Node.js and pnpm remain
 unpinned until projects in those ecosystems need them. Exact versions and
 dependency ranges belong in the manifests and lockfiles named in the ownership
 table.
@@ -72,8 +72,8 @@ manifest, preserving its shared environment and lockfile.
 ## Root setup and tasks
 
 Run `mise run setup` from the repository root for a local setup. It installs
-the locked mise tools, installs the Pixi development environment, and installs
-the managed Git pre-commit hook. Each step is safe to repeat. Run
+the locked mise tools, installs the Pixi development environment, downloads
+the gateway Go dependencies, and installs the managed Git pre-commit hook. Each step is safe to repeat. Run
 `mise run hooks:install` separately only when the hook needs to be installed or
 refreshed.
 
@@ -94,7 +94,8 @@ tasks and native commands remain in each project's configuration. Use
 `mise tasks` to see the commands currently implemented. The repository check
 task must propagate project failures instead of silently skipping required
 checks. Root verbs such as `format`, `test`, and `check` apply to all current
-projects; use `mise run simulator:<task>` to target the simulator directly.
+projects; use `mise run simulator:<task>` or `mise run gateway:<task>` to target
+a project directly.
 The simulator CLI is owned by its project task and exposed from the root as
 `mise run simulator:run`; its command-line arguments are forwarded unchanged,
 and input/output paths resolve from the repository root.
@@ -104,7 +105,8 @@ invocations consistent.
 `mise run pixi:lock-check` verifies that the root Pixi lockfile is current.
 Pre-commit hooks run file checks on eligible changed files, simulator checks
 when simulator files or root Pixi manifests change, and the Pixi lock check
-when Pixi manifests or simulator package metadata change.
+when Pixi manifests or simulator package metadata change. Gateway checks run
+when the gateway module, Go workspace, or shared mise toolchain changes.
 `mise run hooks:check` applies the configured hooks across all eligible
 tracked repository files.
 
@@ -134,13 +136,42 @@ by contributors, and publish enough output to diagnose failures. The active
 check set grows with the projects in the repository; implementation status and
 remaining readiness evidence belong in the [task plan](tasks/README.md) and
 [readiness checklist](project-readiness.md).
-The initial [GitHub Actions workflow](../.github/workflows/pr-checks.yml) runs
+The [GitHub Actions workflow](../.github/workflows/pr-checks.yml) runs
 on pull requests targeting `main`. It installs the locked repository tools and
-simulator environment, then runs `mise run hooks:check`. The result is
-informational for merging; requiring the status check is deferred until the
+simulator environment and pinned Go dependencies, then runs
+`mise run hooks:check`. It also runs broker persistence and gateway integration
+tasks with Docker. The result is informational for merging; requiring the status check is deferred until the
 project begins accepting outside contributions. Track the remaining work and
 PR evidence in
 [P01-012](tasks/phase-01-simulated-world.md#p01-012--run-repository-checks-on-pull-requests).
+
+## Go gateway tasks
+
+### Local environment defaults
+
+Copy root `.env.example` to `.env` for local service configuration. Root mise
+reads the optional file with its dotenv parser into template variables, then
+exports the supported application settings while preserving values already
+present in the caller's environment (including explicit empty values). This
+mapping in root `mise.toml` is the list of supported local settings. Its path
+is anchored to the root configuration, regardless of the project task's
+working directory. Missing `.env` files do not block setup, checks, or tests.
+
+Service binaries read environment variables directly and do not load dotenv
+files. Deployment platforms supply those variables. The
+[gateway guide](../services/telemetry-gateway/README.md#configuration) owns its
+variable names, precedence, and required-value behavior. Tests inject their
+own configuration; broker integration tests discover their disposable
+endpoints rather than use developer service addresses or static test files.
+
+### Commands
+
+The [telemetry gateway](../services/telemetry-gateway/README.md) is the first
+Go module, coordinated by root `go.work`. Its project mise tasks own formatting
+with gofmt, vet, package compilation, module checksum verification, unit tests
+with the race detector, and an explicit broker integration task. Root common
+verbs include gateway checks; root `test` also includes the Docker integration
+task. `mise run gateway:check` needs no broker; `mise run gateway:test:integration` creates and cleans up its own disposable broker.
 
 ## References
 

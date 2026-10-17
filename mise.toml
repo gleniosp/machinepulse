@@ -2,19 +2,37 @@ min_version = "2026.8.11"
 monorepo_root = true
 
 [monorepo]
-config_roots = ["tools/simulator"]
+config_roots = ["tools/simulator", "services/telemetry-gateway"]
 lockfile = true
 
 [tools]
 github-cli = "2.98.0"
+go = "1.27.1"
 prek = "0.5.3"
 pixi = "0.76.1"
+
+# Read local defaults with mise's dotenv parser. Map supported variables back
+# into the environment while preserving caller-supplied values, even empty ones.
+# The path is relative to this config, including from nested project tasks.
+[vars]
+_.file = ".env"
+
+[env]
+MACHINEPULSE_MQTT_ADDRESS = "{{ get_env(name='MACHINEPULSE_MQTT_ADDRESS', default=vars.MACHINEPULSE_MQTT_ADDRESS | default(value='')) }}"
+MACHINEPULSE_MQTT_CLIENT_ID = "{{ get_env(name='MACHINEPULSE_MQTT_CLIENT_ID', default=vars.MACHINEPULSE_MQTT_CLIENT_ID | default(value='')) }}"
+MACHINEPULSE_MQTT_PORT = "{{ get_env(name='MACHINEPULSE_MQTT_PORT', default=vars.MACHINEPULSE_MQTT_PORT | default(value='')) }}"
+MACHINEPULSE_KAFKA_PORT = "{{ get_env(name='MACHINEPULSE_KAFKA_PORT', default=vars.MACHINEPULSE_KAFKA_PORT | default(value='')) }}"
+MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS = "{{ get_env(name='MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS', default=vars.MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS | default(value='')) }}"
+MACHINEPULSE_MQTT_RECONNECT_CAP = "{{ get_env(name='MACHINEPULSE_MQTT_RECONNECT_CAP', default=vars.MACHINEPULSE_MQTT_RECONNECT_CAP | default(value='')) }}"
+MACHINEPULSE_MQTT_MAX_PACKET_BYTES = "{{ get_env(name='MACHINEPULSE_MQTT_MAX_PACKET_BYTES', default=vars.MACHINEPULSE_MQTT_MAX_PACKET_BYTES | default(value='')) }}"
+MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT = "{{ get_env(name='MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT', default=vars.MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT | default(value='')) }}"
 
 [tasks.setup]
 description = "Install repository tools, project environments, and Git hooks"
 run = [
   "mise install --locked",
   "mise run simulator:setup",
+  "mise run gateway:setup",
   "mise run hooks:install",
 ]
 
@@ -61,28 +79,29 @@ run = "mise run //tools/simulator:experiment:conditions"
 
 [tasks.format]
 description = "Format all current projects"
-run = "mise run simulator:format"
+run = ["mise run simulator:format", "mise run gateway:format"]
 
 [tasks.format-check]
 description = "Check formatting for all current projects"
-run = "mise run simulator:format-check"
+run = ["mise run simulator:format-check", "mise run gateway:format-check"]
 
 [tasks.lint]
 description = "Lint all current projects"
-run = "mise run simulator:lint"
+run = ["mise run simulator:lint", "mise run gateway:lint"]
 
 [tasks.typecheck]
 description = "Type-check all current projects"
-run = "mise run simulator:typecheck"
+run = ["mise run simulator:typecheck", "mise run gateway:typecheck"]
 
 [tasks.test]
 description = "Test all current projects"
-run = ["mise run simulator:test", "mise run infra:test"]
+run = ["mise run simulator:test", "mise run gateway:test", "mise run infra:test", "mise run gateway:test:integration"]
 
 [tasks.check]
 description = "Run all current repository checks"
 run = [
   "mise run simulator:check",
+  "mise run gateway:check",
   "mise run pixi:lock-check",
   "mise run infra:check",
 ]
@@ -122,3 +141,40 @@ run = "mise exec -- prek install"
 [tasks."hooks:check"]
 description = "Run all configured repository hooks across all files"
 run = "mise exec -- prek run --all-files"
+
+[tasks."gateway:setup"]
+description = "Download the gateway's pinned Go dependencies"
+run = "mise run //services/telemetry-gateway:setup"
+
+[tasks."gateway:run"]
+description = "Run the gateway in observation mode"
+raw_args = true
+run = "mise run //services/telemetry-gateway:run"
+
+[tasks."gateway:format"]
+description = "Format the Go gateway"
+run = "mise run //services/telemetry-gateway:format"
+
+[tasks."gateway:format-check"]
+description = "Check Go gateway formatting"
+run = "mise run //services/telemetry-gateway:format-check"
+
+[tasks."gateway:lint"]
+description = "Vet the Go gateway"
+run = "mise run //services/telemetry-gateway:lint"
+
+[tasks."gateway:typecheck"]
+description = "Compile the Go gateway"
+run = "mise run //services/telemetry-gateway:typecheck"
+
+[tasks."gateway:test"]
+description = "Test the Go gateway with the race detector"
+run = "mise run //services/telemetry-gateway:test"
+
+[tasks."gateway:test:integration"]
+description = "Verify gateway MQTT behavior against a disposable broker"
+run = "mise run //services/telemetry-gateway:test:integration"
+
+[tasks."gateway:check"]
+description = "Check Go gateway formatting, vet, build, dependencies, and tests"
+run = "mise run //services/telemetry-gateway:check"
