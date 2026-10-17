@@ -74,16 +74,22 @@ and any later physical producer use the same producer contract.
 
 ### P02-003 — Implement the Go MQTT telemetry gateway
 
-- **Status:** Planned
+- **Status:** Complete
 - **Outcome:** The gateway subscribes to the accepted device route, decodes
   messages, preserves producer data, and exposes connection failures.
 - **Acceptance criteria:**
-  - [ ] The gateway subscribes to the documented device topic.
-  - [ ] It decodes messages and preserves producer identity and event time.
-  - [ ] It adds receipt metadata without overwriting event metadata.
-  - [ ] Connection failures are observable.
-- **Tests or evidence:** Gateway unit tests and broker integration evidence for
-  connection, subscription, reconnect, and producer metadata preservation.
+  - [x] The gateway subscribes to the documented device topic.
+  - [x] It decodes messages and preserves producer identity and event time.
+  - [x] It adds receipt metadata without overwriting event metadata.
+  - [x] Connection failures are observable.
+- **Tests or evidence:** [Gateway unit tests](../../services/telemetry-gateway/internal/gateway/gateway_test.go),
+  [real-broker integration test](../../services/telemetry-gateway/internal/gateway/broker_integration_test.go),
+  [command configuration tests](../../services/telemetry-gateway/cmd/telemetry-gateway/config_test.go),
+  [gateway guide and client provenance](../../services/telemetry-gateway/README.md),
+  and [Week 02 Day 3 results](../journal/week-02-telemetry-ingestion.md#day-3--go-mqtt-gateway).
+  `mise run gateway:check`, `mise run gateway:test:integration`, and root
+  `mise run check` pass. Paho manual acknowledgement is verified against Mosquitto;
+  the command leaves messages pending until later tasks provide durable sinks.
 - **GitHub issue:** [#21](https://github.com/gleniosp/machinepulse/issues/21).
 - **Dependencies:** P02-001, P02-002.
 - **Out of scope:** Internal event schema, downstream persistence, physical

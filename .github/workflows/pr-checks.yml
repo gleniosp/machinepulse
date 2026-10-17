@@ -36,8 +36,14 @@ jobs:
       - name: Install the locked simulator environment
         run: mise run simulator:setup
 
+      - name: Download pinned gateway dependencies
+        run: mise run gateway:setup
+
       - name: Run repository checks and tests
         run: mise run hooks:check
 
       - name: Verify local broker startup and persistence
         run: mise run infra:test
+
+      - name: Verify gateway MQTT delivery and recovery
+        run: mise run gateway:test:integration

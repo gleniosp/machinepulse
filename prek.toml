@@ -28,6 +28,15 @@ pass_filenames = false
 stages = ["pre-commit"]
 
 [[repos.hooks]]
+id = "gateway-check"
+name = "gateway checks"
+language = "system"
+entry = "mise run gateway:check"
+files = '^(services/telemetry-gateway/|go\.work(\.sum)?$|mise\.(toml|lock)$)'
+pass_filenames = false
+stages = ["pre-commit"]
+
+[[repos.hooks]]
 id = "infra-config-check"
 name = "infrastructure configuration"
 language = "system"

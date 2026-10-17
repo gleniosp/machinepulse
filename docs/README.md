@@ -1,6 +1,6 @@
 # MachinePulse Documentation Hub
 
-- **Status:** Phase 02 implementation in progress; P02-001 and P02-002 complete
+- **Status:** Phase 02 implementation in progress; P02-001 through P02-003 complete
 - **Product version:** 0.1 proposal
 
 This file is the documentation map. It explains where information belongs; it does not restate the product definition, architecture, contracts, task details, or journal evidence maintained by the linked documents.
@@ -16,7 +16,9 @@ This file is the documentation map. It explains where information belongs; it do
 
 ## Current work
 
-The active milestone is Phase 02: move simulated telemetry through MQTT and the Go gateway into the internal event stream. Its task breakdown is in [Phase 02](tasks/phase-02-telemetry-transport.md), the accepted transport contract is in [Ingestion and Internal Event Boundaries](specs/ingestion.md), and current evidence belongs in [Week 02](journal/week-02-telemetry-ingestion.md). P02-001 and P02-002 are complete; the [local infrastructure guide](../infra/README.md) covers the broker environment. The remaining phase tasks cover gateway implementation and integration. The completed simulator foundation and evidence remain in [Phase 01](tasks/phase-01-simulated-world.md) and [Week 01](journal/week-01-simulated-world.md).
+The active milestone is Phase 02: move simulated telemetry through MQTT and the Go gateway into the internal event stream. Its task breakdown is in [Phase 02](tasks/phase-02-telemetry-transport.md), the accepted transport contract is in [Ingestion and Internal Event Boundaries](specs/ingestion.md), and current evidence belongs in [Week 02](journal/week-02-telemetry-ingestion.md). P02-001 through P02-003 are complete; the [local infrastructure guide](../infra/README.md) covers the broker environment. The [gateway guide](../services/telemetry-gateway/README.md) covers the current
+receive path. The remaining phase tasks cover validation, durable disposition,
+internal publication, and integration. The completed simulator foundation and evidence remain in [Phase 01](tasks/phase-01-simulated-world.md) and [Week 01](journal/week-01-simulated-world.md).
 
 To generate and inspect a local synthetic dataset, start with the [simulator quickstart](guides/simulator-quickstart.md). It links the current file output to the telemetry contract and target architecture without repeating their definitions.
 

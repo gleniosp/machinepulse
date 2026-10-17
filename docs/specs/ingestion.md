@@ -195,7 +195,8 @@ P02-001 is complete. The accepted topic naming, QoS, reconnect/session
 behavior, retained-message policy, acknowledgement meaning, clock semantics,
 and separation from internal event routing are defined here. Runtime behavior,
 broker durability under failure, the selected Go client's manual-ack support,
-and end-to-end delivery remain unverified until P02-002 through P02-007.
+and end-to-end delivery are tracked in the
+[Phase 02 task evidence](../tasks/phase-02-telemetry-transport.md).
 
 ## Protocol reference
 

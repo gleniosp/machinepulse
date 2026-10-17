@@ -1,2 +1,5 @@
 /.pixi/
 simulator-output/
+/.env
+/.env.*
+!/.env.example
