@@ -142,7 +142,8 @@ func TestBrokerSessionAndDeferredAcknowledgement(t *testing.T) {
 	time.Sleep(150 * time.Millisecond)
 	compose("stop", "mqtt")
 	waitFor(t, func() bool { return strings.Contains(logs.text(), "mqtt_connection_failed") }, "broker outage log")
-	compose("start", "--wait", "--wait-timeout", "60", "mqtt")
+	// Older supported Compose versions expose readiness waiting on up, not start.
+	compose("up", "--detach", "--no-recreate", "--wait", "--wait-timeout", "60", "mqtt")
 	waitFor(t, func() bool { return strings.Count(logs.text(), `"session_present":true`) >= 2 }, "session recovered after broker restart")
 	if count := strings.Count(logs.text(), "mqtt_subscribed"); count != 1 {
 		t.Fatalf("existing session was resubscribed: %d\n%s", count, logs.text())

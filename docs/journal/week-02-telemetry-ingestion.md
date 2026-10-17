@@ -174,8 +174,8 @@ Integration handlers simulate sink success; they do not establish quarantine
 or Kafka durability. JSON decoding is not full `telemetry.v1` validation.
 Actual ingress validation/quarantine, internal publication, and end-to-end
 flow remain P02-004 onward. Recovery evidence covers graceful restarts, not
-power loss, production authentication/TLS, or sustained-load behavior. CI
-execution awaits the maintainer's pull request.
+power loss, production authentication/TLS, or sustained-load behavior. The CI
+compatibility follow-up below records the first pull-request run.
 
 P02-003 is locally complete. The next task is P02-004: ingress validation and
 durable invalid-message handling.
@@ -224,6 +224,20 @@ Local configuration still needs to align the MQTT client address with the
 published port when that port changes. Container/deployment addresses depend
 on the caller's network; authentication/TLS and actual deployed-runtime
 verification remain future work.
+
+## CI compatibility follow-up — 2026-10-17
+
+The [first PR #100 CI run](https://github.com/gleniosp/machinepulse/actions/runs/39022587425)
+failed during the integration test's broker restart: the runner's Compose
+version rejects `start --wait`. Initial startup with `up --wait` and the earlier
+delivery checks had succeeded. Changed restart to
+`up --detach --no-recreate --wait --wait-timeout 60 mqtt`, retaining the same
+container and data while using the supported readiness command.
+
+`mise run gateway:test:integration` passed locally with the race detector after
+the correction, including broker restart and persistent-session recovery;
+`git diff --check` passed. A new CI run requires the maintainer to commit and
+push this correction.
 
 ## Weekly review
 
