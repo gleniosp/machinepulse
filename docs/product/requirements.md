@@ -64,4 +64,4 @@ This document owns stable high-level functional and non-functional requirement i
 
 ## Requirement traceability
 
-Implementation task files should reference requirement identifiers. Experiments may validate or challenge a requirement, while ADRs explain architectural choices used to satisfy one or more requirements.
+GitHub implementation issues should reference requirement identifiers. Experiments may validate or challenge a requirement, while ADRs explain architectural choices used to satisfy one or more requirements.

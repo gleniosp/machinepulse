@@ -23,7 +23,7 @@ The maintainer may ask the agent to plan, discuss, investigate, implement, revis
 The agent is responsible for keeping the repository coherent while implementing requested work. This includes:
 
 - discovering the next actionable GitHub issue;
-- reading and respecting the relevant local specifications and task documents;
+- reading and respecting the relevant repository specifications and GitHub issues;
 - creating or updating specifications when the implementation requires them;
 - creating ADRs for durable decisions;
 - creating experiments for uncertain questions;
@@ -45,7 +45,7 @@ Use the following order when information conflicts:
 1. The latest explicit instruction from the project maintainer.
 2. Accepted product specifications and accepted ADRs.
 3. The active GitHub issue and milestone acceptance criteria.
-4. Draft specifications and planned task documents.
+4. Draft specifications and proposals.
 5. Journal notes and experiments as evidence of what has happened.
 6. Existing implementation behavior, which may reveal drift or an undocumented decision.
 
@@ -53,9 +53,9 @@ If the conflict materially affects scope, architecture, data semantics, or safet
 
 ## Git and repository hygiene
 
-- Each week's work uses one dedicated branch and one pull request. When a week maps directly to a phase, the phase branch and pull request are the same unit of work. Suggest branch names in `phase-XX/task-description` form for phase work, combining the phase name with a short description of the first task in that phase (for example, `phase-01/vibration-generation`), and `week-XX/short-description` form for other weekly work. The maintainer creates or switches to the branch.
+- Each week's work uses one dedicated branch and one pull request. When a week maps directly to a phase, the phase branch and pull request are the same unit of work. Suggest branch names in `phase-XX/task-description` form for phase work, combining the phase name with a short description of the first task in that phase (for example, `phase-01/vibration-generation`), and `week-XX/short-description` form for other weekly work. For work outside the numbered phases, the maintainer may approve separate task-oriented branches and pull requests. The approved public-onboarding sequence is `chore/github-planning`, followed after merge by `feat/public-onboarding`, both targeting `main`; its scope is tracked in the [public-onboarding milestone](https://github.com/gleniosp/machinepulse/milestone/10). The maintainer creates or switches to the branch.
 - The agent does not create branches or commits. Within the weekly or phase branch, each coherent completed task or step should be represented by a commit. The agent proposes commit boundaries and commands; the maintainer decides the commit packages and executes them.
-- Mark a local task **Complete** as soon as its acceptance criteria and required evidence are satisfied, before raising its pull request. Local completion does not wait for merge. The maintainer owns pull-request creation, review, approval, and merging. Keep related GitHub issues open until the pull request containing their changes has merged; close them only after that merge and when their acceptance criteria and evidence are complete.
+- Record implementation completion through checked acceptance criteria and evidence on the GitHub issue before raising its pull request. Do not maintain a second live task status in repository documents. The maintainer owns pull-request creation, review, approval, and merging. Keep related GitHub issues open until the pull request containing their changes has merged; close them only after that merge and when their acceptance criteria and evidence are complete.
 - Do not reset, revert, delete, or overwrite work unless the maintainer explicitly requests the operation and its target is clear.
 - When a commit is requested, use a Conventional Commit / Commitizen-compatible message with a lowercase imperative subject and a short explanation of why the change exists.
 - Keep secrets, private information, proprietary data, and unlicensed external material out of the repository. Record provenance and licensing for external datasets, models, documents, images, and code.
@@ -67,11 +67,11 @@ The agent should perform the following sequence without requiring the maintainer
 
 1. Inspect GitHub milestones and open issues for `gleniosp/machinepulse`.
 2. Select the earliest active milestone with unfinished work, unless the maintainer names another milestone.
-3. Select the first open, unblocked issue in that milestone, prioritizing high-priority work and then the local task ID.
-4. Read the issue, linked specification, related phase task, relevant journal entry, and applicable ADRs or experiments.
+3. Select the first open, unblocked issue in that milestone, prioritizing high-priority work and then the stable task ID where one exists.
+4. Read the issue, its milestone, linked specification, relevant journal entry, and applicable ADRs or experiments.
 5. Check whether the issue is implementation-ready.
-6. If context is missing, create or update the required specification, task breakdown, or experiment before coding.
-7. Propose the weekly or phase branch name and wait for the maintainer to create or select the branch.
+6. If context is missing, create or update the required specification, issue acceptance criteria, milestone description, or experiment before coding.
+7. Propose the weekly, phase, or approved task-oriented branch name and wait for the maintainer to create or select the branch.
 8. Implement the smallest complete slice that satisfies the issue.
 9. Run the narrowest relevant validation first, then broader checks when available.
 10. Record evidence in the journal and update any affected specification, ADR, or experiment.
@@ -95,12 +95,12 @@ For each meaningful slice:
 
 ```text
 GitHub issue
-    → specification and acceptance criteria
+    → linked specification and issue acceptance criteria
     → task implementation
     → tests or other evidence
     → journal entry
     → ADR or experiment when needed
-    → local task marked Complete
+    → issue acceptance criteria checked with evidence
     → maintainer raises, reviews, and merges the pull request
     → related GitHub issue closed
 ```
@@ -113,14 +113,30 @@ Keep one authoritative location for each fact. Use the [documentation hub](READM
 
 ### Acceptance criteria and progress
 
+GitHub issues own live task scope, acceptance checklists, dependencies,
+assignment, and progress. Milestones group the issues and track phase delivery.
 Write each acceptance criterion as a separate, verifiable Markdown checkbox
-(`- [ ]`) in the phase task and its GitHub issue. Leave it unchecked until
-evidence shows the criterion is satisfied; then check it in both places and
-link the supporting evidence. A task is complete only when every acceptance
-criterion is checked and the required evidence is recorded. Set the local task
-status to **Complete** at that point, even if the pull request has not yet been
-raised or merged. Keep the related GitHub issue open until its pull request has
-merged; close it only after merge.
+(`- [ ]`) on its issue. Check it only when linked evidence demonstrates that
+it is satisfied. An implementation can be complete while its issue stays open
+for review and merge; record that distinction on the issue rather than in a
+second repository status field.
+
+Repository requirements, specifications, and ADRs own product and technical
+behavior. Journals and experiments own factual evidence. The concise
+[roadmap](roadmap.md) links to GitHub without maintaining phase pages, task
+lists, or historical planning archives. Keep stable task IDs on their issues
+and in evidence references. Before retiring an existing repository task record,
+compare it with its GitHub issue and transfer any missing scope, acceptance
+criteria, dependencies, and evidence links. Apply the same organization to
+completed and upcoming tasks. Preserve historical evidence in journals,
+experiments, ADRs, and Git history rather than keeping a second task archive
+beside the live issues.
+
+Use the [issue](templates/github-issue.md) and
+[milestone](templates/github-milestone.md) templates when useful. Keep issue
+acceptance criteria on issues and phase exit criteria in milestone descriptions.
+Select next work by inspecting GitHub, not by inferring priorities from journal
+entries, roadmap prose, or other repository documents.
 
 ## Review and direction changes
 
@@ -162,26 +178,25 @@ Ask for maintainer input before:
 
 ## Completion and handoff
 
-A local task is **Complete** when:
+A task's implementation is complete when:
 
-- every acceptance criterion has supporting evidence and is checked in the task and GitHub issue;
+- every acceptance criterion has supporting evidence and is checked on the GitHub issue;
 - relevant tests, measurements, screenshots, plots, or other evidence are available;
-- affected specifications and task files are current;
+- affected specifications and GitHub planning are current;
 - the journal records what happened and any limitations;
 - required ADRs or experiments are linked.
 
-Set the local task status to **Complete** as soon as these conditions are met.
-Do not hold it open while waiting for a pull request.
+Record these conditions on the GitHub issue as soon as they are met. Do not
+require a separate repository task-status update.
 
 The related GitHub issue remains open while its pull request is pending. After
 the maintainer-approved weekly or phase pull request is merged, close the issue
 if its acceptance criteria and evidence are complete.
 
-A phase is locally **Complete** when all mapped local tasks are complete and
-its local exit evidence is recorded. Mark it complete before the pull request
-merges; do not update the phase document after merge only to record delivery
-state. Track pull-request and issue state in GitHub, and close related issues
-after their pull requests merge.
+Record phase exit evidence in the repository and link it from the milestone
+or its issues. Track phase delivery through the GitHub milestone rather than
+updating a second live phase status in the repository. Journal summaries may
+describe what was demonstrated without mirroring issue or pull-request state.
 
 A GitHub milestone is complete only when all mapped issues are closed, its exit
 evidence is recorded, and no scope change is being hidden as completion.

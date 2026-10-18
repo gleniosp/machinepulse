@@ -12,22 +12,16 @@ visible.
 
 ## Related documents
 
-- [Phase 02 tasks](../tasks/phase-02-telemetry-transport.md)
+- [Phase 02 tasks](https://github.com/gleniosp/machinepulse/milestone/3)
 - [Telemetry contract](../specs/telemetry-contract.md)
 - [Ingestion and internal event boundaries](../specs/ingestion.md)
 - [Accepted MQTT delivery ADR](../adr/0004-mqtt-delivery-semantics.md)
 
-## Planned outcomes
+## Implementation scope
 
-- [x] MQTT topics and delivery semantics are reviewed and accepted.
-- [x] Local MQTT broker and event-stream environment starts with documented
-  readiness behavior.
-- [ ] Go gateway validates and routes telemetry with source event time and
-  identity preserved.
-- [ ] Invalid messages, retries, and dead-letter outcomes have tested and
-  observable behavior.
-- [ ] A repeatable simulator-to-stream integration command and evidence are
-  recorded.
+The [Phase 02 milestone](https://github.com/gleniosp/machinepulse/milestone/3)
+and its issues own acceptance criteria and delivery progress. The entries below
+record demonstrated behavior, commands, and limitations.
 
 ## Day 1 — Ingestion contract review
 
@@ -56,7 +50,7 @@ compatibility checks and end-to-end evidence for later Phase 02 tasks.
 - [P02-001 issue](https://github.com/gleniosp/machinepulse/issues/19)
 - [Accepted ingestion specification](../specs/ingestion.md)
 - [Accepted ADR-0004](../adr/0004-mqtt-delivery-semantics.md)
-- [Phase 02 task plan](../tasks/phase-02-telemetry-transport.md)
+- [Phase 02 task plan](https://github.com/gleniosp/machinepulse/milestone/3)
 
 ## Day 2 — Local broker environment
 

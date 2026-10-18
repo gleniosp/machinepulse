@@ -11,7 +11,7 @@
 
 ## Context
 
-[P02-002](../tasks/phase-02-telemetry-transport.md#p02-002--add-the-local-mqtt-and-event-stream-environment)
+[P02-002](https://github.com/gleniosp/machinepulse/issues/20)
 needs explicit local implementations of the accepted MQTT boundary and the
 planned Kafka-compatible internal stream. The repository's initial deployment
 direction is Docker Compose. No managed service or credentials should be

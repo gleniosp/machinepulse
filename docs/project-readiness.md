@@ -15,12 +15,13 @@ Phase 01 should not begin until each area is accepted or its remaining uncertain
 | Requirements and domain | [Requirements](product/requirements.md), [Domain model](product/domain-model.md), [Workflows](product/workflows.md) | Core entities, requirement identifiers, and telemetry-to-maintenance journeys are understood. |
 | Producer contract | [Telemetry contract](specs/telemetry-contract.md) | The active contract is accepted, or every open question has an owner, ADR, experiment, or explicit decision. |
 | System design | [Architecture overview](architecture/overview.md), [Data flow](architecture/data-flow.md), [Runtime boundaries](architecture/runtime-boundaries.md) | Responsibilities, data stages, storage roles, and local deployment direction are clear. |
-| Implementation plan | [Task index](tasks/README.md), relevant specification, and Week 01 journal (to be created) | The next phase has an implementation-ready specification, tasks, evidence expectations, and journal plan. |
-| Tooling and validation | [Developer tooling baseline](developer-tooling.md), [Phase 00 tasks](tasks/phase-00-foundation.md) | Supported toolchains and repeatable format, lint, test, and integration commands are selected or explicitly tracked. |
+| Implementation plan | [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones), relevant specification, and [Week 01 journal](journal/week-01-simulated-world.md) | The next phase has an implementation-ready specification, issues, evidence expectations, and journal plan. |
+| Tooling and validation | [Developer tooling baseline](developer-tooling.md), [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1) | Supported toolchains and repeatable format, lint, test, and integration commands are selected or explicitly tracked. |
 | Governance and data hygiene | Project governance files and this checklist | License, contribution expectations, provenance, reproducibility, and public-repository safeguards are recorded. |
 | Agent collaboration | [AGENTS.md](../AGENTS.md), [working agreement](working-agreement.md) | Agent boundaries, review expectations, and evidence rules are aligned with the repository. |
 
-The Week 01 journal is a placeholder until the Phase 01 weekly entry is created. The gate may record a deliberate follow-up instead of blocking on a decision that is not needed for the next implementation slice.
+This document records the foundation review and its gate evidence. GitHub owns
+the current state of implementation follow-ups; this review is not a backlog.
 
 ## Staged gate policy
 
@@ -50,29 +51,21 @@ are not blockers for earlier work.
 - [x] Select and document the repository license.
 - [x] Record contribution, conduct, security, issue, and pull-request follow-ups.
 - [x] Select supported Go, Python, Node.js, and package-manager versions plus formatter, linter, type-checker, and test-runner expectations.
-- [x] Define the project-wide definition of done and the division between unit, contract, integration, end-to-end, and load evidence through the [working agreement](working-agreement.md), [task conventions](tasks/README.md), and [developer tooling baseline](developer-tooling.md).
+- [x] Define the project-wide definition of done and the division between unit, contract, integration, end-to-end, and load evidence through the [working agreement](working-agreement.md) and [developer tooling baseline](developer-tooling.md).
 
-## Required during Phase 01 before phase exit
+## Implementation follow-ups
 
-- [ ] Establish a clean-checkout validation path and ensure CI will run the same focused checks once runtime code exists. This is owned by P01-008.
-- [x] Record simulator configuration, seed, generator version, source revision, and dataset/model provenance for analytical work.
-- [x] Keep simulator ground truth separate from inference inputs and document what synthetic experiments cannot prove about physical equipment.
+Phase 01 validation and reproducibility work is owned by
+[P01-008](https://github.com/gleniosp/machinepulse/issues/18), with results in
+the [Week 01 journal](journal/week-01-simulated-world.md). Later reliability
+and physical-producer follow-ups belong to the
+[Phase 07](https://github.com/gleniosp/machinepulse/milestone/8) and
+[Phase 08](https://github.com/gleniosp/machinepulse/milestone/9) milestones.
 
-## Deferred to later phases
+## Decisions deferred at the foundation review
 
-- Establish observability, failure-recovery, replay, and benchmark evidence in
-  the reliability phase before making performance or reliability claims.
-- Define clock quality, sequence gaps, buffering, reconnect, calibration, and
-  orientation assumptions in the physical edge phase before hardware is
-  connected.
-- Plan a compatibility test showing that a physical producer can replace the
-  simulator without downstream special cases in the physical edge phase.
-- Keep the producer contract independent of simulator internals; this is already
-  accepted as a standing architectural constraint.
-
-## Decisions intentionally deferred
-
-These do not block the documentation foundation, but they must be resolved before the relevant implementation phase:
+The review deferred the following decisions. This is a historical record;
+current ownership and progress belong to GitHub issues and milestones:
 
 - final contribution, conduct, security, and artifact-review policies;
 - exact toolchain versions and CI provider;

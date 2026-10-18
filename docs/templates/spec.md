@@ -33,7 +33,7 @@ Describe validation, retries, recovery, and user-visible failure behavior.
 
 ## Acceptance criteria
 
-- [ ] _
+- _Expected capability behavior; track implementation checks on linked GitHub issues._
 
 ## Observability
 

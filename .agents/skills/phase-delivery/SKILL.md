@@ -15,8 +15,9 @@ is an operational route through them, not a replacement for their policy.
 1. Read [the documentation hub](../../../docs/README.md) and
    [the working agreement](../../../docs/working-agreement.md).
 2. Inspect the active GitHub milestone and select the earliest open, unblocked
-   issue unless the maintainer names another task.
-3. Read the issue, its phase task, the owning specification, the relevant
+   issue unless the maintainer names another task. Select priorities from GitHub,
+   not repository roadmap prose or historical journal entries.
+3. Read the issue, its milestone, the owning specification, the relevant
    journal entry, and any linked ADRs or experiments.
 4. Confirm the task is implementation-ready. If a contract, decision, or
    experiment is missing, prepare that prerequisite before coding.
@@ -29,7 +30,8 @@ that owns a fact instead of copying it into a task or journal.
 - Propose a clear task-oriented branch name and wait for the maintainer to
   create or switch to it. Do not create branches or commits.
 - Keep one branch and pull request for the week's work; when the week maps to a
-  phase, use the phase as that unit.
+  phase, use the phase as that unit. Follow maintainer-approved task-oriented
+  branches and PR boundaries for work outside the numbered phases.
 - Keep the implementation focused on the accepted issue and product scope.
 - Run the narrowest relevant validation first, then broader checks when they
   exist.
@@ -40,7 +42,7 @@ that owns a fact instead of copying it into a task or journal.
 
 Before handing off, verify that:
 
-- acceptance criteria and evidence are current in the task and GitHub issue;
+- acceptance criteria, dependencies, and evidence are current on the GitHub issue;
 - affected specifications, ADRs, experiments, and journal entries are linked;
 - proposed commit boundaries and commands are clear for the maintainer;
 - the pull request summary explains scope and validation; and

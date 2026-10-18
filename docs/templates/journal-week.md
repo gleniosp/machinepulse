@@ -1,8 +1,8 @@
 # Week NN — Title
 
-- **Status:** Planned
 - **Phase:**
 - **Theme:**
+- **GitHub milestone:**
 
 ## Goal
 
@@ -14,9 +14,10 @@
 
 - _
 
-## Planned outcomes
+## Evidence to collect
 
-- [ ] _
+Describe the intended measurements and artifacts; link to the issue acceptance
+criteria rather than maintaining a second checklist here.
 
 ## Day 1 — Title
 

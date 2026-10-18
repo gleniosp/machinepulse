@@ -21,7 +21,7 @@ A specification may be updated when implementation or an experiment reveals a be
 - Link related product requirements, tasks, ADRs, and experiments.
 - Avoid copying daily progress from the engineering journal.
 
-Specifications should link to the product requirements they satisfy and to architecture, ADR, experiment, and task documents as needed. They should not become a second product roadmap or an implementation diary.
+Specifications should link to the product requirements they satisfy and to architecture, ADRs, experiments, and GitHub issues as needed. They should not become a second product roadmap or an implementation diary.
 
 ## Current specifications
 
