@@ -1,6 +1,6 @@
 # Agent instructions
 
-MachinePulse is an open-source, simulation-first condition-monitoring platform for rotating machinery. The repository currently contains the documentation foundation; runtime implementation begins after the Phase 00 readiness review.
+MachinePulse is an open-source, simulation-first condition-monitoring platform for rotating machinery. Runtime implementation is underway; use the documentation hub for technical context and GitHub milestones for delivery progress.
 
 ## Read before changing
 
@@ -9,7 +9,7 @@ Use the [documentation hub](docs/README.md) to find the owner of the information
 - [Product scope](docs/product/scope.md) owns version 0.1 boundaries and non-goals.
 - [Product requirements](docs/product/requirements.md) owns requirement identifiers.
 - [Specifications](docs/specs/README.md) own expected capability behavior and contracts.
-- [Implementation tasks](docs/tasks/README.md) own planned work and acceptance evidence.
+- [Roadmap](docs/roadmap.md) points to GitHub milestones and issues, which own implementation scope, acceptance checklists, dependencies, priorities, and progress.
 - [Engineering journal](docs/journal/README.md) owns factual progress and discoveries.
 - [Working agreement](docs/working-agreement.md) owns maintainer-agent collaboration and GitHub workflow.
 

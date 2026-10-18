@@ -7,7 +7,7 @@
 - **Related product document:** [Domain model — Telemetry window](../product/domain-model.md#telemetry-window)
 - **Related specifications:** [Telemetry contract](telemetry-contract.md)
 - **Related ADRs:** [ADR-0001 — Telemetry event identifiers](../adr/0001-telemetry-event-identifiers.md), [ADR-0003 — Device and asset identifiers](../adr/0003-device-and-asset-identifiers.md)
-- **Related tasks:** [P01-001 — Specify simulator behavior and configuration](../tasks/phase-01-simulated-world.md), [Phase 01 — Simulated industrial world](../tasks/phase-01-simulated-world.md)
+- **Related tasks:** [P01-001 — Specify simulator behavior and configuration](https://github.com/gleniosp/machinepulse/issues/11), [Phase 01 — Simulated industrial world](https://github.com/gleniosp/machinepulse/milestone/2)
 - **Related experiments:** [EXP-0001](../experiments/EXP-0001-simulator-parameters.md), [EXP-0002](../experiments/EXP-0002-condition-separation.md)
 
 ## Purpose and scope
@@ -322,7 +322,7 @@ inference must not receive it when producing a prediction. It also does not
 establish that a signal pattern is a validated signature of a real fault or
 that a physical machine has the named condition. The manifest shape and
 revision semantics above are implemented by
-[P01-002](../tasks/phase-01-simulated-world.md).
+[P01-002](https://github.com/gleniosp/machinepulse/issues/12).
 
 ## Failure behavior
 
@@ -361,12 +361,15 @@ EXP-0002, and the limitations above.
 
 ## Acceptance criteria
 
-- [ ] Configuration, conditions, condition intensity, duration, sampling, seed,
+These define expected capability behavior. Implementation checks and evidence
+are tracked in the [Phase 01 issues](https://github.com/gleniosp/machinepulse/milestone/2).
+
+- Configuration, conditions, condition intensity, duration, sampling, seed,
   and execution mode are specified.
-- [ ] A fixed seed and effective configuration produce repeatable output.
-- [ ] Telemetry and ground truth are separate and associated by event ID.
-- [ ] Output conforms to `telemetry.v1` and invalid configuration is rejected.
-- [ ] Synthetic-data limitations are visible in documentation and evidence.
+- A fixed seed and effective configuration produce repeatable output.
+- Telemetry and ground truth are separate and associated by event ID.
+- Output conforms to `telemetry.v1` and invalid configuration is rejected.
+- Synthetic-data limitations are visible in documentation and evidence.
 
 ## Open questions
 

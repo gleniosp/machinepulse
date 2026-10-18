@@ -27,6 +27,10 @@ Each implementation week has one Markdown file with:
 - a weekly review; and
 - links to related specs and tasks.
 
+Work outside the numbered phases may use a separate dated notes file, such as
+the [public-onboarding notes](public-onboarding.md), linked to its GitHub issue
+and milestone. Record evidence there without duplicating task checklists.
+
 Week 00 is the documentation and project-foundation week. Week 01 begins runtime implementation.
 
 ## Daily entry guidance
@@ -54,8 +58,7 @@ Everything committed to this journal is public. Do not include:
 
 ## Journal status
 
-Use `Planned`, `In progress`, `Complete`, `Blocked`, or `Archived` at the top
-of each weekly entry. Mark a week **Complete** when its planned local work and
-evidence are complete. This may happen before the related pull request merges;
-track delivery and GitHub issue closure under the
-[working agreement](../working-agreement.md).
+Existing weekly statuses describe the recorded evidence at the time of writing;
+they are not live task or milestone state. New entries link to GitHub for scope
+and delivery progress and record dated observations and validation results.
+Follow the [working agreement](../working-agreement.md) for issue closure.

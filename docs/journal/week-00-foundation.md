@@ -11,7 +11,7 @@ Review and refine the initial MachinePulse product definition, architecture, tel
 ## Related documents
 
 - [Project documentation hub](../README.md)
-- [Phase 00 tasks](../tasks/phase-00-foundation.md)
+- [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1)
 - [Product vision](../product/vision.md)
 - [Product scope](../product/scope.md)
 - [Domain model](../product/domain-model.md)
@@ -31,7 +31,7 @@ Review and refine the initial MachinePulse product definition, architecture, tel
 - [x] P00-009 — governance baseline selected.
 - [x] P00-010 — developer-tooling baseline defined.
 
-The detailed acceptance criteria for these outcomes live in [Phase 00 tasks](../tasks/phase-00-foundation.md); this journal tracks their evidence rather than repeating them.
+The detailed acceptance criteria for these outcomes live in [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1); this journal tracks their evidence rather than repeating them.
 
 ## Day 1 — Project identity
 
@@ -167,10 +167,10 @@ preparation review.
 
 - [Documentation hub](../README.md)
 - [AI-agent instructions](../../AGENTS.md)
-- [Phase 00 tasks](../tasks/phase-00-foundation.md)
+- [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1)
 - [Pre-implementation readiness](../project-readiness.md)
 - [Simulator specification](../specs/simulator.md)
-- [Phase 01 tasks](../tasks/phase-01-simulated-world.md)
+- [Phase 01 tasks](https://github.com/gleniosp/machinepulse/milestone/2)
 - [Week 01 journal](week-01-simulated-world.md)
 
 ## Readiness review
@@ -204,7 +204,7 @@ their later phases.
 ### Evidence
 
 - [Pre-implementation readiness](../project-readiness.md)
-- [Phase 00 tasks](../tasks/phase-00-foundation.md)
+- [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1)
 - [Working agreement](../working-agreement.md)
 
 ## Developer tooling review
@@ -225,7 +225,7 @@ deferred to implementation setup and P01-008.
 ### Evidence
 
 - [Developer tooling baseline](../developer-tooling.md)
-- [Phase 01 simulator tasks](../tasks/phase-01-simulated-world.md)
+- [Phase 01 simulator tasks](https://github.com/gleniosp/machinepulse/milestone/2)
 - Maintainer acceptance recorded on 2026-09-19.
 
 ## Governance and licensing review

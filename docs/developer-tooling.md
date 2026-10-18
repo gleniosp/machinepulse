@@ -134,7 +134,7 @@ and image pins remain owned by `infra/`.
 CI should install from committed lockfiles, run the same root mise checks used
 by contributors, and publish enough output to diagnose failures. The active
 check set grows with the projects in the repository; implementation status and
-remaining readiness evidence belong in the [task plan](tasks/README.md) and
+remaining readiness work is tracked through [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones) and
 [readiness checklist](project-readiness.md).
 The [GitHub Actions workflow](../.github/workflows/pr-checks.yml) runs
 on pull requests targeting `main`. It installs the locked repository tools and
@@ -143,7 +143,7 @@ simulator environment and pinned Go dependencies, then runs
 tasks with Docker. The result is informational for merging; requiring the status check is deferred until the
 project begins accepting outside contributions. Track the remaining work and
 PR evidence in
-[P01-012](tasks/phase-01-simulated-world.md#p01-012--run-repository-checks-on-pull-requests).
+[P01-012](https://github.com/gleniosp/machinepulse/issues/93).
 
 ## Go gateway tasks
 

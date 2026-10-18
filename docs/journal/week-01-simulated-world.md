@@ -17,7 +17,7 @@ operating conditions.
 
 ## Related tasks
 
-- [Phase 01 tasks](../tasks/phase-01-simulated-world.md)
+- [Phase 01 tasks](https://github.com/gleniosp/machinepulse/milestone/2)
 - [P01-001 GitHub issue](https://github.com/gleniosp/machinepulse/issues/11)
 - [P01-009 GitHub issue](https://github.com/gleniosp/machinepulse/issues/79)
 - [P01-010 GitHub issue](https://github.com/gleniosp/machinepulse/issues/83)
@@ -289,7 +289,7 @@ merged.
 ### Evidence
 
 - [P01-002 GitHub issue](https://github.com/gleniosp/machinepulse/issues/12)
-- [Phase 01 task breakdown](../tasks/phase-01-simulated-world.md)
+- [Phase 01 task breakdown](https://github.com/gleniosp/machinepulse/milestone/2)
 - [Reproducibility tests](../../tools/simulator/tests/test_reproducibility.py)
 - `mise run simulator:check` — formatting, lint, type checks, 13 tests passed.
 
@@ -327,7 +327,7 @@ maintainer-approved PR is merged.
 - [Motor and condition domain models](../../tools/simulator/src/machinepulse_simulator/domain.py)
 - [Effective run configuration](../../tools/simulator/src/machinepulse_simulator/models.py)
 - [Domain tests](../../tools/simulator/tests/test_domain.py)
-- [P01-003 task acceptance](../tasks/phase-01-simulated-world.md)
+- [P01-003 task acceptance](https://github.com/gleniosp/machinepulse/issues/13)
 - [P01-003 GitHub issue](https://github.com/gleniosp/machinepulse/issues/13)
 - `mise run simulator:check` — formatting, lint, strict mypy, and 57 tests passed.
 
@@ -418,7 +418,7 @@ benchmark work.
 
 The pnpm workspace and Vite+ catalog are intentionally deferred until the
 first JavaScript/TypeScript package is introduced. This follow-up is already
-owned by [P01-010](../tasks/phase-01-simulated-world.md)
+owned by [P01-010](https://github.com/gleniosp/machinepulse/issues/83)
 and the [developer tooling baseline](../developer-tooling.md).
 
 ### Changed assumptions
@@ -472,7 +472,7 @@ from the start.
   checkout snapshot; YAML was skipped because there are no YAML files.
 - `mise run test` from the former `simulator/` directory — 13 tests passed.
 - [Developer tooling baseline](../developer-tooling.md)
-- [P01-009 and P01-010 task records](../tasks/phase-01-simulated-world.md)
+- [P01-009](https://github.com/gleniosp/machinepulse/issues/79) and [P01-010](https://github.com/gleniosp/machinepulse/issues/83) issue records
 
 ## Tooling refinement — 2026-09-29
 

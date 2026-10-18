@@ -1,6 +1,6 @@
 # Local telemetry infrastructure
 
-This environment implements [P02-002](../docs/tasks/phase-02-telemetry-transport.md#p02-002--add-the-local-mqtt-and-event-stream-environment).
+This environment implements [P02-002](https://github.com/gleniosp/machinepulse/issues/20).
 The broker selection and trade-offs are proposed in
 [ADR-0005](../docs/adr/0005-local-telemetry-brokers.md).
 

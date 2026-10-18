@@ -23,7 +23,7 @@ The maintainer may ask the agent to plan, discuss, investigate, implement, revis
 The agent is responsible for keeping the repository coherent while implementing requested work. This includes:
 
 - discovering the next actionable GitHub issue;
-- reading and respecting the relevant local specifications and task documents;
+- reading and respecting the relevant repository specifications and GitHub issues;
 - creating or updating specifications when the implementation requires them;
 - creating ADRs for durable decisions;
 - creating experiments for uncertain questions;
@@ -45,7 +45,7 @@ Use the following order when information conflicts:
 1. The latest explicit instruction from the project maintainer.
 2. Accepted product specifications and accepted ADRs.
 3. The active GitHub issue and milestone acceptance criteria.
-4. Draft specifications and planned task documents.
+4. Draft specifications and proposals.
 5. Journal notes and experiments as evidence of what has happened.
 6. Existing implementation behavior, which may reveal drift or an undocumented decision.
 
@@ -68,9 +68,9 @@ The agent should perform the following sequence without requiring the maintainer
 1. Inspect GitHub milestones and open issues for `gleniosp/machinepulse`.
 2. Select the earliest active milestone with unfinished work, unless the maintainer names another milestone.
 3. Select the first open, unblocked issue in that milestone, prioritizing high-priority work and then the stable task ID where one exists.
-4. Read the issue, linked specification, related phase context, relevant journal entry, and applicable ADRs or experiments.
+4. Read the issue, its milestone, linked specification, relevant journal entry, and applicable ADRs or experiments.
 5. Check whether the issue is implementation-ready.
-6. If context is missing, create or update the required specification, task breakdown, or experiment before coding.
+6. If context is missing, create or update the required specification, issue acceptance criteria, milestone description, or experiment before coding.
 7. Propose the weekly, phase, or approved task-oriented branch name and wait for the maintainer to create or select the branch.
 8. Implement the smallest complete slice that satisfies the issue.
 9. Run the narrowest relevant validation first, then broader checks when available.
@@ -122,13 +122,21 @@ for review and merge; record that distinction on the issue rather than in a
 second repository status field.
 
 Repository requirements, specifications, and ADRs own product and technical
-behavior. Journals and experiments own factual evidence. Phase documents
-provide context and links to the relevant issues and evidence; they do not
-need matching live checklists or task assignments. Keep stable task IDs and
-completed historical records. Before retiring an existing live repository
-checklist, compare it with its GitHub issue and transfer any missing scope,
-acceptance criteria, or dependencies. Retained historical statuses and
-checkboxes describe the recorded work, not current delivery state.
+behavior. Journals and experiments own factual evidence. The concise
+[roadmap](roadmap.md) links to GitHub without maintaining phase pages, task
+lists, or historical planning archives. Keep stable task IDs on their issues
+and in evidence references. Before retiring an existing repository task record,
+compare it with its GitHub issue and transfer any missing scope, acceptance
+criteria, dependencies, and evidence links. Apply the same organization to
+completed and upcoming tasks. Preserve historical evidence in journals,
+experiments, ADRs, and Git history rather than keeping a second task archive
+beside the live issues.
+
+Use the [issue](templates/github-issue.md) and
+[milestone](templates/github-milestone.md) templates when useful. Keep issue
+acceptance criteria on issues and phase exit criteria in milestone descriptions.
+Select next work by inspecting GitHub, not by inferring priorities from journal
+entries, roadmap prose, or other repository documents.
 
 ## Review and direction changes
 
@@ -174,7 +182,7 @@ A task's implementation is complete when:
 
 - every acceptance criterion has supporting evidence and is checked on the GitHub issue;
 - relevant tests, measurements, screenshots, plots, or other evidence are available;
-- affected specifications and phase context are current;
+- affected specifications and GitHub planning are current;
 - the journal records what happened and any limitations;
 - required ADRs or experiments are linked.
 

@@ -122,7 +122,7 @@ parameter describing how strongly the simulator applied that synthetic
 effect. The condition and intensity are stored as experimental reference data
 outside production telemetry; inference uses the telemetry and its derived
 features, not these labels. Intensity is simulator input/reference metadata,
-not analytical severity. See the [simulator behavior specification](../specs/simulator.md#ground-truth-sidecar)
+not analytical severity. See the [simulator behavior specification](../specs/simulator.md#run-manifest-and-ground-truth-sidecar)
 for how the reference data is associated with each window.
 
 ## Relationships

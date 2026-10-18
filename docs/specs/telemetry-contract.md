@@ -162,7 +162,7 @@ for example:
 
 The sidecar is not part of `telemetry.v1`. Experiments may join it to telemetry
 to evaluate analysis results, but production inference must not receive these
-labels as input features. The [simulator behavior specification](simulator.md#ground-truth-sidecar)
+labels as input features. The [simulator behavior specification](simulator.md#run-manifest-and-ground-truth-sidecar)
 defines their meaning and limitations.
 
 `event_id` is an opaque event identity; consumers use `sequence` for device-local

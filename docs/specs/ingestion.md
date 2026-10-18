@@ -5,7 +5,7 @@
 - **Related requirements:** FR-006–FR-010, NFR-003–NFR-006, NFR-011
 - **Related specifications:** [Telemetry contract](telemetry-contract.md)
 - **Related ADR:** [ADR-0004 — MQTT delivery semantics](../adr/0004-mqtt-delivery-semantics.md) (Accepted)
-- **Related task:** [P02-001 — Specify MQTT topics and ingestion semantics](../tasks/phase-02-telemetry-transport.md#p02-001--specify-mqtt-topics-and-ingestion-semantics)
+- **Related task:** [P02-001 — Specify MQTT topics and ingestion semantics](https://github.com/gleniosp/machinepulse/issues/19)
 
 This specification defines the producer-facing MQTT topic convention and the
 delivery boundary between MQTT and the internal event stream. It does not
@@ -196,7 +196,8 @@ behavior, retained-message policy, acknowledgement meaning, clock semantics,
 and separation from internal event routing are defined here. Runtime behavior,
 broker durability under failure, the selected Go client's manual-ack support,
 and end-to-end delivery are tracked in the
-[Phase 02 task evidence](../tasks/phase-02-telemetry-transport.md).
+[Phase 02 issues](https://github.com/gleniosp/machinepulse/milestone/3)
+and [Week 02 evidence](../journal/week-02-telemetry-ingestion.md).
 
 ## Protocol reference
 
