@@ -41,7 +41,7 @@ To generate and inspect a local synthetic dataset, start with the [simulator qui
 | Project operations | [Working agreement](working-agreement.md) | Maintainer-agent collaboration and delivery lifecycle |
 | Project operations | [Developer tooling baseline](developer-tooling.md) | Tool, environment, setup, and root task ownership |
 | Project operations | [Readiness checklist](project-readiness.md) | Evidence that the project is ready for the next phase |
-| Execution | [Task index](tasks/README.md) | Phase map, task conventions, and task status |
+| Execution | [Task index](tasks/README.md) | Phase context, task conventions, and links to GitHub work |
 | Execution | [Journal index](journal/README.md) | Journal format and evidence rules |
 | Decisions | [ADR index](adr/README.md) | Durable architectural decisions and their consequences |
 | Investigation | [Experiment index](experiments/README.md) | Reproducible answers to uncertain questions |
@@ -55,4 +55,4 @@ The [working agreement](working-agreement.md) owns the project lifecycle. The in
 
 ## External project state
 
-[GitHub issues](https://github.com/gleniosp/machinepulse/issues) and [milestones](https://github.com/gleniosp/machinepulse/milestones) are the operational source of task state. Repository documents provide the context, acceptance criteria, decisions, and evidence that support that state.
+[GitHub issues](https://github.com/gleniosp/machinepulse/issues) own live task scope, acceptance checklists, dependencies, assignment, and progress. [Milestones](https://github.com/gleniosp/machinepulse/milestones) group work and track phase delivery. Repository documents own requirements, technical contracts, context, decisions, and evidence. The [working agreement](working-agreement.md#acceptance-criteria-and-progress) explains how existing task records transition to this ownership.
