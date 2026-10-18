@@ -9,6 +9,9 @@ belong to P02-005.
 
 ## Run locally
 
+For a container build and Compose workflow without host Go or mise, see the
+[Docker quickstart](../../docs/guides/docker-quickstart.md).
+
 From the repository root:
 
 ```bash

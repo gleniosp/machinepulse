@@ -41,7 +41,7 @@ id = "infra-config-check"
 name = "infrastructure configuration"
 language = "system"
 entry = "mise run infra:check"
-files = '^(infra/|mise\.toml$)'
+files = '^(infra/|compose\.yaml$|\.dockerignore$|mise\.toml$)'
 pass_filenames = false
 stages = ["pre-commit"]
 

@@ -71,6 +71,12 @@ manifest, preserving its shared environment and lockfile.
 
 ## Root setup and tasks
 
+For running the current components without a host development toolchain, use
+the [Docker quickstart](guides/docker-quickstart.md). Mise remains the shared
+contributor and CI task interface. The Pixi workspace locks Linux amd64/arm64,
+macOS Intel/Apple Silicon, and Windows amd64 environments; dependency resolution
+does not by itself establish runtime validation on every platform.
+
 Run `mise run setup` from the repository root for a local setup. It installs
 the locked mise tools, installs the Pixi development environment, downloads
 the gateway Go dependencies, and installs the managed Git pre-commit hook. Each step is safe to repeat. Run
@@ -112,8 +118,10 @@ tracked repository files.
 
 The [local infrastructure guide](../infra/README.md) owns Docker/Compose host
 prerequisites and broker lifecycle commands. `mise run infra:check` validates
-the Compose configuration without a daemon; it is included in the root
-`check` task and runs in pre-commit when infrastructure or root tasks change.
+both the infrastructure-only and root application Compose configurations,
+including the simulator profile, without a daemon. It is included in the root
+`check` task and runs in pre-commit when infrastructure, root Compose files,
+the Docker build-context filter, or root tasks change.
 `mise run infra:test` proves broker persistence with disposable services and
 is included in root `test`; it requires a running Docker daemon. Broker data
 and image pins remain owned by `infra/`.

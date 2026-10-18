@@ -10,6 +10,9 @@ model limits.
 
 ## Run the example
 
+To run without installing Python, Pixi, or mise on the host, use the
+[Docker quickstart](docker-quickstart.md#generate-a-dataset).
+
 From the repository root, install the locked environment once and run the
 canonical example:
 

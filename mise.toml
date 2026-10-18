@@ -107,8 +107,11 @@ run = [
 ]
 
 [tasks."infra:check"]
-description = "Validate the local infrastructure configuration (no daemon needed)"
-run = "docker compose --file infra/compose.yaml config --quiet"
+description = "Validate broker and application Compose configurations (no daemon needed)"
+run = [
+  "docker compose --file infra/compose.yaml config --quiet",
+  "docker compose --file compose.yaml --profile tools config --quiet",
+]
 
 [tasks."infra:up"]
 description = "Start local MQTT and Kafka services and wait for readiness"

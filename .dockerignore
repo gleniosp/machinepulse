@@ -1,0 +1,28 @@
+# Deny by default. Allow only dependency manifests, component source,
+# examples, and the license; Dockerfiles still use explicit COPY instructions.
+**
+!LICENSE
+!pixi.toml
+!pixi.lock
+!services/telemetry-gateway/go.mod
+!services/telemetry-gateway/go.sum
+!services/telemetry-gateway/cmd/**
+!services/telemetry-gateway/internal/**
+!tools/simulator/pyproject.toml
+!tools/simulator/src/**
+!tools/simulator/examples/**
+
+# Keep these exclusions last so they also apply inside allowed directories.
+**/.git
+**/.env
+**/.env.*
+**/.aws
+**/.codex
+**/.pixi
+**/.venv
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+simulator-output/

@@ -75,3 +75,69 @@ implementation checkbox progress belongs to the linked GitHub issues.
 The migration changes planning ownership and document navigation only.
 Runtime behavior and numbered-phase scope are unchanged. The next delivery
 step is maintainer review and commit, followed by the planning PR for #101.
+
+## 2026-10-18 — Container images and local Compose workflow
+
+Started [#104](https://github.com/gleniosp/machinepulse/issues/104) on
+`feat/public-onboarding`. Added a root Compose entry point that includes the
+existing broker definitions, starts the gateway on the internal MQTT address,
+and exposes the simulator as an on-demand tool with host-mounted output.
+The [Docker guide](../guides/docker-quickstart.md) owns commands, configuration,
+output ownership, readiness interpretation, platform limits, and provenance.
+
+Both image recipes use build and runtime stages with version/digest-pinned
+bases. The gateway runs a static Go executable as a non-root user. The
+simulator installs the shared Pixi `default` environment during its build and
+runs without Pixi or development tools. Its editable source retains the build
+path. Dockerfile `COPY` instructions explicitly select dependency manifests,
+component source directories, examples, and the license. The context filter
+denies files by default and allows only those build inputs. Final exclusions
+also remove common local configuration, Git metadata, environments, and caches
+inside allowed directories. Unrelated projects and generated datasets remain
+outside the build context.
+After the maintainer's build-input review, both images rebuilt successfully
+with these explicit copies; the simulator generated the three example runs
+again and the gateway executable's help command succeeded.
+The final context allowlist was also checked by exporting a scratch build's
+`COPY . /` result: all 24 exported files were approved manifests, source,
+examples, or the license; local configuration, Git data, caches, datasets, and
+unrelated directories were absent. The check initially caught parent-directory
+exceptions admitting extra project files; the final allowlist omits those
+exceptions and uses exact manifest paths and required source subtrees.
+
+The maintainer requested broader host coverage. Added `linux-aarch64` to the
+shared Pixi workspace and regenerated the lockfile. The lockfile diff only
+adds entries; existing platform selections were preserved. The workspace now
+resolves Linux amd64/arm64, macOS Intel/Apple Silicon, and Windows amd64 for
+both runtime and development environments. Resolution is not runtime evidence.
+
+Local validation on Linux amd64, Docker Engine 29.7.2 and Compose 5.4.0:
+
+| Check | Evidence |
+|---|---|
+| `docker compose build gateway simulator` | Both native images built using the locked Go and Pixi inputs |
+| `docker compose --project-name machinepulse-container104 run --rm simulator` | Three runs, two windows each; telemetry/sidecar event IDs matched and files belonged to the invoking host user |
+| Container manifest inspection | Revision and dirty state were null without build provenance, as documented |
+| Runtime image inspection | Simulator runtime had no Pixi, pytest, or checkout metadata; gateway used user `65532:65532` |
+| Root Compose startup with disposable project and random host ports | MQTT and Kafka became healthy; gateway logged a successful subscription and connection to `mqtt:1883` |
+| Contract fixture published with bundled `mosquitto_pub` | Gateway logged the original event ID and `telemetry_unacknowledged` |
+| Gateway restart, then full `down` / `up` preserving volumes | The same pending event was redelivered; the gateway resumed its broker session |
+| `docker buildx build --platform linux/arm64 --file infra/docker/gateway.Dockerfile --tag machinepulse-gateway:arm64-check --load .` | Arm64 gateway image cross-built successfully; image architecture was verified |
+| `mise run check` | Formatting, lint, typing, 124 simulator tests, Go race tests/build/module verification, expanded lockfile validation, and both Compose configurations passed |
+| Repository hooks on all changed and new files | File hygiene, TOML/YAML, simulator, gateway, Compose, and Pixi lock checks passed |
+| Documentation navigation and whitespace | 386 local Markdown links/anchors and `git diff --check` passed |
+
+The disposable Compose project's containers, network, and volumes were removed.
+Generated sample datasets remain in the ignored host output directory. No
+physical telemetry, durable gateway sink, or simulator MQTT publisher was
+introduced. The gateway remains in observation mode. Native simulator/gateway
+runtime evidence is amd64 only; the host lacks ARM execution support, so the
+arm64 simulator and other host platforms have not been runtime-tested here.
+
+This is the first container implementation slice. Repeatable automated
+container verification and CI integration remain the next commit-sized step
+under #104, before the contribution and public README work.
+
+The maintainer also reported that the manual Docker walkthrough succeeded:
+dataset generation, runtime startup, fixture delivery, gateway restart,
+container recreation, and shutdown behaved as expected.

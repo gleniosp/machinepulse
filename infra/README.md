@@ -1,12 +1,16 @@
 # Local telemetry infrastructure
 
+For the gateway and simulator alongside these brokers, use the
+[Docker quickstart](../docs/guides/docker-quickstart.md). This guide owns the
+infrastructure-only environment and its persistence behavior.
+
 This environment implements [P02-002](https://github.com/gleniosp/machinepulse/issues/20).
 The broker selection and trade-offs are proposed in
 [ADR-0005](../docs/adr/0005-local-telemetry-brokers.md).
 
 ## Prerequisites and start
 
-Install Docker Engine or Docker Desktop with Docker Compose v2.20 or newer,
+Install Docker Engine or Docker Desktop with Docker Compose v2.20.3 or newer,
 and start its daemon. Docker is a host prerequisite; `mise run setup` does not
 install it. Allow roughly 2 GiB of free memory and disk space for the images
 and local broker data. The image references in [compose.yaml](compose.yaml)
