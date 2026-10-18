@@ -91,7 +91,7 @@ stops the brokers started through that project.
 
 ```sh
 # Brokers only, using their existing configuration.
-docker compose --file infra/compose.yaml up --detach --wait
+docker compose --file infra/docker/compose.yaml up --detach --wait
 
 # Gateway and its MQTT dependency, without starting Kafka.
 docker compose up --build --detach --wait gateway
@@ -145,6 +145,37 @@ Only use a revision that identifies the source being built. Container manifests
 report `working_tree_dirty` as null because they cannot inspect the checkout.
 The existing [mise development workflow](../developer-tooling.md) remains
 available for editing, checks, and tests.
+
+## Repeatable verification
+
+```sh
+bash infra/docker/smoke-test.sh
+# Equivalent contributor task:
+mise run containers:test
+```
+
+The host entry point, `infra/docker/smoke-test.sh`, requires Bash and Docker.
+It mounts `verify-smoke.py` read-only and runs it inside the simulator image
+with `/app/.pixi/envs/default/bin/python`: Python 3.13 from the shared Pixi
+lockfile. The helper uses container-only paths and is not a host executable.
+The separate `broker-smoke-test.sh` tests broker persistence without building
+the applications.
+
+The application smoke test builds both images without layer-cache reuse, compares two
+generated datasets, checks fixture reception, and verifies pending-message
+recovery after gateway restart and full container recreation. Its separate
+project, random host ports, temporary output, and image tags keep it independent
+of the normal local runtime. It ignores the developer dotenv file, prints
+service diagnostics on failure, and removes its own containers, volumes,
+images, network, and temporary files on exit. Shared Docker build caches remain.
+
+CI runs this test alongside the existing broker and gateway integration checks.
+These checks demonstrate the current observation-mode workflow, not durable
+Kafka publication or power-loss recovery.
+
+For editing these scripts, the pinned local lint/format commands are documented
+in [developer tooling](../developer-tooling.md#container-test-scripts). Static
+checks do not execute the Python evidence checker or start Docker services.
 
 ## References
 

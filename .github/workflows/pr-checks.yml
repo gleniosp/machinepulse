@@ -47,3 +47,6 @@ jobs:
 
       - name: Verify gateway MQTT delivery and recovery
         run: mise run gateway:test:integration
+
+      - name: Verify container builds, datasets, and gateway recovery
+        run: mise run containers:test

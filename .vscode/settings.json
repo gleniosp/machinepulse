@@ -1,4 +1,8 @@
 {
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "ruff.configurationPreference": "filesystemFirst",
   "gopls": {
     "build.buildFlags": [
       "-tags=integration"

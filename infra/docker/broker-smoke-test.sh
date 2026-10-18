@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 # Separate project/volumes and random host ports keep developer data untouched.
 project="machinepulse-test-$(date +%s)-$$"
 export MACHINEPULSE_MQTT_PORT=0
 export MACHINEPULSE_KAFKA_PORT=0
-compose=(docker compose --project-name "$project" --file infra/compose.yaml)
+compose=(docker compose --project-name "$project" --file infra/docker/compose.yaml)
 
 cleanup() {
   result=$?

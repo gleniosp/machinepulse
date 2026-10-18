@@ -61,7 +61,7 @@ readiness, and broker session persistence evidence before adding the gateway.
 
 ### What happened
 
-Added the [Compose environment](../../infra/compose.yaml), Mosquitto persistence
+Added the [Compose environment](../../infra/docker/compose.yaml), Mosquitto persistence
 configuration, named mise tasks, and the
 [local infrastructure guide](../../infra/README.md). Image references pin
 versions and multi-platform digests. The configuration requires no secrets and
@@ -69,7 +69,7 @@ publishes client ports on host loopback. The durable broker selection is
 recorded in [accepted ADR-0005](../adr/0005-local-telemetry-brokers.md) after
 maintainer approval on 2026-10-16.
 
-The [smoke test](../../infra/smoke-test.sh) creates fresh disposable volumes,
+The [smoke test](../../infra/docker/broker-smoke-test.sh) creates fresh disposable volumes,
 waits for readiness, queues a non-retained QoS 1 message for an offline MQTT 5
 session with a 24-hour expiry, and writes a Kafka record. It gracefully removes
 and recreates containers, then verifies recovery of both messages. It cleans

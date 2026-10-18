@@ -37,7 +37,7 @@ func TestBrokerSessionAndDeferredAcknowledgement(t *testing.T) {
 		t.Helper()
 		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 		defer cancel()
-		base := []string{"compose", "--project-name", project, "--file", filepath.Join(root, "infra/compose.yaml")}
+		base := []string{"compose", "--project-name", project, "--file", filepath.Join(root, "infra/docker/compose.yaml")}
 		cmd := exec.CommandContext(ctx, "docker", append(base, args...)...)
 		cmd.Env = append(os.Environ(), "MACHINEPULSE_MQTT_PORT="+port, "MACHINEPULSE_KAFKA_PORT=0")
 		out, err := cmd.CombinedOutput()

@@ -24,7 +24,7 @@ mise run gateway:run
 In another terminal, publish the existing contract fixture:
 
 ```bash
-docker compose --file infra/compose.yaml exec -T mqtt mosquitto_pub \
+docker compose --file infra/docker/compose.yaml exec -T mqtt mosquitto_pub \
   -V mqttv5 -q 1 \
   -t machinepulse/v1/telemetry/01M000000028T5CY4GNF6YY4HM \
   -s < tools/simulator/tests/fixtures/telemetry.v1.json

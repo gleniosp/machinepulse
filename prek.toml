@@ -20,10 +20,19 @@ repo = "local"
 
 [[repos.hooks]]
 id = "simulator-check"
-name = "simulator checks"
+name = "simulator tests"
 language = "system"
-entry = "mise run simulator:check"
+entry = "mise run simulator:test"
 files = '^(tools/simulator/|pixi\.(toml|lock)$)'
+pass_filenames = false
+stages = ["pre-commit"]
+
+[[repos.hooks]]
+id = "python-check"
+name = "shared Python checks"
+language = "system"
+entry = "mise run python:check"
+files = '(\.py$|^ruff\.toml$|^mypy\.ini$|^pixi\.(toml|lock)$|(^|/)mise\.toml$|/pyproject\.toml$)'
 pass_filenames = false
 stages = ["pre-commit"]
 
@@ -42,6 +51,15 @@ name = "infrastructure configuration"
 language = "system"
 entry = "mise run infra:check"
 files = '^(infra/|compose\.yaml$|\.dockerignore$|mise\.toml$)'
+pass_filenames = false
+stages = ["pre-commit"]
+
+[[repos.hooks]]
+id = "container-smoke-check"
+name = "container smoke-test shell syntax"
+language = "system"
+entry = "mise run containers:check"
+files = '^(infra/docker/.*\.sh$|mise\.toml$)'
 pass_filenames = false
 stages = ["pre-commit"]
 

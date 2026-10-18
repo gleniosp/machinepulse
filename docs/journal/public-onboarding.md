@@ -141,3 +141,97 @@ under #104, before the contribution and public README work.
 The maintainer also reported that the manual Docker walkthrough succeeded:
 dataset generation, runtime startup, fixture delivery, gateway restart,
 container recreation, and shutdown behaved as expected.
+
+## 2026-10-18 — Automated container verification
+
+Added the [container smoke test](../../infra/docker/smoke-test.sh), its
+[test-only Compose overrides](../../infra/docker/compose.test.yaml), and a
+[runtime evidence checker](../../infra/docker/verify-smoke.py) for #104.
+The test builds fresh application layers, runs the simulator twice, compares
+the generated files, checks event/sidecar identity and output ownership, and
+verifies fixture reception and pending-message recovery after gateway restart
+and full container recreation. The evidence checker runs inside the simulator
+image with read-only test mounts; it adds no Python requirement on the host or
+test files to the runtime image.
+
+The test uses a unique Compose project and image tags, random host ports, and
+temporary output. It ignores local dotenv settings and clears inherited tool
+profiles; cleanup removes only its own resources. The
+[root task](../../mise.toml) exposes `containers:test` and includes it in `test`.
+The [PR workflow](../../.github/workflows/pr-checks.yml) invokes it after the
+existing broker and gateway integration checks.
+
+Local validation on Linux amd64:
+
+- `mise run containers:test` passed both no-cache builds, byte-for-byte dataset
+  comparison, identity/ownership/provenance checks, initial reception, gateway
+  restart redelivery, and broker-backed recovery after container recreation.
+- The direct Bash command passed with conflicting inherited tool-profile,
+  gateway-timeout, and source-revision settings, confirming test isolation.
+- Docker inspection after cleanup found no containers, image tags, volumes,
+  or networks belonging to either successful test run.
+- Bash syntax and Ruff lint/format checks passed for the new test helpers.
+- Applicable repository hooks, including YAML/TOML, gateway checks, and Compose
+  validation, passed. All 392 local Markdown links/anchors and
+  `git diff --check` passed.
+
+The GitHub Actions run awaits the combined public-onboarding PR. Local evidence
+covers the current observation-mode workflow and graceful recovery on amd64;
+it does not establish native ARM execution, durable Kafka publication, or
+power-loss recovery.
+
+## 2026-10-18 — Smoke-test tooling and Docker asset organization
+
+Maintainer review identified that the Python evidence checker had only manual
+format checks. Added shared Python 3.13 lint/format settings and static-check tasks
+with scoped pre-commit coverage. Root `check`, `format`, `format-check`, and `lint`
+include the helper. VS Code selects Ruff for Python and prefers repository
+configuration. The helper already passed the selected Ruff formatting rules;
+the missing piece was automated coverage and discoverable configuration.
+
+The Bash wrapper and Python module now explicitly document their execution
+contexts: Bash orchestrates Docker on the host; the checker runs inside the
+simulator's locked Python runtime with read-only fixtures and evidence mounts.
+Host-side Ruff checks only parse the file through the pinned Pixi development
+toolchain. The [Docker guide](../guides/docker-quickstart.md#repeatable-verification)
+and [developer tooling](../developer-tooling.md#container-test-scripts) describe
+these roles and commands.
+
+Moved broker Compose configuration and its persistence test into `infra/docker/`,
+naming the latter `broker-smoke-test.sh`. Updated the root Compose include,
+task commands, Go broker integration harness, documentation, and the owning
+GitHub issue's live links. The Mosquitto bind source still resolves to the
+existing configuration; Compose project and persistent volume names are
+unchanged.
+
+After the move, `mise run test` passed all 124 simulator tests, Go race tests,
+broker persistence, gateway MQTT integration, and the no-cache application
+container smoke test. `containers:check` and automatic Ruff configuration
+discovery also passed. Native runtime evidence remains Linux amd64.
+The final pre-commit run explicitly included the new container shell-syntax
+hook and passed, alongside JSON/TOML/YAML, gateway, and Compose checks. All
+395 local Markdown links/anchors and `git diff --check` passed.
+
+### Shared Python quality policy
+
+Consolidated Ruff and strict mypy settings in root `ruff.toml` and `mypy.ini`,
+preserving Python 3.13 and the existing lint rules. Simulator package metadata and pytest
+settings stay local. Updated the simulator import roots for the new config
+location and added Docker helpers to the mypy targets. Removed the proposed
+container-specific Ruff config. Root Python tasks and the shared pre-commit
+hook cover all current Python code; focused simulator tasks use the same
+policy. Shell syntax checks remain separate, so root checks do not repeat
+Python analysis through the container tasks. Smoke-test runtime execution
+remains inside Docker.
+
+A tools-only root `pyproject.toml` passed the checks but triggered repeated
+missing-project-table warnings from the pinned Pixi version. Dedicated root
+config files avoid those warnings without introducing root package metadata.
+
+Validation: `mise run check` passed shared formatting/lint and strict mypy on
+23 Python files, all 124 simulator tests, Go checks, lockfile freshness,
+Compose validation, and Bash syntax. Focused simulator type checking passed
+on 22 files; automatic Ruff discovery also passed for the Docker helper.
+Applicable pre-commit hooks, including shared Python coverage, passed. The
+lockfile did not change. All 395 local Markdown links and `git diff --check`
+passed.

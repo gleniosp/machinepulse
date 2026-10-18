@@ -1,0 +1,22 @@
+# Test-only overrides; paths resolve relative to the root compose.yaml.
+services:
+  gateway:
+    image: machinepulse-gateway:${MACHINEPULSE_SMOKE_PROJECT:?}
+    environment:
+      MACHINEPULSE_MQTT_CLIENT_ID: ${MACHINEPULSE_SMOKE_PROJECT:?}
+      MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS: "86400"
+      MACHINEPULSE_MQTT_RECONNECT_CAP: 1s
+      MACHINEPULSE_MQTT_MAX_PACKET_BYTES: "1048576"
+      MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT: 10s
+
+  simulator:
+    image: machinepulse-simulator:${MACHINEPULSE_SMOKE_PROJECT:?}
+    build:
+      args:
+        MACHINEPULSE_CODE_REVISION: ""
+    volumes:
+      - type: bind
+        source: ${MACHINEPULSE_SMOKE_OUTPUT:?}
+        target: /output/simulator-output
+        bind:
+          create_host_path: false

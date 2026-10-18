@@ -2,7 +2,7 @@ name: machinepulse
 
 # Keep broker configuration and persistent volumes owned by infra/.
 include:
-  - infra/compose.yaml
+  - infra/docker/compose.yaml
 
 services:
   gateway:
