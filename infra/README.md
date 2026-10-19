@@ -1,15 +1,25 @@
 # Local telemetry infrastructure
 
+For the gateway and simulator alongside these brokers, use the
+[Docker quickstart](../docs/guides/docker-quickstart.md). This guide owns the
+infrastructure-only environment and its persistence behavior.
+
+The broker Compose file and tests live in `docker/`: `compose.yaml` defines
+the brokers, `broker-smoke-test.sh` checks broker persistence, and
+`smoke-test.sh` checks the application containers too. Broker configuration
+remains under `mosquitto/`. The root Compose file includes the broker model;
+moving these files does not change the project name or persistent volume names.
+
 This environment implements [P02-002](https://github.com/gleniosp/machinepulse/issues/20).
 The broker selection and trade-offs are proposed in
 [ADR-0005](../docs/adr/0005-local-telemetry-brokers.md).
 
 ## Prerequisites and start
 
-Install Docker Engine or Docker Desktop with Docker Compose v2.20 or newer,
+Install Docker Engine or Docker Desktop with Docker Compose v2.20.3 or newer,
 and start its daemon. Docker is a host prerequisite; `mise run setup` does not
 install it. Allow roughly 2 GiB of free memory and disk space for the images
-and local broker data. The image references in [compose.yaml](compose.yaml)
+and local broker data. The image references in [compose.yaml](docker/compose.yaml)
 pin versions and multi-platform digests for Linux amd64 and arm64.
 
 From the repository root:
@@ -107,7 +117,7 @@ failure unless their data is intentionally disposable.
 mise run infra:test
 ```
 
-The [smoke test](smoke-test.sh) starts an isolated Compose project with fresh
+The [broker smoke test](docker/broker-smoke-test.sh) starts an isolated Compose project with fresh
 volumes and random loopback host ports. It registers an offline MQTT 5
 subscription with a 24-hour expiry, publishes a non-retained QoS 1 message,
 and writes a Kafka record with `acks=all`. It then gracefully removes and

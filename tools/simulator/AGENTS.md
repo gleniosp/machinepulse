@@ -4,18 +4,16 @@
   tests and golden fixtures; `experiments/` contains reproducible experiment
   runners.
 - `pyproject.toml` owns package metadata, runtime dependencies
-  (`project.dependencies`), build configuration, and Python tooling config.
+  (`project.dependencies`), build configuration, and pytest config. The root
+  `ruff.toml` and `mypy.ini` own shared lint, format, and type-checking policy.
   This project's `mise.toml` owns its task names; its tasks use the repository
   root as their working directory and the shared root Pixi environment. Commit
   the root `pixi.lock`. `.pixi/` at the repository root is local environment
   state.
-- Use the repository's mise-provided Pixi CLI, then run native checks from this
-  folder with the root manifest: `pixi run --manifest-path ../../pixi.toml
-  --locked -e dev pytest`, `pixi run --manifest-path ../../pixi.toml --locked
-  -e dev ruff check src tests experiments`, `pixi run --manifest-path
-  ../../pixi.toml --locked -e dev mypy src tests experiments`, and `pixi run
-  --manifest-path ../../pixi.toml --locked -e dev ruff format --check src
-  tests experiments`.
+- Run `mise run simulator:check` from the repository root for focused checks,
+  or `mise run python:check` for shared lint, formatting, and strict typing
+  across all configured Python areas. These tasks use the root configuration
+  and the repository's pinned Pixi development environment.
 - Run `mise run simulator:experiment:vibration` from the repository root to
   regenerate the EXP-0001 vibration plots and summaries.
 - The Pixi `default` environment is for runtime use; `dev` adds test and quality

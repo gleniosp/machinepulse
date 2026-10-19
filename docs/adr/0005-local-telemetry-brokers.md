@@ -22,7 +22,7 @@ needed. MQTT session state must persist across broker restart under
 
 Use Eclipse Mosquitto for MQTT and Apache Kafka in combined KRaft
 broker/controller mode for the internal stream. The reviewable implementation
-and exact image versions/digests live in [infra/compose.yaml](../../infra/compose.yaml).
+and exact image versions/digests live in [infra/docker/compose.yaml](../../infra/docker/compose.yaml).
 The project maintainer accepted this decision on 2026-10-16.
 
 Run one container per broker with named data volumes. Publish client ports on

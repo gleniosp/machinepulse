@@ -22,7 +22,7 @@ and should not be repeated here.
 |---|---|---|
 | Shared tools and commands | `mise.toml`, `mise.lock`, `prek.toml`, and root mise tasks | Root tasks are the shared command interface |
 | Go service or library | A root `go.work` coordinates local modules; each module owns `go.mod` and `go.sum` | Add the Go toolchain through mise when Go code is introduced; project tasks delegate to the module |
-| Python tool, app, or library | Root Pixi workspace (`pixi.toml`, `pixi.lock`) owns the locked environment; each project owns package metadata, runtime dependencies, tool configuration, and task names | Project mise tasks run native commands through the shared root Pixi environment |
+| Python tool, app, or library | Root Pixi workspace (`pixi.toml`, `pixi.lock`) owns the locked environment; root `ruff.toml` and `mypy.ini` own Python quality policy; each project owns package metadata, runtime dependencies, pytest configuration, and task names | Project mise tasks run native commands through the shared root Pixi environment |
 | JavaScript/TypeScript app or package | Root pnpm workspace, catalog, and lockfile; each project owns its `package.json` dependencies and scripts | Package scripts run native tooling through pnpm |
 | Infrastructure | `infra/` package or folder with Docker, database, and operational scripts | mise exposes documented infra tasks; services remain explicit and local-first |
 
@@ -47,7 +47,9 @@ table.
 Pixi owns Python environment dependencies: the root manifest provides Python,
 and its development feature provides Ruff, mypy, and pytest. The simulator's
 `pyproject.toml` owns its package metadata, runtime dependencies, build settings,
-and tool-specific pytest, Ruff, and mypy configuration. Pixi manifests describe
+and pytest configuration. Root `ruff.toml` and `mypy.ini` own shared lint,
+formatting, and strict type-checking settings for Python 3.13, including
+simulator import roots. Pixi manifests describe
 workspace environments and dependencies; they do not replace those tools'
 configuration files.
 
@@ -71,6 +73,12 @@ manifest, preserving its shared environment and lockfile.
 
 ## Root setup and tasks
 
+For running the current components without a host development toolchain, use
+the [Docker quickstart](guides/docker-quickstart.md). Mise remains the shared
+contributor and CI task interface. The Pixi workspace locks Linux amd64/arm64,
+macOS Intel/Apple Silicon, and Windows amd64 environments; dependency resolution
+does not by itself establish runtime validation on every platform.
+
 Run `mise run setup` from the repository root for a local setup. It installs
 the locked mise tools, installs the Pixi development environment, downloads
 the gateway Go dependencies, and installs the managed Git pre-commit hook. Each step is safe to repeat. Run
@@ -86,7 +94,7 @@ auto-install is disabled, it may also fall back to `PATH`. The root
 commands; this controls mise config loading, not `PATH` isolation.
 
 Use the mise-managed GitHub CLI for repository issue and pull-request
-workflows. See the [README](../README.md#github-cli) for authentication and
+workflows. See the [contribution guide](../CONTRIBUTING.md#github-cli-optional) for authentication and
 least-privilege token guidance.
 
 Root mise tasks are the contributor and CI entry points; project-specific
@@ -103,20 +111,63 @@ All simulator project tasks also run from the repository root and address
 project files through `tools/simulator/` paths, keeping direct and root-alias
 invocations consistent.
 `mise run pixi:lock-check` verifies that the root Pixi lockfile is current.
-Pre-commit hooks run file checks on eligible changed files, simulator checks
-when simulator files or root Pixi manifests change, and the Pixi lock check
-when Pixi manifests or simulator package metadata change. Gateway checks run
+Pre-commit hooks run shared Python checks when Python files, Python manifests,
+or mise task definitions change. Simulator tests run when simulator files or
+root Pixi manifests change; the Pixi lock check runs when Pixi manifests or
+simulator package metadata change. Gateway checks run
 when the gateway module, Go workspace, or shared mise toolchain changes.
 `mise run hooks:check` applies the configured hooks across all eligible
 tracked repository files.
 
 The [local infrastructure guide](../infra/README.md) owns Docker/Compose host
 prerequisites and broker lifecycle commands. `mise run infra:check` validates
-the Compose configuration without a daemon; it is included in the root
-`check` task and runs in pre-commit when infrastructure or root tasks change.
+both the infrastructure-only and root application Compose configurations,
+including the simulator profile, without a daemon. It is included in the root
+`check` task and runs in pre-commit when infrastructure, root Compose files,
+the Docker build-context filter, or root tasks change.
 `mise run infra:test` proves broker persistence with disposable services and
 is included in root `test`; it requires a running Docker daemon. Broker data
 and image pins remain owned by `infra/`.
+
+`mise run containers:test` builds and verifies the complete current Docker
+workflow in a disposable project and is also included in root `test`.
+The [Docker verification guide](guides/docker-quickstart.md#repeatable-verification)
+owns its direct Bash command, isolation, cleanup, and evidence limits.
+
+### Container test scripts
+
+Docker Compose files, image recipes, and smoke tests live in `infra/docker/`.
+The root `compose.yaml` remains the application entry point. The broker-only
+environment is `infra/docker/compose.yaml`, tested by `broker-smoke-test.sh`;
+`smoke-test.sh` tests the application images and runtime together.
+
+The Bash wrappers run on the host. `verify-smoke.py` runs only inside the
+simulator container with its locked Python 3.13 runtime and read-only test
+mounts. It does not need a host Python installation to execute the smoke test.
+Host-side contributor checks use pinned Ruff and mypy from the root Pixi
+`dev` environment; they analyze the helper without executing it:
+
+```sh
+mise run python:check
+mise run python:format
+mise run containers:check
+```
+
+Root `ruff.toml` and `mypy.ini` own the shared lint, format, and strict
+type-checking policy. Ruff scans the repository with its standard exclusions
+plus `.pixi`;
+mypy checks the source directories listed in that config, currently simulator
+sources, tests, experiments, and Docker helpers. Add new Python source areas
+to mypy's `files` list when introducing them. Component commands use the same
+root policy while narrowing their targets. Keep exceptions scoped to modules
+and justified; do not duplicate the shared settings in package configs.
+
+`python:check` runs in root `check`, the shared Python pre-commit hook, and CI
+through `hooks:check`. Root `format`, `format-check`, `lint`, and `typecheck`
+cover the helper too. `containers:check` separately checks Bash syntax without
+starting services; it also runs in root `check` and its scoped pre-commit hook.
+VS Code selects Ruff for Python and prefers repository configuration. Use the
+Pixi `dev` interpreter for editor analysis, as with the simulator.
 
 ## Dependency and lockfile policy
 
@@ -139,8 +190,8 @@ remaining readiness work is tracked through [GitHub milestones](https://github.c
 The [GitHub Actions workflow](../.github/workflows/pr-checks.yml) runs
 on pull requests targeting `main`. It installs the locked repository tools and
 simulator environment and pinned Go dependencies, then runs
-`mise run hooks:check`. It also runs broker persistence and gateway integration
-tasks with Docker. The result is informational for merging; requiring the status check is deferred until the
+`mise run hooks:check`. It also runs broker persistence, gateway integration,
+and container workflow verification with Docker. The result is informational for merging; requiring the status check is deferred until the
 project begins accepting outside contributions. Track the remaining work and
 PR evidence in
 [P01-012](https://github.com/gleniosp/machinepulse/issues/93).

@@ -79,56 +79,92 @@ run = "mise run //tools/simulator:experiment:conditions"
 
 [tasks.format]
 description = "Format all current projects"
-run = ["mise run simulator:format", "mise run gateway:format"]
+run = ["mise run python:format", "mise run gateway:format"]
 
 [tasks.format-check]
 description = "Check formatting for all current projects"
-run = ["mise run simulator:format-check", "mise run gateway:format-check"]
+run = ["mise run python:format-check", "mise run gateway:format-check"]
 
 [tasks.lint]
 description = "Lint all current projects"
-run = ["mise run simulator:lint", "mise run gateway:lint"]
+run = ["mise run python:lint", "mise run gateway:lint"]
 
 [tasks.typecheck]
 description = "Type-check all current projects"
-run = ["mise run simulator:typecheck", "mise run gateway:typecheck"]
+run = ["mise run python:typecheck", "mise run gateway:typecheck"]
 
 [tasks.test]
 description = "Test all current projects"
-run = ["mise run simulator:test", "mise run gateway:test", "mise run infra:test", "mise run gateway:test:integration"]
+run = ["mise run simulator:test", "mise run gateway:test", "mise run infra:test", "mise run gateway:test:integration", "mise run containers:test"]
 
 [tasks.check]
 description = "Run all current repository checks"
 run = [
-  "mise run simulator:check",
+  "mise run python:check",
+  "mise run simulator:test",
   "mise run gateway:check",
   "mise run pixi:lock-check",
   "mise run infra:check",
+  "mise run containers:check",
 ]
 
 [tasks."infra:check"]
-description = "Validate the local infrastructure configuration (no daemon needed)"
-run = "docker compose --file infra/compose.yaml config --quiet"
+description = "Validate broker and application Compose configurations (no daemon needed)"
+run = [
+  "docker compose --file infra/docker/compose.yaml config --quiet",
+  "docker compose --file compose.yaml --profile tools config --quiet",
+]
 
 [tasks."infra:up"]
 description = "Start local MQTT and Kafka services and wait for readiness"
-run = "docker compose --file infra/compose.yaml up --detach --wait --wait-timeout 180"
+run = "docker compose --file infra/docker/compose.yaml up --detach --wait --wait-timeout 180"
 
 [tasks."infra:down"]
 description = "Stop local infrastructure, preserving its data volumes"
-run = "docker compose --file infra/compose.yaml down"
+run = "docker compose --file infra/docker/compose.yaml down"
 
 [tasks."infra:status"]
 description = "Show local infrastructure service and health state"
-run = "docker compose --file infra/compose.yaml ps --all"
+run = "docker compose --file infra/docker/compose.yaml ps --all"
 
 [tasks."infra:logs"]
 description = "Show recent local infrastructure logs"
-run = "docker compose --file infra/compose.yaml logs --tail 100"
+run = "docker compose --file infra/docker/compose.yaml logs --tail 100"
 
 [tasks."infra:test"]
 description = "Prove MQTT session and Kafka record persistence in disposable services"
-run = "bash infra/smoke-test.sh"
+run = "bash infra/docker/broker-smoke-test.sh"
+
+[tasks."containers:test"]
+description = "Build and verify the container workflow in a disposable Compose project"
+run = "bash infra/docker/smoke-test.sh"
+
+[tasks."python:format"]
+description = "Format repository Python sources"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev ruff format --config ruff.toml ."
+
+[tasks."python:format-check"]
+description = "Check repository Python formatting"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev ruff format --check --config ruff.toml ."
+
+[tasks."python:lint"]
+description = "Lint repository Python sources"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev ruff check --config ruff.toml ."
+
+[tasks."python:typecheck"]
+description = "Type-check all configured Python source directories"
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev mypy --config-file mypy.ini"
+
+[tasks."python:check"]
+description = "Check repository Python formatting, lint, and strict types"
+run = ["mise run python:format-check", "mise run python:lint", "mise run python:typecheck"]
+
+[tasks."containers:check"]
+description = "Check smoke-test shell syntax without starting Docker"
+run = [
+  "bash -n infra/docker/smoke-test.sh",
+  "bash -n infra/docker/broker-smoke-test.sh",
+]
 
 [tasks."pixi:lock-check"]
 description = "Check that the root Pixi lockfile is current"

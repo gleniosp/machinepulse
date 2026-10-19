@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a problem with the current implementation or documentation.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please search existing issues first. MachinePulse is in heavy development;
+        include enough detail to help reproduce the problem. Keep credentials and
+        private data out of your report and logs.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Describe what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How can we reproduce it?
+      description: Include commands, inputs, or a small example. If you cannot reproduce it reliably, say so.
+      placeholder: |
+        1. Start with...
+        2. Run...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include your source revision (git rev-parse --short HEAD), OS, and Docker/Compose versions, or mise/tool versions if relevant. Share what you know.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or additional context
+      description: Add relevant log excerpts, screenshots, or related issue links. Remove secrets and private data.
+    validations:
+      required: false

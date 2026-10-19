@@ -1,70 +1,102 @@
 # MachinePulse
 
-MachinePulse is an open-source, simulation-first condition-monitoring platform
-for rotating machinery.
+> [!WARNING]
+> Heavy development: interfaces and setup may change, and things may break.
+> The [roadmap](https://github.com/gleniosp/machinepulse/milestones) is only partly implemented.
 
-## Quick start
+MachinePulse is an open-source condition-monitoring platform for rotating
+machinery, such as motors and pumps. The goal is to turn measurements like
+vibration and temperature into evidence people can use to investigate machine
+health and plan maintenance.
 
-Install [mise](https://mise.jdx.dev/) and Docker with Compose (see the
-[infrastructure prerequisites](infra/README.md#prerequisites-and-start)), then
-run these commands from the repository root:
+It starts with simulated measurements so the pipeline can be developed and
+tested without physical sensors. Synthetic conditions and analytical results
+are engineering evidence, not validated diagnoses.
+
+## What works today
+
+The **Python simulator** generates repeatable datasets with measurements,
+separate labels describing the simulated conditions, and a manifest recording
+how each run was produced. The **Go gateway** receives MQTT messages and records
+source identity and receipt time. MQTT and Kafka run locally in Docker.
+
+These pieces are not connected end to end yet: the simulator writes files
+rather than publishing to MQTT. The gateway currently runs in **observation
+mode**; it logs received messages but withholds acknowledgement because durable
+storage/publication is not implemented. Its one-message receive limit then
+pauses further deliveries. Kafka is available, but receives no gateway events yet.
+
+The intended path is:
+
+```text
+Simulator / future sensors → MQTT → Go gateway → Kafka
+  → storage and Python analytics → alerts and maintenance → API / dashboard
+```
+
+Storage, analytics, maintenance workflows, and the dashboard remain planned.
+See the [architecture](docs/architecture/overview.md) for responsibilities and
+the [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones)
+for implementation progress.
+
+## Try it with Docker
+
+From a checkout, use Docker with Compose **2.20.3+** and a running daemon.
+Host Go, Python, mise, and GitHub authentication are not required. Commands use
+Bash or Zsh; on Windows, use WSL2 with Docker Desktop integration.
+
+On Linux, match generated-file ownership to your account first:
 
 ```sh
-cp .env.example .env
-mise run setup
-mise run check
+export MACHINEPULSE_UID=$(id -u)
+export MACHINEPULSE_GID=$(id -g)
 ```
 
-`setup` installs the locked tools, Python environment, and Go dependencies, then configures the
-pre-commit hook. `check` runs the checks currently available in the repository.
-See the [developer tooling baseline](docs/developer-tooling.md) for the command
-interface and ownership details.
+Generate a small example dataset from the repository root:
 
-The root `.env` supplies local service configuration through mise. Existing
-environment variables take precedence. The gateway guide documents
-[configuration and deployment](services/telemetry-gateway/README.md#configuration).
-
-## GitHub CLI
-
-We pin GitHub CLI (`gh`) with mise because project work uses GitHub issues,
-milestones, and pull requests to track task state. `mise run setup` installs
-the shared version; authentication stays in your user environment.
-
-Run `gh auth login` for browser-based sign-in, or `gh auth login --with-token`
-with a classic personal access token. For a fine-grained token, set `GH_TOKEN`
-in the current terminal; GitHub CLI prefers it over saved credentials:
-
-```bash
-# Enter the token when prompted; input is hidden.
-read -s GH_TOKEN
-export GH_TOKEN
+```sh
+mkdir -p simulator-output
+docker compose run --rm --build simulator
 ```
 
-Scope the token to only the `gleniosp/machinepulse` repository to limit its
-reach, and grant these repository permissions:
+The command prints its output path under `simulator-output/`. Each run contains
+`telemetry.jsonl` measurements, `ground-truth.jsonl` labels, and `manifest.json`
+metadata. The first build downloads images and dependencies.
 
-| Permission    | Access         |
-| ------------- | -------------- |
-| Actions       | Read-only      |
-| Contents      | Read and write |
-| Issues        | Read and write |
-| Metadata      | Read-only      |
-| Pull requests | Read and write |
+To start the brokers and gateway separately from dataset generation:
 
-For token details, see GitHub CLI's [`GH_TOKEN` documentation](https://cli.github.com/manual/gh_help_environment), [fine-grained token guidance](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens), and [permission reference](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens).
+```sh
+docker compose up --build --detach --wait --wait-timeout 180
+docker compose logs --tail 50 gateway
+# Look for mqtt_connected (and mqtt_subscribed for a new session).
+docker compose down
+```
 
-## Project documentation
+Stopping preserves broker volumes and generated files. The
+[Docker guide](docs/guides/docker-quickstart.md) covers configuration, resource
+requirements, publishing a sample message, individual components, and checks.
 
-The end-to-end monitoring workflow is not available yet. See:
+## Delivery and recovery
 
-- [Simulator quickstart](docs/guides/simulator-quickstart.md) — generate a
-  small local dataset and understand its files.
-- [Local telemetry infrastructure](infra/README.md) — start and verify the
-  local MQTT broker and Kafka stream.
-- [Telemetry gateway](services/telemetry-gateway/README.md) — receive local
-  MQTT telemetry and verify delivery recovery.
-- [Documentation hub](docs/README.md) — document map and current project status.
-- [Product vision](docs/product/vision.md) — purpose, users, and principles.
-- [Product scope](docs/product/scope.md) — version 0.1 boundaries and non-goals.
-- [Architecture overview](docs/architecture/overview.md) — system shape and evolution.
-- [Project governance](docs/project-governance.md) — contribution, security, and provenance guidance.
+- **Duplicates:** MQTT QoS 1 allows repeated delivery (at least once). Source
+  event IDs are preserved; consumer deduplication and safe repeated side effects
+  (idempotency) are planned, not implemented.
+- **Ordering:** producer timestamps remain separate from gateway receipt time.
+  The design assumes late or out-of-order messages and sequence gaps.
+- **Failures:** gateway reconnect and pending-message redelivery are tested
+  while the MQTT session survives. Durable quarantine, downstream retries,
+  replay, and producer buffering remain planned; session persistence alone
+  does not guarantee data retention.
+
+The [ingestion contract](docs/specs/ingestion.md) and
+[data-flow design](docs/architecture/data-flow.md) explain these boundaries.
+There is no end-to-end exactly-once guarantee or production-readiness claim.
+
+## Development and contribution
+
+Use the [mise development setup](docs/developer-tooling.md#root-setup-and-tasks)
+for editing and checks. Development is maintainer-led; read the
+[provisional contribution guide](CONTRIBUTING.md) before proposing substantial
+work. The [documentation hub](docs/README.md) provides technical context;
+[GitHub issues](https://github.com/gleniosp/machinepulse/issues) track implementation.
+
+Licensed under [Apache-2.0](LICENSE).

@@ -1,0 +1,39 @@
+name: machinepulse
+
+# Keep broker configuration and persistent volumes owned by infra/.
+include:
+  - infra/docker/compose.yaml
+
+services:
+  gateway:
+    image: machinepulse-gateway:local
+    build:
+      context: .
+      dockerfile: infra/docker/gateway.Dockerfile
+    environment:
+      MACHINEPULSE_MQTT_ADDRESS: mqtt:1883
+      MACHINEPULSE_MQTT_CLIENT_ID: ${MACHINEPULSE_CONTAINER_MQTT_CLIENT_ID:-machinepulse-gateway-container}
+      MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS: ${MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS:-}
+      MACHINEPULSE_MQTT_RECONNECT_CAP: ${MACHINEPULSE_MQTT_RECONNECT_CAP:-}
+      MACHINEPULSE_MQTT_MAX_PACKET_BYTES: ${MACHINEPULSE_MQTT_MAX_PACKET_BYTES:-}
+      MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT: ${MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT:-}
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    stop_grace_period: 30s
+
+  simulator:
+    image: machinepulse-simulator:local
+    profiles: [tools]
+    build:
+      context: .
+      dockerfile: infra/docker/simulator.Dockerfile
+      args:
+        MACHINEPULSE_CODE_REVISION: ${MACHINEPULSE_CODE_REVISION:-}
+    user: "${MACHINEPULSE_UID:-1000}:${MACHINEPULSE_GID:-1000}"
+    volumes:
+      - type: bind
+        source: ./simulator-output
+        target: /output/simulator-output
+        bind:
+          create_host_path: false

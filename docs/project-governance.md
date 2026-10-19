@@ -13,14 +13,17 @@ trademarks, or third-party materials.
 
 ## Governance follow-ups
 
-- `CONTRIBUTING.md`: document branch, commit, pull-request, review, testing,
-  and provenance expectations before accepting outside contributions.
+- [Provisional contribution guide](../CONTRIBUTING.md): available for trying
+  the project, reporting problems, and coordinating agreed changes. Broader
+  contribution readiness and final guidance remain future work while the
+  initial implementation phases are underway.
 - `CODE_OF_CONDUCT.md`: adopt a contributor conduct policy and identify the
   maintainers responsible for reports.
 - `SECURITY.md`: define private vulnerability reporting, supported versions,
   disclosure handling, and security-sensitive data rules.
-- Issue and pull-request templates: add once the first runtime implementation
-  workflow exists.
+- [Public issue forms](../.github/ISSUE_TEMPLATE/): available for bug reports
+  and feature proposals; public reports use the guided forms. Pull-request
+  templates remain a follow-up.
 - Dependency and license review: record third-party software licenses and
   notices before distribution.
 

@@ -6,6 +6,9 @@ This file is the documentation map. It explains where information belongs; it do
 
 ## Start here
 
+For trying the project, reporting a problem, or proposing a change, see the
+[provisional contribution guide](../CONTRIBUTING.md).
+
 1. Read the [AI-agent instructions](../AGENTS.md) when working as an agent.
 2. Read the [working agreement](working-agreement.md) for collaboration, source-of-truth, and delivery rules.
 3. Read the [product vision](product/vision.md), [product scope](product/scope.md), and [product requirements](product/requirements.md) for product context.
@@ -42,6 +45,7 @@ To generate and inspect a local synthetic dataset, start with the [simulator qui
 | Architecture | [Runtime boundaries](architecture/runtime-boundaries.md) | Component ownership and cross-boundary rules |
 | Specifications | [Specifications index](specs/README.md) | Specification lifecycle and contract registry |
 | Guide | [Simulator quickstart](guides/simulator-quickstart.md) | Simulator purpose, invocation, and interpretation of generated files |
+| Guide | [Docker quickstart](guides/docker-quickstart.md) | Run the current components without host language toolchains |
 | Guide | [Local telemetry infrastructure](../infra/README.md) | Local broker setup, configuration, readiness, and verification |
 | Project operations | [Working agreement](working-agreement.md) | Maintainer-agent collaboration and delivery lifecycle |
 | Project operations | [Developer tooling baseline](developer-tooling.md) | Tool, environment, setup, and root task ownership |
