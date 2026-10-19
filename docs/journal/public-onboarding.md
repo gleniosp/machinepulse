@@ -271,3 +271,32 @@ and `git diff --check` passed. Reviewed the form fields and chooser configuratio
 against GitHub's documented syntax. GitHub's live issue chooser will become
 available after these files merge into the default branch; no live form
 submission was made during local validation.
+
+## 2026-10-19 — Public README refresh
+
+Reworked the README into a concise introduction to condition monitoring and the
+simulation-first approach, with a development warning, current capabilities,
+intended architecture, Docker quickstart, and reliability boundaries. Linked
+technical owners and GitHub implementation tracking instead of copying their
+checklists. The overview explicitly distinguishes file generation and gateway
+observation mode from planned publication, storage, analytics, and maintenance
+workflows. At-least-once delivery, stable identity, separate event/receipt time,
+and tested session recovery are distinguished from future deduplication,
+quarantine, consumer retries, replay, and producer buffering.
+
+Executed the displayed Docker commands on Linux amd64. The simulator image
+rebuilt from the current package configuration and generated the three example
+runs (two windows each), with the expected JSONL and manifest files owned by
+the host account. Runtime startup rebuilt the gateway image, started the two
+brokers and gateway, and produced `mqtt_connected` logs. The gateway resumed an
+existing persisted session and redelivered its pending fixture, so it correctly
+did not emit `mqtt_subscribed`; the README log hint now distinguishes a new
+session. `docker compose down` removed the containers/network while retaining
+broker volumes and generated data. No existing dataset or broker volume was
+removed. Native evidence remains Linux amd64.
+
+`mise run hooks:check` passed across the repository, including simulator tests,
+shared Python checks, Go checks, Compose validation, shell syntax, and lockfile
+freshness. The README is approximately 550 words. Local Markdown links and
+`git diff --check` passed. GitHub Actions and live issue-form behavior still
+await the pull request and merge respectively.
