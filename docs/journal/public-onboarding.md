@@ -235,3 +235,39 @@ on 22 files; automatic Ruff discovery also passed for the Docker helper.
 Applicable pre-commit hooks, including shared Python coverage, passed. The
 lockfile did not change. All 395 local Markdown links and `git diff --check`
 passed.
+
+## 2026-10-19 — Provisional contribution guidance
+
+Added [CONTRIBUTING.md](../../CONTRIBUTING.md) for the maintainer-led development
+stage, with a discussion-first route for substantial changes. It links to the
+existing setup/checks, working agreement, GitHub planning, and artifact
+provenance owners. Moved GitHub CLI authentication guidance out of the public
+README and made clear that trying the project needs no GitHub authentication.
+Updated the tooling guide's incoming link, documentation hub, and governance
+follow-up to reflect the provisional guide without claiming broader
+contribution readiness. No license, conduct, or disclosure policy was changed.
+
+Validation: applicable pre-commit documentation hooks passed on all six changed
+or new Markdown files. All 405 local Markdown links, including anchors, and
+`git diff --check` passed. Checked the authentication text against the pinned
+`gh auth login --help` and official CLI documentation. This slice changes only
+documentation; runtime tests were not repeated.
+
+### Guided public issue forms
+
+Added GitHub issue forms for bug reports and feature/improvement proposals,
+plus a chooser link to the provisional contribution guide. Bug reports ask
+for expected/actual behavior, reproduction, and optional environment/evidence;
+proposals start with the problem and invite discussion before substantial
+implementation. At maintainer request, blank issues are disabled for public
+intake so reports use these forms. No labels, assignees, or
+milestones are assigned automatically. These public intake forms complement
+the existing maintainer issue/milestone drafting guides rather than replacing
+GitHub as the owner of implementation scope and progress.
+
+Validation: YAML and applicable documentation hooks passed for the three new
+chooser/form files and affected guides. All 406 local Markdown links/anchors
+and `git diff --check` passed. Reviewed the form fields and chooser configuration
+against GitHub's documented syntax. GitHub's live issue chooser will become
+available after these files merge into the default branch; no live form
+submission was made during local validation.

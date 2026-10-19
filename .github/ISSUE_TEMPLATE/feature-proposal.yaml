@@ -1,0 +1,30 @@
+name: Feature or improvement proposal
+description: Discuss a problem or idea before starting substantial implementation work.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please search existing issues and review the [roadmap](https://github.com/gleniosp/machinepulse/blob/main/docs/roadmap.md).
+        Development is currently maintainer-led. Proposals are for discussion;
+        agree on scope with the maintainer before starting substantial work.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe who encounters the problem and what they are trying to do.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Suggested improvement
+      description: Describe the behavior you would like. It is fine if you do not have a solution yet.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Alternatives or related work
+      description: Share workarounds, relevant issues or milestones, or examples that help explain the idea.
+    validations:
+      required: false

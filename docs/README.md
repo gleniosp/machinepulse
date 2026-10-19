@@ -6,6 +6,9 @@ This file is the documentation map. It explains where information belongs; it do
 
 ## Start here
 
+For trying the project, reporting a problem, or proposing a change, see the
+[provisional contribution guide](../CONTRIBUTING.md).
+
 1. Read the [AI-agent instructions](../AGENTS.md) when working as an agent.
 2. Read the [working agreement](working-agreement.md) for collaboration, source-of-truth, and delivery rules.
 3. Read the [product vision](product/vision.md), [product scope](product/scope.md), and [product requirements](product/requirements.md) for product context.

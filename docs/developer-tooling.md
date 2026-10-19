@@ -94,7 +94,7 @@ auto-install is disabled, it may also fall back to `PATH`. The root
 commands; this controls mise config loading, not `PATH` isolation.
 
 Use the mise-managed GitHub CLI for repository issue and pull-request
-workflows. See the [README](../README.md#github-cli) for authentication and
+workflows. See the [contribution guide](../CONTRIBUTING.md#github-cli-optional) for authentication and
 least-privilege token guidance.
 
 Root mise tasks are the contributor and CI entry points; project-specific

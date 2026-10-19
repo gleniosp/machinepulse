@@ -24,34 +24,11 @@ The root `.env` supplies local service configuration through mise. Existing
 environment variables take precedence. The gateway guide documents
 [configuration and deployment](services/telemetry-gateway/README.md#configuration).
 
-## GitHub CLI
+## Contributing
 
-We pin GitHub CLI (`gh`) with mise because project work uses GitHub issues,
-milestones, and pull requests to track task state. `mise run setup` installs
-the shared version; authentication stays in your user environment.
-
-Run `gh auth login` for browser-based sign-in, or `gh auth login --with-token`
-with a classic personal access token. For a fine-grained token, set `GH_TOKEN`
-in the current terminal; GitHub CLI prefers it over saved credentials:
-
-```bash
-# Enter the token when prompted; input is hidden.
-read -s GH_TOKEN
-export GH_TOKEN
-```
-
-Scope the token to only the `gleniosp/machinepulse` repository to limit its
-reach, and grant these repository permissions:
-
-| Permission    | Access         |
-| ------------- | -------------- |
-| Actions       | Read-only      |
-| Contents      | Read and write |
-| Issues        | Read and write |
-| Metadata      | Read-only      |
-| Pull requests | Read and write |
-
-For token details, see GitHub CLI's [`GH_TOKEN` documentation](https://cli.github.com/manual/gh_help_environment), [fine-grained token guidance](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens), and [permission reference](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens).
+Development is maintainer-led and interfaces are changing quickly. See the
+[provisional contribution guide](CONTRIBUTING.md) before starting work.
+Trying the project locally does not require GitHub authentication.
 
 ## Project documentation
 
