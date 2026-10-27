@@ -55,14 +55,14 @@ then the corresponding root `.env` value. `MACHINEPULSE_MQTT_ADDRESS` (or
 configuration. Empty or missing optional variables use the Go tuning defaults;
 invalid supplied values cause a startup error.
 
-| Environment variable | Flag |
-|---|---|
-| `MACHINEPULSE_MQTT_ADDRESS` | `--broker` |
-| `MACHINEPULSE_MQTT_CLIENT_ID` | `--client-id` |
-| `MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS` | `--session-expiry` |
-| `MACHINEPULSE_MQTT_RECONNECT_CAP` | `--reconnect-cap` |
-| `MACHINEPULSE_MQTT_MAX_PACKET_BYTES` | `--max-packet-bytes` |
-| `MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT` | `--operation-timeout` |
+| Environment variable                       | Flag                  |
+| ------------------------------------------ | --------------------- |
+| `MACHINEPULSE_MQTT_ADDRESS`                | `--broker`            |
+| `MACHINEPULSE_MQTT_CLIENT_ID`              | `--client-id`         |
+| `MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS` | `--session-expiry`    |
+| `MACHINEPULSE_MQTT_RECONNECT_CAP`          | `--reconnect-cap`     |
+| `MACHINEPULSE_MQTT_MAX_PACKET_BYTES`       | `--max-packet-bytes`  |
+| `MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT`   | `--operation-timeout` |
 
 `mise run gateway:run --help` lists defaults. `--broker` accepts a plain TCP
 `host:port` for the local environment; `--client-id` must remain stable and

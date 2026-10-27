@@ -21,9 +21,9 @@ trademarks, or third-party materials.
   maintainers responsible for reports.
 - `SECURITY.md`: define private vulnerability reporting, supported versions,
   disclosure handling, and security-sensitive data rules.
-- [Public issue forms](../.github/ISSUE_TEMPLATE/): available for bug reports
-  and feature proposals; public reports use the guided forms. Pull-request
-  templates remain a follow-up.
+- [Public issue forms](../.github/ISSUE_TEMPLATE/) and
+  [pull-request template](../.github/pull_request_template.md): guide reports,
+  proposals, and review evidence.
 - Dependency and license review: record third-party software licenses and
   notices before distribution.
 

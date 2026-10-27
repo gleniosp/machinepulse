@@ -1,0 +1,4 @@
+[tool.commitizen]
+name = "cz_conventional_commits"
+# Only Git-generated merge messages bypass Conventional Commit validation.
+allowed_prefixes = ["Merge "]

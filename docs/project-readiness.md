@@ -9,16 +9,16 @@ This document owns the cross-cutting readiness gate and its evidence. It does no
 
 Phase 01 should not begin until each area is accepted or its remaining uncertainty has an owner and a documented follow-up.
 
-| Area | Owner | Gate condition |
-|---|---|---|
-| Product intent and boundary | [Vision](product/vision.md), [Scope](product/scope.md) | Purpose, version 0.1 boundary, non-goals, and completion criteria are accepted. |
-| Requirements and domain | [Requirements](product/requirements.md), [Domain model](product/domain-model.md), [Workflows](product/workflows.md) | Core entities, requirement identifiers, and telemetry-to-maintenance journeys are understood. |
-| Producer contract | [Telemetry contract](specs/telemetry-contract.md) | The active contract is accepted, or every open question has an owner, ADR, experiment, or explicit decision. |
-| System design | [Architecture overview](architecture/overview.md), [Data flow](architecture/data-flow.md), [Runtime boundaries](architecture/runtime-boundaries.md) | Responsibilities, data stages, storage roles, and local deployment direction are clear. |
-| Implementation plan | [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones), relevant specification, and [Week 01 journal](journal/week-01-simulated-world.md) | The next phase has an implementation-ready specification, issues, evidence expectations, and journal plan. |
-| Tooling and validation | [Developer tooling baseline](developer-tooling.md), [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1) | Supported toolchains and repeatable format, lint, test, and integration commands are selected or explicitly tracked. |
-| Governance and data hygiene | Project governance files and this checklist | License, contribution expectations, provenance, reproducibility, and public-repository safeguards are recorded. |
-| Agent collaboration | [AGENTS.md](../AGENTS.md), [working agreement](working-agreement.md) | Agent boundaries, review expectations, and evidence rules are aligned with the repository. |
+| Area                        | Owner                                                                                                                                                       | Gate condition                                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Product intent and boundary | [Vision](product/vision.md), [Scope](product/scope.md)                                                                                                      | Purpose, version 0.1 boundary, non-goals, and completion criteria are accepted.                                      |
+| Requirements and domain     | [Requirements](product/requirements.md), [Domain model](product/domain-model.md), [Workflows](product/workflows.md)                                         | Core entities, requirement identifiers, and telemetry-to-maintenance journeys are understood.                        |
+| Producer contract           | [Telemetry contract](specs/telemetry-contract.md)                                                                                                           | The active contract is accepted, or every open question has an owner, ADR, experiment, or explicit decision.         |
+| System design               | [Architecture overview](architecture/overview.md), [Data flow](architecture/data-flow.md), [Runtime boundaries](architecture/runtime-boundaries.md)         | Responsibilities, data stages, storage roles, and local deployment direction are clear.                              |
+| Implementation plan         | [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones), relevant specification, and [Week 01 journal](journal/week-01-simulated-world.md) | The next phase has an implementation-ready specification, issues, evidence expectations, and journal plan.           |
+| Tooling and validation      | [Developer tooling baseline](developer-tooling.md), [Phase 00 tasks](https://github.com/gleniosp/machinepulse/milestone/1)                                  | Supported toolchains and repeatable format, lint, test, and integration commands are selected or explicitly tracked. |
+| Governance and data hygiene | Project governance files and this checklist                                                                                                                 | License, contribution expectations, provenance, reproducibility, and public-repository safeguards are recorded.      |
+| Agent collaboration         | [AGENTS.md](../AGENTS.md), [working agreement](working-agreement.md)                                                                                        | Agent boundaries, review expectations, and evidence rules are aligned with the repository.                           |
 
 This document records the foundation review and its gate evidence. GitHub owns
 the current state of implementation follow-ups; this review is not a backlog.

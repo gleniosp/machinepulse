@@ -31,7 +31,7 @@ jobs:
       - name: Install pinned mise tools
         uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.8.11
+          version: 2026.10.20
 
       - name: Install the locked simulator environment
         run: mise run simulator:setup
@@ -39,14 +39,14 @@ jobs:
       - name: Download pinned gateway dependencies
         run: mise run gateway:setup
 
-      - name: Run repository checks and tests
-        run: mise run hooks:check
+      - name: Install pinned document formatters
+        run: mise run format:setup
 
-      - name: Verify local broker startup and persistence
-        run: mise run infra:test
+      - name: Validate hook configuration
+        run: mise exec -- prek validate-config prek.toml
 
-      - name: Verify gateway MQTT delivery and recovery
-        run: mise run gateway:test:integration
+      - name: Check repository without modifying sources
+        run: mise run check
 
-      - name: Verify container builds, datasets, and gateway recovery
-        run: mise run containers:test
+      - name: Run unit and integration tests
+        run: mise run test

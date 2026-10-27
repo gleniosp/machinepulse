@@ -39,10 +39,10 @@ the gateway and simulator-to-stream path are later Phase 02 work.
 
 ## Connections and configuration
 
-| Service | Host client address | Client in the Compose network |
-|---|---|---|
-| MQTT | `127.0.0.1:1883` | `mqtt:1883` |
-| Kafka bootstrap | `127.0.0.1:9092` | `kafka:19092` |
+| Service         | Host client address | Client in the Compose network |
+| --------------- | ------------------- | ----------------------------- |
+| MQTT            | `127.0.0.1:1883`    | `mqtt:1883`                   |
+| Kafka bootstrap | `127.0.0.1:9092`    | `kafka:19092`                 |
 
 Kafka uses separate advertised listeners for host and container clients. Its
 controller listener stays inside the Compose network. Application stream

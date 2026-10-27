@@ -30,15 +30,15 @@ The repository can keep the source draft even if the canonical published version
 
 ## Planned article series
 
-| Week | Working title | Status |
-|---|---|---|
-| 01 | [From Machines to Data: Modeling Industrial Sensor Telemetry Without Hardware](week-01-simulator.md) | Draft |
-| 02 | Designing an Event-Driven Telemetry Pipeline for Industrial IoT | Planned |
-| 03 | Storing Industrial Telemetry: PostgreSQL vs. ClickHouse | Planned |
-| 04 | What Vibration Data Actually Tells Us About a Machine | Planned |
-| 05 | Predictive Maintenance Without Deep Learning: Building a Useful Baseline First | Planned |
-| 06 | Turning Sensor Anomalies Into Maintenance Decisions | Planned |
-| 07 | What Happens When 10,000 Machines Start Sending Data? | Planned |
-| 08 | From Simulation to a Real Sensor: What Changed When Hardware Entered the System | Planned |
+| Week | Working title                                                                                        | Status  |
+| ---- | ---------------------------------------------------------------------------------------------------- | ------- |
+| 01   | [From Machines to Data: Modeling Industrial Sensor Telemetry Without Hardware](week-01-simulator.md) | Draft   |
+| 02   | Designing an Event-Driven Telemetry Pipeline for Industrial IoT                                      | Planned |
+| 03   | Storing Industrial Telemetry: PostgreSQL vs. ClickHouse                                              | Planned |
+| 04   | What Vibration Data Actually Tells Us About a Machine                                                | Planned |
+| 05   | Predictive Maintenance Without Deep Learning: Building a Useful Baseline First                       | Planned |
+| 06   | Turning Sensor Anomalies Into Maintenance Decisions                                                  | Planned |
+| 07   | What Happens When 10,000 Machines Start Sending Data?                                                | Planned |
+| 08   | From Simulation to a Real Sensor: What Changed When Hardware Entered the System                      | Planned |
 
 A week does not require publication if there is not enough evidence for a responsible article. The outline may be carried forward instead.

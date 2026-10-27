@@ -25,10 +25,10 @@ Specifications should link to the product requirements they satisfy and to archi
 
 ## Current specifications
 
-| Specification | Status | Purpose |
-|---|---|---|
-| [Telemetry contract](telemetry-contract.md) | Draft | Defines the producer-facing telemetry window and initial event semantics |
-| [Simulator behavior](simulator.md) | Draft | Defines deterministic motor telemetry generation and ground-truth separation |
+| Specification                                           | Status   | Purpose                                                                                                              |
+| ------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
+| [Telemetry contract](telemetry-contract.md)             | Draft    | Defines the producer-facing telemetry window and initial event semantics                                             |
+| [Simulator behavior](simulator.md)                      | Draft    | Defines deterministic motor telemetry generation and ground-truth separation                                         |
 | [Ingestion and internal event boundaries](ingestion.md) | Accepted | Defines the MQTT route and delivery boundary into the internal event stream; defers the internal envelope to P02-005 |
 
 The remaining capability specifications will be added just before their implementation phases:

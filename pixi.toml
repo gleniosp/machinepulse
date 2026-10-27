@@ -2,7 +2,7 @@
 name = "machinepulse"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64", "linux-aarch64"]
-requires-pixi = ">=0.76.1,<0.77"
+requires-pixi = ">=0.83.0,<0.84"
 
 [workspace.dependencies]
 python = ">=3.13,<3.14"
@@ -14,9 +14,13 @@ python = { workspace = true }
 machinepulse_simulator = { path = "tools/simulator", editable = true }
 
 [feature.dev.pypi-dependencies]
+commitizen = ">=4.19.3,<5"
 mypy = ">=1.14,<2"
 pytest = ">=8,<10"
 ruff = ">=0.14,<0.15"
+
+[feature.dev.tasks]
+commit-check = "cz check --allow-abort --commit-msg-file"
 
 [environments]
 default = { solve-group = "default" }

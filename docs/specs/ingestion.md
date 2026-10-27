@@ -15,10 +15,10 @@ broker/client compatibility remain to be verified by the follow-up tasks.
 
 ## Boundaries and terms
 
-| Boundary | Purpose | Name space |
-|---|---|---|
-| Producer → MQTT broker | Accept device-published telemetry | MQTT topic name |
-| MQTT broker → Go gateway | Deliver device messages to the ingress consumer | MQTT subscription filter |
+| Boundary                           | Purpose                                         | Name space                                           |
+| ---------------------------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| Producer → MQTT broker             | Accept device-published telemetry               | MQTT topic name                                      |
+| MQTT broker → Go gateway           | Deliver device messages to the ingress consumer | MQTT subscription filter                             |
 | Go gateway → internal event stream | Publish validated events for platform consumers | Stream-specific topic or subject, defined by P02-005 |
 
 An MQTT topic name is not an internal event-stream topic. The gateway validates

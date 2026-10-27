@@ -34,20 +34,20 @@ column are first implementation settings for synthetic experiments; they are
 not physical reference values. [EXP-0001](../experiments/EXP-0001-simulator-parameters.md)
 will evaluate the signal defaults before the simulator phase is complete.
 
-| Field | Meaning and constraints | Default |
-|---|---|---|
-| `asset_id` | Canonical uppercase ULID identifying the maintainable asset. | Required |
-| `device_id` | Canonical uppercase ULID identifying the producer. | Required |
-| `run_id` | Non-empty identifier for this generated run. Reuse it to reproduce event IDs; use a new value for a distinct run. | Required |
-| `nominal_rpm` | Finite, positive motor speed in RPM. It stays constant for the run. | `1800.0` |
-| `condition` | One of `normal`, `imbalance`, or `overheating`. | `normal` |
-| `condition_intensity` | Finite simulator input from `0.0` through `1.0`. `normal` requires `0.0`; `imbalance` and `overheating` require a value greater than `0.0`. It scales the synthetic condition effect and is recorded as ground truth. | `0.0` for `normal` |
-| `sampling.rate_hz` | Positive integer samples per second for each vibration axis. | `1600` |
-| `sampling.window_duration_ms` | Positive integer duration represented by every window. | `1000` |
-| `run.window_count` | Positive integer number of complete windows; total duration is the count multiplied by the window duration. Partial final windows are not emitted. | Required |
-| `run.seed` | Non-negative integer controlling all generated random values. | Required |
-| `run.start_time_utc` | UTC time of the first window. If omitted, the simulator resolves it once at run start and records the resolved value in the effective configuration. | Current UTC time |
-| `run.execution_mode` | `accelerated` or `real_time`. | `accelerated` |
+| Field                         | Meaning and constraints                                                                                                                                                                                               | Default            |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `asset_id`                    | Canonical uppercase ULID identifying the maintainable asset.                                                                                                                                                          | Required           |
+| `device_id`                   | Canonical uppercase ULID identifying the producer.                                                                                                                                                                    | Required           |
+| `run_id`                      | Non-empty identifier for this generated run. Reuse it to reproduce event IDs; use a new value for a distinct run.                                                                                                     | Required           |
+| `nominal_rpm`                 | Finite, positive motor speed in RPM. It stays constant for the run.                                                                                                                                                   | `1800.0`           |
+| `condition`                   | One of `normal`, `imbalance`, or `overheating`.                                                                                                                                                                       | `normal`           |
+| `condition_intensity`         | Finite simulator input from `0.0` through `1.0`. `normal` requires `0.0`; `imbalance` and `overheating` require a value greater than `0.0`. It scales the synthetic condition effect and is recorded as ground truth. | `0.0` for `normal` |
+| `sampling.rate_hz`            | Positive integer samples per second for each vibration axis.                                                                                                                                                          | `1600`             |
+| `sampling.window_duration_ms` | Positive integer duration represented by every window.                                                                                                                                                                | `1000`             |
+| `run.window_count`            | Positive integer number of complete windows; total duration is the count multiplied by the window duration. Partial final windows are not emitted.                                                                    | Required           |
+| `run.seed`                    | Non-negative integer controlling all generated random values.                                                                                                                                                         | Required           |
+| `run.start_time_utc`          | UTC time of the first window. If omitted, the simulator resolves it once at run start and records the resolved value in the effective configuration.                                                                  | Current UTC time   |
+| `run.execution_mode`          | `accelerated` or `real_time`.                                                                                                                                                                                         | `accelerated`      |
 
 [ADR-0003](../adr/0003-device-and-asset-identifiers.md) defines the accepted
 [device and asset ID profile](telemetry-contract.md#device-and-asset-id-profile)
@@ -77,14 +77,14 @@ duration; sample times still use fractional seconds as described under
 
 The initial signal and context parameters are configurable as follows:
 
-| Parameter | Meaning and constraints | Initial setting |
-|---|---|---|
-| `signal.rotational_peak_m_s2` | Non-negative peak amplitude at the rotational frequency, independently set for X, Y, and Z. | X `0.05`, Y `0.04`, Z `0.03` |
-| `signal.rotational_phase_rad` | Finite phase offset for each axis' rotational component. | `0.0` on each axis |
-| `signal.noise_std_m_s2` | Non-negative standard deviation of zero-mean Gaussian vibration noise, in m/s². | `0.01` |
-| `signal.imbalance_peak_m_s2_at_intensity_1` | Non-negative added rotational-frequency peak amplitude per axis at condition intensity `1.0`. | X `0.10`, Y `0.05`, Z `0.05` |
-| `temperature.initial_c` | Finite temperature context at run start, in degrees Celsius. | `40.0` |
-| `temperature.overheating_rise_c_at_intensity_1` | Non-negative total linear temperature rise across a full run at condition intensity `1.0`, in degrees Celsius. | `10.0` |
+| Parameter                                       | Meaning and constraints                                                                                        | Initial setting              |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `signal.rotational_peak_m_s2`                   | Non-negative peak amplitude at the rotational frequency, independently set for X, Y, and Z.                    | X `0.05`, Y `0.04`, Z `0.03` |
+| `signal.rotational_phase_rad`                   | Finite phase offset for each axis' rotational component.                                                       | `0.0` on each axis           |
+| `signal.noise_std_m_s2`                         | Non-negative standard deviation of zero-mean Gaussian vibration noise, in m/s².                                | `0.01`                       |
+| `signal.imbalance_peak_m_s2_at_intensity_1`     | Non-negative added rotational-frequency peak amplitude per axis at condition intensity `1.0`.                  | X `0.10`, Y `0.05`, Z `0.05` |
+| `temperature.initial_c`                         | Finite temperature context at run start, in degrees Celsius.                                                   | `40.0`                       |
+| `temperature.overheating_rise_c_at_intensity_1` | Non-negative total linear temperature rise across a full run at condition intensity `1.0`, in degrees Celsius. | `10.0`                       |
 
 These initial signal values are experiment settings chosen to make controlled
 signals inspectable. They are not expected operating ranges for a real motor.
@@ -152,10 +152,10 @@ The division converts revolutions per minute to revolutions per second
 second. This model uses a once-per-turn vibration component, separate from the
 sampling rate:
 
-| Quantity | Value in this example | What it counts |
-|---|---:|---|
-| Sampling rate (`sampling.rate_hz`) | 1600 samples/s | Acceleration readings taken each second on each axis. |
-| Vibration frequency (`f_rot`) | 30 cycles/s (30 Hz) | Repeats of the modeled vibration pattern each second. |
+| Quantity                           | Value in this example | What it counts                                        |
+| ---------------------------------- | --------------------: | ----------------------------------------------------- |
+| Sampling rate (`sampling.rate_hz`) |        1600 samples/s | Acceleration readings taken each second on each axis. |
+| Vibration frequency (`f_rot`)      |   30 cycles/s (30 Hz) | Repeats of the modeled vibration pattern each second. |
 
 For axis `j` and sample time `t`, the normal vibration signal is:
 
@@ -272,14 +272,14 @@ window's `occurred_at` timestamp.
 Each run has one JSON manifest, separate from the telemetry windows. Its
 `manifest_version` is `machinepulse.run-manifest.v1`; fields are:
 
-| Field | Meaning |
-|---|---|
-| `manifest_version` | Version of this manifest shape. |
-| `run_id` | The run identity from the effective configuration. |
-| `generator_version` | Stable simulator behavior identifier, initially `simulator.v1`. Increment it when a change can alter generated output for the same effective configuration and seed. |
-| `code_revision` | Full source-control revision used to generate the run, or `null` when unavailable. |
-| `working_tree_dirty` | Whether tracked or untracked source changes were present, or `null` when it cannot be determined. |
-| `effective_config` | Complete configuration after defaults and `run.start_time_utc` have been resolved. It includes the seed and all values needed to regenerate the run. |
+| Field                | Meaning                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `manifest_version`   | Version of this manifest shape.                                                                                                                                      |
+| `run_id`             | The run identity from the effective configuration.                                                                                                                   |
+| `generator_version`  | Stable simulator behavior identifier, initially `simulator.v1`. Increment it when a change can alter generated output for the same effective configuration and seed. |
+| `code_revision`      | Full source-control revision used to generate the run, or `null` when unavailable.                                                                                   |
+| `working_tree_dirty` | Whether tracked or untracked source changes were present, or `null` when it cannot be determined.                                                                    |
+| `effective_config`   | Complete configuration after defaults and `run.start_time_utc` have been resolved. It includes the seed and all values needed to regenerate the run.                 |
 
 Manifest serialization is UTF-8 JSON with object keys sorted lexicographically,
 no insignificant whitespace, and non-finite numbers rejected. It contains no

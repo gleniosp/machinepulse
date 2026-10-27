@@ -1,4 +1,4 @@
-FROM ghcr.io/prefix-dev/pixi:0.76.1@sha256:540414f50b96439a6ba1475b79b2e2dd2208e86ebef33e2fbf2a176a8f037d31 AS build
+FROM ghcr.io/prefix-dev/pixi:0.83.0@sha256:3dce86c6e87371c58035aa41b09f2b56ca8f011722320551e0c2bfc1c59da5fb AS build
 WORKDIR /app
 COPY pixi.toml pixi.lock ./
 COPY tools/simulator/pyproject.toml tools/simulator/pyproject.toml

@@ -66,22 +66,22 @@ The shortened arrays in the example are illustrative only. A valid event must sa
 
 ## Field semantics
 
-| Field | Required | Meaning |
-|---|---:|---|
-| `schema_version` | Yes | Version of the external telemetry contract. |
-| `event_id` | Yes | Canonical lowercase, hyphenated UUID unique to this telemetry window across the deployment. A producer assigns it once and preserves it across retries. |
-| `device_id` | Yes | Identity of the producer that captured or generated the window. |
-| `asset_id` | Yes | Asset associated with the window at production time. |
-| `occurred_at` | Yes | UTC time of the first vibration sample in the represented window. This is not gateway receipt time. |
-| `sequence` | Yes | Non-negative device-local integer used for ordering and gap detection. |
-| `sampling.rate_hz` | Yes | Sampling rate in samples per second for each vibration axis. |
-| `sampling.sample_count` | Yes | Number of values in each vibration-axis array for this window. |
-| `sampling.window_duration_ms` | Yes | Intended time span represented by the vibration samples. |
-| `measurements.temperature_c` | Yes | Temperature context in degrees Celsius, representative of the window midpoint. |
-| `measurements.rpm` | Yes | Rotational speed context in revolutions per minute, representative of the window midpoint. |
-| `measurements.vibration_m_s2.x` | Yes | X-axis acceleration samples in metres per second squared. |
-| `measurements.vibration_m_s2.y` | Yes | Y-axis acceleration samples in metres per second squared. |
-| `measurements.vibration_m_s2.z` | Yes | Z-axis acceleration samples in metres per second squared. |
+| Field                           | Required | Meaning                                                                                                                                                 |
+| ------------------------------- | -------: | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schema_version`                |      Yes | Version of the external telemetry contract.                                                                                                             |
+| `event_id`                      |      Yes | Canonical lowercase, hyphenated UUID unique to this telemetry window across the deployment. A producer assigns it once and preserves it across retries. |
+| `device_id`                     |      Yes | Identity of the producer that captured or generated the window.                                                                                         |
+| `asset_id`                      |      Yes | Asset associated with the window at production time.                                                                                                    |
+| `occurred_at`                   |      Yes | UTC time of the first vibration sample in the represented window. This is not gateway receipt time.                                                     |
+| `sequence`                      |      Yes | Non-negative device-local integer used for ordering and gap detection.                                                                                  |
+| `sampling.rate_hz`              |      Yes | Sampling rate in samples per second for each vibration axis.                                                                                            |
+| `sampling.sample_count`         |      Yes | Number of values in each vibration-axis array for this window.                                                                                          |
+| `sampling.window_duration_ms`   |      Yes | Intended time span represented by the vibration samples.                                                                                                |
+| `measurements.temperature_c`    |      Yes | Temperature context in degrees Celsius, representative of the window midpoint.                                                                          |
+| `measurements.rpm`              |      Yes | Rotational speed context in revolutions per minute, representative of the window midpoint.                                                              |
+| `measurements.vibration_m_s2.x` |      Yes | X-axis acceleration samples in metres per second squared.                                                                                               |
+| `measurements.vibration_m_s2.y` |      Yes | Y-axis acceleration samples in metres per second squared.                                                                                               |
+| `measurements.vibration_m_s2.z` |      Yes | Z-axis acceleration samples in metres per second squared.                                                                                               |
 
 For evenly spaced samples, adjacent readings are separated by `1 / rate_hz`
 seconds. The simulator's rule for deriving an integer sample count is in the
@@ -241,14 +241,14 @@ These questions are intentionally visible. Their accepted answers should be reco
 The questions are reviewed for the foundation phase and assigned to the
 capability work that needs each decision:
 
-| Question | Follow-up owner |
-|---|---|
-| Event ID generation and retry identity | P01-001 simulator specification and ADR-0001; P02-001 defines ingestion validation and idempotency handling |
-| Initial window duration and sampling default | P01-001 simulator specification |
-| Scalar temperature and RPM window semantics | P01-001 proposes midpoint semantics for the simulator; P04-001 confirms or revises the contract-wide convention |
-| Producer event time and gateway receipt time | P02-001 ingestion specification |
-| MQTT QoS and session behavior | P02-001 ingestion specification and its transport ADR |
-| JSON as the initial internal encoding | P02-005 internal event specification; record a durable encoding choice in an ADR if needed |
+| Question                                     | Follow-up owner                                                                                                 |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Event ID generation and retry identity       | P01-001 simulator specification and ADR-0001; P02-001 defines ingestion validation and idempotency handling     |
+| Initial window duration and sampling default | P01-001 simulator specification                                                                                 |
+| Scalar temperature and RPM window semantics  | P01-001 proposes midpoint semantics for the simulator; P04-001 confirms or revises the contract-wide convention |
+| Producer event time and gateway receipt time | P02-001 ingestion specification                                                                                 |
+| MQTT QoS and session behavior                | P02-001 ingestion specification and its transport ADR                                                           |
+| JSON as the initial internal encoding        | P02-005 internal event specification; record a durable encoding choice in an ADR if needed                      |
 
 These assignments keep the contract review complete without silently resolving
 decisions that belong to the simulator or ingestion phases.

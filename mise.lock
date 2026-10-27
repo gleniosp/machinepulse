@@ -2,6 +2,53 @@
 
 lockfile_version = 1
 
+[[tools.dprint]]
+version = "0.64.3"
+backend = "aqua:dprint/dprint"
+specifiers = ["0.64.3"]
+
+[tools.dprint."platforms.linux-arm64"]
+checksum = "sha256:c820bfc67b0cd6f5f0fa4d00ecdcb056944c86030859f5e50151c88d9164b30d"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-aarch64-unknown-linux-gnu.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629157"
+provenance = "github-attestations"
+
+[tools.dprint."platforms.linux-arm64-musl"]
+checksum = "sha256:61c8936368ff4030a615ce43853adc5a0707ff77973743d0a691aee2cbf64723"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-aarch64-unknown-linux-musl.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629170"
+provenance = "github-attestations"
+
+[tools.dprint."platforms.linux-x64"]
+checksum = "sha256:f71cb7e22d6776439eba168d5cb296092d6413fea7148fe4d70684a2702a4fee"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-x86_64-unknown-linux-gnu.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629165"
+provenance = "github-attestations"
+
+[tools.dprint."platforms.linux-x64-musl"]
+checksum = "sha256:f105dbc2b0bc0d83c644fcabc3e7bd8779469c0d9faeda48365c58b389d5a443"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-x86_64-unknown-linux-musl.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629164"
+provenance = "github-attestations"
+
+[tools.dprint."platforms.macos-arm64"]
+checksum = "sha256:94b48820945602fb113a34343db0a9e653a8346c60966f790556dc9ce4084a92"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-aarch64-apple-darwin.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629166"
+provenance = "github-attestations"
+
+[tools.dprint."platforms.macos-x64"]
+checksum = "sha256:b868e1e87d2ed23217e5ea9521989c167ce8392090088bf0e1fb43be727ea752"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-x86_64-apple-darwin.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629151"
+provenance = "github-attestations"
+
+[tools.dprint."platforms.windows-x64"]
+checksum = "sha256:3beb87a2582f1e43a301efd0840565518484e53f8c7b0ad27b857eee08e0745f"
+url = "https://github.com/dprint/dprint/releases/download/0.64.3/dprint-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/667629154"
+provenance = "github-attestations"
+
 [[tools.github-cli]]
 version = "2.98.0"
 backend = "aqua:cli/cli"
@@ -83,51 +130,50 @@ checksum = "sha256:a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd
 url = "https://dl.google.com/go/go1.27.1.windows-amd64.zip"
 
 [[tools.pixi]]
-version = "0.76.1"
+version = "0.83.0"
 backend = "github:prefix-dev/pixi"
-specifiers = ["0.76.1"]
+specifiers = ["0.83.0"]
 
 [tools.pixi."platforms.linux-arm64"]
-checksum = "sha256:e7c9d7f128fe02d20b212c0ba9b8ab445907b415155b72ca93f3120e63a8fbb3"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223332"
+checksum = "sha256:d08403d8f048626ec93ba7b7c56e3b747a5f3a95c4e6e0c815ceb264f5f0b9ce"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666387811"
 provenance = "github-attestations"
 
 [tools.pixi."platforms.linux-arm64-musl"]
-checksum = "sha256:e7c9d7f128fe02d20b212c0ba9b8ab445907b415155b72ca93f3120e63a8fbb3"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223332"
+checksum = "sha256:d08403d8f048626ec93ba7b7c56e3b747a5f3a95c4e6e0c815ceb264f5f0b9ce"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666387811"
 provenance = "github-attestations"
 
 [tools.pixi."platforms.linux-x64"]
-checksum = "sha256:8e2ab7630f5bc1e8aa38d236842e20f565f7aa0834687e53670b7c86ba54c90f"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223455"
+checksum = "sha256:064f371e692aaa3400ac581c89da2843c91437f20c2d9155395a5d0037f33551"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666388059"
 provenance = "github-attestations"
-provenance_verified = true
 
 [tools.pixi."platforms.linux-x64-musl"]
-checksum = "sha256:8e2ab7630f5bc1e8aa38d236842e20f565f7aa0834687e53670b7c86ba54c90f"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223455"
+checksum = "sha256:064f371e692aaa3400ac581c89da2843c91437f20c2d9155395a5d0037f33551"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666388059"
 provenance = "github-attestations"
 
 [tools.pixi."platforms.macos-arm64"]
-checksum = "sha256:ad059ad5dbe6de0f5cd4b0740a7f95f47c8e1270bae608c32203d1511a7af880"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223293"
+checksum = "sha256:b46066fbaf931284a3f4a61d68e0eb352295f4b3ce4330315a3de3dc5da5736c"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666387691"
 provenance = "github-attestations"
 
 [tools.pixi."platforms.macos-x64"]
-checksum = "sha256:4959ceeeb2580948445109da6b656e34f450e19566b3d9f6d28c55ce33fce6ce"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223389"
+checksum = "sha256:145e26ba860b5a08a2904ca4354cdfdcec1332a8f1d09ea08f1ec663c08e3ac8"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666387899"
 provenance = "github-attestations"
 
 [tools.pixi."platforms.windows-x64"]
-checksum = "sha256:ca64d56112cbebd96b4ec76ff220d59436ad5b6428a0e97242b3e549d65a39be"
-url = "https://github.com/prefix-dev/pixi/releases/download/v0.76.1/pixi-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/501223445"
+checksum = "sha256:77bed9f9d2795c94f9ab5744353892eb82bd3b1eaa09ecbbe7573e22ef70a2f4"
+url = "https://github.com/prefix-dev/pixi/releases/download/v0.83.0/pixi-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/prefix-dev/pixi/releases/assets/666388028"
 provenance = "github-attestations"
 
 [[tools.prek]]

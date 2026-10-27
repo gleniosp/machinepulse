@@ -1,25 +1,29 @@
 ---
 name: pull-request
-description: Prepare or raise a MachinePulse pull request against main with an evidence-backed summary and issue-closing references.
+description: Prepare MachinePulse PR content, publish reviewed commits when explicitly requested, or address PR feedback under the maintainer's delivery workflow.
 ---
 
 # Pull Request
 
-Use this skill when the maintainer asks to prepare or raise a pull request for
-MachinePulse. For phase work, also follow the [phase-delivery skill](../phase-delivery/SKILL.md).
+Read [review and publication](../../../docs/working-agreement.md#review-commits-and-publication)
+and [progress ownership](../../../docs/working-agreement.md#acceptance-criteria-and-progress).
+Use the [PR template](../../../.github/pull_request_template.md) for content;
+use [phase-delivery](../phase-delivery/SKILL.md) for local implementation.
 
-1. Read the [working agreement](../../../docs/working-agreement.md). Confirm the
-   intended base is `main`, inspect the latest `origin/main`, and review the
-   complete branch diff plus staged, unstaged, and untracked changes.
-2. Write a short title without Conventional Commit prefixes such as `feat:` or
-   `docs:`. Summarize the actual scope in the description, list validation that
-   passed, and state material limits. Do not claim work absent from the diff or
-   evidence.
-3. Verify each referenced GitHub issue and its acceptance evidence. Add
-   `Closes #N` for issues this PR completes; GitHub closes them on merge. Do not
-   close issues manually before merge.
-4. The maintainer owns branches and commits. If asked only to prepare PR
-   content, return the title and description without publishing. Create a PR
-   only when explicitly asked, and only after its intended changes are
-   committed and pushed; use `gh pr create --base main` and check for an
-   existing PR first.
+- Identify whether the request authorizes content preparation, PR publication,
+  committed updates, or local review corrections. Apply the agreement to that
+  action; preparation returns text and implementation alone does not publish.
+- Before publication, inspect current `origin/main`, the complete branch diff
+  and commit series, staged/unstaged/untracked work, issue criteria, and evidence.
+  Resolve unreviewed or uncommitted changes with the maintainer. Check for an
+  existing branch PR and its base/review state before creating another.
+- Describe the final problem and resulting behavior, actual validation,
+  evidence/revision, and limits. Reconcile changed scope with the issue; use a
+  draft for incomplete work and one closure reference per fully delivered issue.
+- On explicit raise-PR authorization, push reviewed commits and create the PR
+  against `main`, or reuse its existing PR. With `gh`, use `--body-file` for
+  multiline content. Report the PR URL and readiness; maintainer review and
+  merge remain the final gate.
+- Address feedback locally against the full current change, revalidate affected
+  behavior, and update owning evidence and PR content. Follow the same local
+  review, maintainer commit, and requested publication sequence for corrections.

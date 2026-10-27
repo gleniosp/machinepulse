@@ -29,6 +29,11 @@ description = "Type-check simulator Python sources"
 run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev mypy --config-file mypy.ini tools/simulator/src tools/simulator/tests tools/simulator/experiments"
 dir = "{{config_root}}/../.."
 
+[tasks.check]
+description = "Run simulator formatting, lint, and type checks without tests"
+depends = [":format-check", ":lint", ":typecheck"]
+dir = "{{config_root}}/../.."
+
 [tasks.test]
 description = "Run simulator tests"
 run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev pytest -c tools/simulator/pyproject.toml tools/simulator/tests"
@@ -43,8 +48,3 @@ dir = "{{config_root}}"
 description = "Generate EXP-0002 condition comparison plots and summaries"
 run = "mise exec -- pixi run --manifest-path ../../pixi.toml --locked -e dev python -m experiments.evaluate_conditions"
 dir = "{{config_root}}"
-
-[tasks.check]
-description = "Run simulator formatting, lint, type, and test checks"
-depends = [":format-check", ":lint", ":typecheck", ":test"]
-dir = "{{config_root}}/../.."

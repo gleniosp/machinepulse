@@ -18,8 +18,8 @@
         "execution_mode": "accelerated"
       },
       "signal": {
-        "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
-        "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
+        "rotational_peak_m_s2": { "x": 0.05, "y": 0.04, "z": 0.03 },
+        "rotational_phase_rad": { "x": 0.0, "y": 0.0, "z": 0.0 },
         "noise_std_m_s2": 0.01,
         "imbalance_peak_m_s2_at_intensity_1": {
           "x": 0.1,
@@ -50,8 +50,8 @@
         "execution_mode": "accelerated"
       },
       "signal": {
-        "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
-        "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
+        "rotational_peak_m_s2": { "x": 0.05, "y": 0.04, "z": 0.03 },
+        "rotational_phase_rad": { "x": 0.0, "y": 0.0, "z": 0.0 },
         "noise_std_m_s2": 0.01,
         "imbalance_peak_m_s2_at_intensity_1": {
           "x": 0.1,
@@ -82,8 +82,8 @@
         "execution_mode": "accelerated"
       },
       "signal": {
-        "rotational_peak_m_s2": {"x": 0.05, "y": 0.04, "z": 0.03},
-        "rotational_phase_rad": {"x": 0.0, "y": 0.0, "z": 0.0},
+        "rotational_peak_m_s2": { "x": 0.05, "y": 0.04, "z": 0.03 },
+        "rotational_phase_rad": { "x": 0.0, "y": 0.0, "z": 0.0 },
         "noise_std_m_s2": 0.01,
         "imbalance_peak_m_s2_at_intensity_1": {
           "x": 0.1,
