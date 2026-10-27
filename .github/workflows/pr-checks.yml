@@ -42,17 +42,11 @@ jobs:
       - name: Install pinned document formatters
         run: mise run format:setup
 
-      - name: Verify commit-message tooling
-        run: mise run tooling:test
+      - name: Validate hook configuration
+        run: mise exec -- prek validate-config prek.toml
 
-      - name: Run repository checks and tests
-        run: mise run hooks:check
+      - name: Check repository without modifying sources
+        run: mise run check
 
-      - name: Verify local broker startup and persistence
-        run: mise run infra:test
-
-      - name: Verify gateway MQTT delivery and recovery
-        run: mise run gateway:test:integration
-
-      - name: Verify container builds, datasets, and gateway recovery
-        run: mise run containers:test
+      - name: Run unit and integration tests
+        run: mise run test

@@ -1,22 +1,13 @@
 default_install_hook_types = ["pre-commit", "commit-msg"]
 default_stages = ["pre-commit"]
-exclude = '(^|/)(\.pixi|__pycache__|\.pytest_cache|\.ruff_cache|\.mypy_cache)(/|$)'
 
 [[repos]]
 repo = "builtin"
 hooks = [
   { id = "check-case-conflict" },
-  { id = "check-illegal-windows-names" },
   { id = "check-merge-conflict" },
   { id = "check-added-large-files", args = [
     "--maxkb=1024",
-  ] },
-  { id = "check-json" },
-  { id = "check-toml" },
-  { id = "check-yaml" },
-  { id = "end-of-file-fixer" },
-  { id = "trailing-whitespace", args = [
-    "--markdown-linebreak-ext=md",
   ] },
 ]
 
@@ -24,11 +15,11 @@ hooks = [
 repo = "local"
 
 [[repos.hooks]]
-id = "documents-format-check"
-name = "document and configuration formatting"
+id = "fix"
+name = "repository fixes and checks"
 language = "system"
-entry = "mise run documents:format-check"
-files = '(\.(md|json|jsonc|ya?ml|toml)$|^mise\.lock$)'
+entry = "mise run fix"
+always_run = true
 pass_filenames = false
 stages = ["pre-commit"]
 
@@ -38,57 +29,3 @@ name = "Conventional Commit message"
 language = "system"
 entry = "mise run commit:check"
 stages = ["commit-msg"]
-
-[[repos.hooks]]
-id = "simulator-check"
-name = "simulator tests"
-language = "system"
-entry = "mise run simulator:test"
-files = '^(tools/simulator/|pixi\.(toml|lock)$)'
-pass_filenames = false
-stages = ["pre-commit"]
-
-[[repos.hooks]]
-id = "python-check"
-name = "shared Python checks"
-language = "system"
-entry = "mise run python:check"
-files = '(\.py$|^ruff\.toml$|^mypy\.ini$|^pixi\.(toml|lock)$|(^|/)mise\.toml$|/pyproject\.toml$)'
-pass_filenames = false
-stages = ["pre-commit"]
-
-[[repos.hooks]]
-id = "gateway-check"
-name = "gateway checks"
-language = "system"
-entry = "mise run gateway:check"
-files = '^(services/telemetry-gateway/|go\.work(\.sum)?$|mise\.(toml|lock)$)'
-pass_filenames = false
-stages = ["pre-commit"]
-
-[[repos.hooks]]
-id = "infra-config-check"
-name = "infrastructure configuration"
-language = "system"
-entry = "mise run infra:check"
-files = '^(infra/|compose\.yaml$|\.dockerignore$|mise\.toml$)'
-pass_filenames = false
-stages = ["pre-commit"]
-
-[[repos.hooks]]
-id = "container-smoke-check"
-name = "container smoke-test shell syntax"
-language = "system"
-entry = "mise run containers:check"
-files = '^(infra/docker/.*\.sh$|mise\.toml$)'
-pass_filenames = false
-stages = ["pre-commit"]
-
-[[repos.hooks]]
-id = "pixi-lock-check"
-name = "Pixi lock check"
-language = "system"
-entry = "mise run pixi:lock-check"
-files = '^(pixi\.(toml|lock)$|tools/simulator/pyproject\.toml$)'
-pass_filenames = false
-stages = ["pre-commit"]

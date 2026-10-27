@@ -98,35 +98,19 @@ Use the mise-managed GitHub CLI for repository issue and pull-request
 workflows. See the [contribution guide](../CONTRIBUTING.md#github-cli-optional) for authentication and
 least-privilege token guidance.
 
-Root mise tasks are the contributor and CI entry points; project-specific
-tasks and native commands remain in each project's configuration. Use
-`mise tasks` to see the commands currently implemented. The repository check
-task must propagate project failures instead of silently skipping required
-checks. Root verbs such as `format`, `test`, and `check` apply to all current
-projects; use `mise run simulator:<task>` or `mise run gateway:<task>` to target
-a project directly.
-The simulator CLI is owned by its project task and exposed from the root as
-`mise run simulator:run`; its command-line arguments are forwarded unchanged,
-and input/output paths resolve from the repository root.
-All simulator project tasks also run from the repository root and address
-project files through `tools/simulator/` paths, keeping direct and root-alias
-invocations consistent.
-`mise run pixi:lock-check` verifies that the root Pixi lockfile is current.
-Pre-commit hooks run shared Python checks when Python files, Python manifests,
-or mise task definitions change. Simulator tests run when simulator files or
-root Pixi manifests change; the Pixi lock check runs when Pixi manifests or
-simulator package metadata change. Gateway checks run
-when the gateway module, Go workspace, or shared mise toolchain changes.
-`mise run hooks:check` applies the configured hooks across all eligible
-tracked repository files at the pre-commit stage. It does not validate a Git
-commit-message file; that uses the separate commit-msg stage described below.
+Root tasks are the contributor and CI entry points. `mise run check` calls
+`format-check`, `lint`, and `typecheck` once each, followed by dependency,
+lockfile, Compose, and shell-syntax checks. Type checking includes strict mypy
+analysis of configured Python sources and compilation of the Go gateway.
+`mise run test` owns unit and integration execution; checks never run tests.
+Use `mise tasks` for the available commands or `simulator:<task>` and
+`gateway:<task>` for project-specific work. Simulator commands run from the
+repository root and forward CLI arguments unchanged.
 
 The [local infrastructure guide](../infra/README.md) owns Docker/Compose host
 prerequisites and broker lifecycle commands. `mise run infra:check` validates
 both the infrastructure-only and root application Compose configurations,
-including the simulator profile, without a daemon. It is included in the root
-`check` task and runs in pre-commit when infrastructure, root Compose files,
-the Docker build-context filter, or root tasks change.
+including the simulator profile, without a daemon.
 `mise run infra:test` proves broker persistence with disposable services and
 is included in root `test`; it requires a running Docker daemon. Broker data
 and image pins remain owned by `infra/`.
@@ -146,64 +130,56 @@ environment is `infra/docker/compose.yaml`, tested by `broker-smoke-test.sh`;
 The Bash wrappers run on the host. `verify-smoke.py` runs only inside the
 simulator container with its locked Python 3.13 runtime and read-only test
 mounts. It does not need a host Python installation to execute the smoke test.
-Host-side contributor checks use pinned Ruff and mypy from the root Pixi
-`dev` environment; they analyze the helper without executing it:
-
-```sh
-mise run python:check
-mise run python:format
-mise run containers:check
-```
-
-Root `ruff.toml` and `mypy.ini` own the shared lint, format, and strict
-type-checking policy. Ruff scans the repository with its standard exclusions
-plus `.pixi`;
-mypy checks the source directories listed in that config, currently simulator
-sources, tests, experiments, and Docker helpers. Add new Python source areas
-to mypy's `files` list when introducing them. Component commands use the same
-root policy while narrowing their targets. Keep exceptions scoped to modules
-and justified; do not duplicate the shared settings in package configs.
-
-`python:check` runs in root `check`, the shared Python pre-commit hook, and CI
-through `hooks:check`. Root `format`, `format-check`, `lint`, and `typecheck`
-cover the helper too. `containers:check` separately checks Bash syntax without
-starting services; it also runs in root `check` and its scoped pre-commit hook.
-VS Code selects Ruff for Python and prefers repository configuration. Use the
-Pixi `dev` interpreter for editor analysis, as with the simulator.
+The root Python checks analyze the helper without executing it, using
+`ruff.toml` and `mypy.ini`. Mypy covers simulator sources, tests, experiments,
+and Docker helpers; add new Python source areas to its `files` list. Component
+tasks narrow the targets while retaining this shared policy.
+`mise run containers:check` checks Bash syntax without starting services.
 
 ## Formatting and editor support
 
-Use `mise run format` to apply formatting and `mise run format-check` to check
-it without editing files. Dprint owns Markdown, JSON/JSONC, YAML, and TOML;
-Ruff owns Python and gofmt owns Go. Root `check`, the scoped document pre-commit
-hook, and CI run the same `documents:format-check` task. Pre-commit reports
-document formatting failures; run `mise run documents:format`, review, and
-restage the result. No formatter automatically stages changes.
+Pre-commit invokes one `mise run fix` task: apply Ruff's safe fixes, run
+`mise run format`, then run `mise run check`. Dprint owns Markdown, JSON/JSONC,
+YAML, and TOML; Ruff owns Python and gofmt owns Go. Remaining violations require
+manual changes. Prek also keeps case-conflict, merge-marker, and large-file
+builtins, whose responsibilities are not provided by those formatters.
+`mise run hooks:check` runs these hooks across tracked files and may apply fixes.
 
-`dprint.json` owns coverage, generated/cache/lockfile/test-fixture exclusions, and versioned
-plugin URLs with SHA-256 checksums. `mise run format:setup` installs the plugins;
-the normal setup and CI call it. The Markdown plugin preserves prose line breaks
-and code blocks; the Oxc plugin handles configuration files with embedded
-language formatting disabled. These choices keep executable examples and other
-language formatters under their existing owners. Update plugin URLs and
-checksums together when upgrading. Dprint and its plugins are MIT-licensed
-development tools, obtained from their upstream release URLs in the tool lock
-and formatter config.
+The pre-commit fix task covers eligible files repository-wide, including
+untracked files. Prek temporarily stashes unstaged tracked edits when invoked
+by Git and restores them afterward; follow its recovery instructions if fixes
+conflict with those edits. Review any modified files and restage them before
+retrying the commit. No formatter automatically stages changes.
+
+`dprint.json` owns file coverage, exclusions, and the Oxc plugin URL/checksum.
+`mise run format:setup` installs it during setup and CI. Oxc preserves prose line
+breaks and disables embedded language formatting. Update its version and SHA-256
+together. Dprint and Oxc are MIT-licensed development tools from the upstream
+releases recorded in the tool lock and formatter config.
+
+### Test fixtures
+
+Dprint excludes `tools/simulator/tests/fixtures/**`.
+`run-manifest.v1.json` and `ground-truth.v1.json` are exact serialized-output
+goldens: [the reproducibility test](../tools/simulator/tests/test_reproducibility.py)
+compares their text with compact, sorted-key JSON, ignoring only the final newline.
+`vibration-window.v1.json` is a numerical golden compared as parsed JSON;
+`telemetry.v1.json` and `telemetry-invalid/*.json` are contract inputs. Keep the
+whole directory as test artifacts rather than applying source formatting.
+Generated datasets under `simulator-output/` are excluded too.
+
+### Editor support
 
 `.editorconfig` supplies UTF-8, LF, final-newline, whitespace, and indentation
 defaults only for files without a dedicated formatter, including shell scripts,
 Dockerfiles, plain text, and repository dotfiles. It does not override Go's tab
 indentation or the dedicated document/Python formatters.
 
-VS Code's workspace recommendations cover Python/Ruff, Go, dprint, EditorConfig,
-YAML/TOML language support, Container Tools, and Oxc for the planned frontend.
-VS Code already includes TypeScript/React language support. Recommending the
-frontend extension does not introduce a frontend toolchain; its lint policy
-belongs to the future package configuration. Workspace settings select the
-owning formatter for current file types and disable the YAML/TOML extensions'
-competing formatters. Launch VS Code from a mise-enabled shell so its extensions
-find the repository-selected tools. Continue using the Pixi `dev` interpreter
-for Python analysis.
+Workspace settings select the owning formatters, enable document/configuration
+format-on-save, and disable implicit Ruff fix/import save actions. Python and
+Ruff use the Pixi `dev` environment. Launch VS Code from a mise-enabled shell so
+dprint resolves to the selected binary. The recommendations in
+`.vscode/extensions.json` complement VS Code's built-in TypeScript/React support.
 
 ## Commit-message validation
 
@@ -213,31 +189,18 @@ Conventional Commits implementation; Commitizen and its dependencies are locked
 in the existing Pixi `dev` environment. Commitizen is an MIT-licensed development
 dependency from [its upstream project](https://github.com/commitizen-tools/commitizen).
 
-Prek passes Git's message filename to `mise run commit:check`, which delegates
-to the Pixi `commit-check` task. To validate a prepared message without making
-a commit:
+The separate commit-msg hook passes Git's filename through mise to Pixi's
+`commit-check` task. To check a prepared message without committing:
 
 ```sh
 mise run commit:check /path/to/commit-message.txt
 mise exec -- prek run commit-check --hook-stage commit-msg --commit-msg-filename /path/to/commit-message.txt
 ```
 
-Setup installs both Git hook stages. Ordinary file hooks run only at pre-commit;
-Commitizen runs at commit-msg and propagates invalid-message failures. Empty
-messages are allowed through this hook so Git can abort the commit normally.
-Git-generated messages beginning with `Merge ` are permitted. Reverts use
-`revert: ...`; ordinary Git `Revert "..."` subjects and `fixup!`, `squash!`, or
-`amend!` subjects are rejected and need a Conventional Commit subject before
-commit. Scoped subjects and actual breaking-change notation are supported.
-The checker validates syntax; maintainers review whether the type, description,
-and breaking-change claim accurately describe the change.
-
-`mise run tooling:test` checks valid/invalid messages through both the task and
-an installed commit-msg hook, using a filename containing spaces. It verifies
-installation of both hook stages in a disposable repository, propagates
-validation failures, and creates no commits. It also verifies dprint's file
-coverage, exclusions, read-only failure behavior, and repeatable formatting in
-disposable fixtures. Root `check` and CI run this regression check.
+Empty messages pass so Git can abort normally. `Merge ` subjects are permitted;
+reverts use `revert: ...`. Git `Revert "..."`, `fixup!`, `squash!`, and `amend!`
+subjects are rejected. Scoped subjects and breaking-change notation are
+supported. Commitizen checks syntax; maintainer review checks meaning.
 
 ## Dependency and lockfile policy
 
@@ -262,9 +225,11 @@ remaining readiness work is tracked through [GitHub milestones](https://github.c
 [readiness checklist](project-readiness.md).
 The [GitHub Actions workflow](../.github/workflows/pr-checks.yml) runs
 on pull requests targeting `main`. It installs the locked repository tools and
-simulator environment and pinned Go dependencies, then runs
-`mise run hooks:check`. It also runs broker persistence, gateway integration,
-and container workflow verification with Docker. The result is informational for merging; requiring the status check is deferred until the
+simulator environment, pinned Go dependencies, and dprint plugin, validates the
+prek configuration, and runs `mise run check` and `mise run test` separately.
+The test task covers simulator/gateway unit tests and the Docker integration
+checks described above.
+The result is informational for merging; requiring the status check is deferred until the
 project begins accepting outside contributions. Track the remaining work and
 PR evidence in
 [P01-012](https://github.com/gleniosp/machinepulse/issues/93).
@@ -293,8 +258,9 @@ endpoints rather than use developer service addresses or static test files.
 The [telemetry gateway](../services/telemetry-gateway/README.md) is the first
 Go module, coordinated by root `go.work`. Its project mise tasks own formatting
 with gofmt, vet, package compilation, module checksum verification, unit tests
-with the race detector, and an explicit broker integration task. Root common
-verbs include gateway checks; root `test` also includes the Docker integration
+with the race detector, and an explicit broker integration task. `gateway:check`
+runs source checks without tests. Root common verbs include gateway checks;
+root `test` includes the unit tests and Docker integration
 task. `mise run gateway:check` needs no broker; `mise run gateway:test:integration` creates and cleans up its own disposable broker.
 
 ## References

@@ -1,17 +1,24 @@
 {
+  "dprint.path": "dprint",
+  "dprint.ensureStableFormat": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}/.pixi/envs/dev/bin/python",
+  "ruff.path": ["${workspaceFolder}/.pixi/envs/dev/bin/ruff"],
+  "ruff.configurationPreference": "filesystemFirst",
   "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff"
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "never",
+      "source.organizeImports.ruff": "never"
+    }
   },
   "[go]": {
     "editor.defaultFormatter": "golang.go"
   },
   "[markdown][json][jsonc][yaml][toml]": {
-    "editor.defaultFormatter": "dprint.dprint"
+    "editor.defaultFormatter": "dprint.dprint",
+    "editor.formatOnSave": true
   },
-  "yaml.format.enable": false,
-  "evenBetterToml.formatter.enabled": false,
   "go.formatTool": "gofmt",
-  "ruff.configurationPreference": "filesystemFirst",
   "gopls": {
     "build.buildFlags": ["-tags=integration"]
   }

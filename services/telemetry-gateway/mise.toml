@@ -29,6 +29,15 @@ description = "Build all gateway packages"
 run = "mise exec -- go build ./..."
 dir = "{{config_root}}"
 
+[tasks."deps:check"]
+description = "Verify Go dependency checksums"
+run = "mise exec -- go mod verify"
+dir = "{{config_root}}"
+
+[tasks.check]
+description = "Run gateway formatting, vet, build, and checksum checks without tests"
+depends = [":format-check", ":lint", ":typecheck", ":deps:check"]
+
 [tasks.test]
 description = "Run gateway unit tests with the race detector"
 run = "mise exec -- go test -race ./..."
@@ -38,12 +47,3 @@ dir = "{{config_root}}"
 description = "Run the real-broker gateway integration test in disposable Compose services"
 run = "mise exec -- go test -race -tags=integration -run TestBrokerSessionAndDeferredAcknowledgement -count=1 -v ./internal/gateway"
 dir = "{{config_root}}"
-
-[tasks."deps:check"]
-description = "Verify Go dependency checksums"
-run = "mise exec -- go mod verify"
-dir = "{{config_root}}"
-
-[tasks.check]
-description = "Run gateway formatting, vet, build, checksum, and unit checks"
-depends = [":format-check", ":lint", ":typecheck", ":deps:check", ":test"]

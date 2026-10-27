@@ -235,60 +235,48 @@ push this correction.
 
 ## Delivery tooling — 2026-10-27
 
-Implemented the maintainer-selected tooling scope in
-[#107](https://github.com/gleniosp/machinepulse/issues/107), in the working tree
-on `chore/107-task-delivery-conventions` based on
-`36c7e35c3720aad399ed97a003d1b1a8a24c2539`. The
-[working agreement](../working-agreement.md) owns the issue-based branch,
-local-review, commit, and publication workflow; the existing delivery skills
-now route to it and the new PR template. The
-[tooling guide](../developer-tooling.md) owns setup, formatter boundaries,
-message-validation behavior, and editor support.
+Delivered the tooling scope of [#107](https://github.com/gleniosp/machinepulse/issues/107)
+and reviewed follow-ups on commits `0218031` and `31dfb0a`.
+The [tooling guide](../developer-tooling.md) owns commands, formatter/fixture
+boundaries, and editor setup; the [working agreement](../working-agreement.md)
+owns delivery permissions and review. The existing delivery skills and new
+PR template link to those owners.
 
-Pixi moved to 0.83.0 in mise and the digest-pinned simulator build image, with
-workspace compatibility `>=0.83.0,<0.84`. Commitizen 4.19.3 and its dependencies
-were added only to the existing Pixi `dev` environment. A parsed lockfile
-comparison confirmed that the default runtime environment and every
-pre-existing locked package were retained. Dprint and its checksum-pinned
-plugins format documents/configuration; EditorConfig covers the fallback file
-types. The initial formatting pass also touched golden JSON fixtures. Although
-their parsed values were unchanged, the simulator's exact-serialization test
-failed. Restored all test fixtures and excluded fixture directories from dprint;
-the test then passed. The remaining initial formatting edits are in documents,
-configuration, and the human-authored simulator example.
+Evidence from the initial implementation and review:
 
-Validation:
+- Locked Pixi 0.83.0, Commitizen 4.19.3 in the existing `dev` environment,
+  and dprint 0.64.3 with the checksum-pinned Oxc plugin. Locked installs and
+  the updated simulator Docker build passed; the runtime dependency set was
+  unchanged.
+- Checked 14 valid/invalid message cases through the direct task and a
+  disposable installed hook, including a filename with spaces. The temporary
+  verification script was subsequently removed during review.
+- Unit/integration verification passed: 124 simulator tests, Go race-enabled
+  unit tests, broker persistence, gateway recovery, and container builds/datasets.
+  An initial exact-serialization failure identified the golden-fixture formatting
+  boundary; fixtures were restored and excluded before the successful run.
+- `mise run fix` and `mise run hooks:check` passed after separating tests from
+  hooks. Reviewed Oxc's tagged schema and verified Markdown formatting via stdin.
+  The two updated skills passed the skill-creator validator.
 
-- `mise install --locked pixi dprint`, `mise run format:setup`, and
-  `mise exec -- pixi install --locked -e dev` passed. The tool lock records
-  Pixi 0.83.0 and dprint 0.64.3; plugin versions/checksums live in `dprint.json`.
-- `mise run check` passed: the
-  [delivery-tooling script](../../tools/check-delivery-tooling.sh), dprint,
-  Python formatting/lint/strict typing, all 124 simulator tests, Go formatting,
-  vet/build/module checks and race-enabled unit tests, Pixi lock validation,
-  both Compose configurations, and container-script syntax.
-- The delivery-tooling script tested 14 accepted/rejected message cases through
-  both the direct task and an installed commit-msg hook, with a message filename
-  containing spaces. It installed both hook stages in a disposable repository,
-  staged only that repository's copied config, and created no commits. Its
-  temporary adapter resolves the message path before invoking the real root
-  task. Six formatter fixture types exercised coverage, generated/cache/lockfile
-  and test-fixture exclusions, read-only failure checks, and repeatability.
-- `mise run hooks:check` passed across tracked files. The pre-commit stage ran
-  the existing file checks and dprint; message validation remained separate.
-- `mise run containers:test` passed with the updated build image: locked runtime
-  installation, dataset generation, MQTT reception, gateway restart/recreation,
-  and disposable-service cleanup.
-- The skill-creator `quick_validate.py` checks passed for `phase-delivery` and
-  `pull-request`; `bash -n tools/check-delivery-tooling.sh` and
-  `git diff --check` passed. Manually reviewed the PR template, policy/skill
-  links, formatter ownership, and VS Code extension/settings assignments.
+Final task/documentation review:
 
-Runtime evidence is local Linux amd64; other locked platforms were resolved but
-not executed. VS Code extensions were recommended/configured without an
-interactive editor run. GitHub CI and the normal checkout's new hook installation
-remain to be exercised after maintainer review/publication and `mise run setup`.
-Changes are uncommitted and await local review.
+- Ordered root commands before shared and project tasks. Main `check` now
+  explicitly calls formatting, lint, and type checking, then dependency/config
+  checks. Project task definitions were unchanged apart from ordering.
+- Audited all 69 task definitions and their `run`/`depends` edges: no missing
+  targets or cycles, and no duplicate leaf execution within `check` (11 leaves),
+  `fix` (15), or `test` (5). Each language typecheck appears once in `check`;
+  no test tasks are reachable from `check` or `fix`.
+- `mise run check` passed with mypy covering 23 Python files, Go vet/build/module
+  verification, formatting/lint, Pixi lock validation, Compose validation, and
+  shell syntax. No tests were rerun for this task-order/documentation-only review.
+- Documented the exact-text goldens and the broader fixture exclusion, shortened
+  repeated tooling/workflow prose, and consolidated this evidence.
+  `git diff --check` passed.
+
+Runtime evidence is local Linux amd64. Interactive VS Code behavior and hosted
+CI remain unverified; recommendations preserve the maintainer's selections.
 
 ## Weekly review
 

@@ -159,6 +159,10 @@ When the maintainer asks only for a discussion or plan, do not edit code or docu
 
 ## Review, commits, and publication
 
+Review and restage any hook fixes; agents do not automatically stage them.
+The [tooling guide](developer-tooling.md#formatting-and-editor-support) owns
+the shared fix/check entry points and formatter behavior.
+
 Implementation authorization covers local changes, validation, and review handoff.
 Leave the complete working tree available for maintainer/developer review and
 acceptance before commits. A request for a commit message returns text only;
