@@ -30,11 +30,11 @@ After the workflow-policy commit, the maintainer requested the same cleanup
 for completed and upcoming tasks. Audited every detailed repository task
 against its GitHub issue before replacing the local records:
 
-| Phase | Task records audited | GitHub owner |
-|---|---|---|
-| 00 | 10 | [Foundation milestone](https://github.com/gleniosp/machinepulse/milestone/1) |
-| 01 | 12 | [Simulator milestone](https://github.com/gleniosp/machinepulse/milestone/2) |
-| 02 | 8 | [Transport milestone](https://github.com/gleniosp/machinepulse/milestone/3) |
+| Phase | Task records audited | GitHub owner                                                                 |
+| ----- | -------------------- | ---------------------------------------------------------------------------- |
+| 00    | 10                   | [Foundation milestone](https://github.com/gleniosp/machinepulse/milestone/1) |
+| 01    | 12                   | [Simulator milestone](https://github.com/gleniosp/machinepulse/milestone/2)  |
+| 02    | 8                    | [Transport milestone](https://github.com/gleniosp/machinepulse/milestone/3)  |
 
 Retained scope, dependencies, expected evidence, completion boundaries, and
 evidence links on the corresponding issues. Made ten historical acceptance
@@ -113,19 +113,19 @@ both runtime and development environments. Resolution is not runtime evidence.
 
 Local validation on Linux amd64, Docker Engine 29.7.2 and Compose 5.4.0:
 
-| Check | Evidence |
-|---|---|
-| `docker compose build gateway simulator` | Both native images built using the locked Go and Pixi inputs |
-| `docker compose --project-name machinepulse-container104 run --rm simulator` | Three runs, two windows each; telemetry/sidecar event IDs matched and files belonged to the invoking host user |
-| Container manifest inspection | Revision and dirty state were null without build provenance, as documented |
-| Runtime image inspection | Simulator runtime had no Pixi, pytest, or checkout metadata; gateway used user `65532:65532` |
-| Root Compose startup with disposable project and random host ports | MQTT and Kafka became healthy; gateway logged a successful subscription and connection to `mqtt:1883` |
-| Contract fixture published with bundled `mosquitto_pub` | Gateway logged the original event ID and `telemetry_unacknowledged` |
-| Gateway restart, then full `down` / `up` preserving volumes | The same pending event was redelivered; the gateway resumed its broker session |
-| `docker buildx build --platform linux/arm64 --file infra/docker/gateway.Dockerfile --tag machinepulse-gateway:arm64-check --load .` | Arm64 gateway image cross-built successfully; image architecture was verified |
-| `mise run check` | Formatting, lint, typing, 124 simulator tests, Go race tests/build/module verification, expanded lockfile validation, and both Compose configurations passed |
-| Repository hooks on all changed and new files | File hygiene, TOML/YAML, simulator, gateway, Compose, and Pixi lock checks passed |
-| Documentation navigation and whitespace | 386 local Markdown links/anchors and `git diff --check` passed |
+| Check                                                                                                                               | Evidence                                                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `docker compose build gateway simulator`                                                                                            | Both native images built using the locked Go and Pixi inputs                                                                                                 |
+| `docker compose --project-name machinepulse-container104 run --rm simulator`                                                        | Three runs, two windows each; telemetry/sidecar event IDs matched and files belonged to the invoking host user                                               |
+| Container manifest inspection                                                                                                       | Revision and dirty state were null without build provenance, as documented                                                                                   |
+| Runtime image inspection                                                                                                            | Simulator runtime had no Pixi, pytest, or checkout metadata; gateway used user `65532:65532`                                                                 |
+| Root Compose startup with disposable project and random host ports                                                                  | MQTT and Kafka became healthy; gateway logged a successful subscription and connection to `mqtt:1883`                                                        |
+| Contract fixture published with bundled `mosquitto_pub`                                                                             | Gateway logged the original event ID and `telemetry_unacknowledged`                                                                                          |
+| Gateway restart, then full `down` / `up` preserving volumes                                                                         | The same pending event was redelivered; the gateway resumed its broker session                                                                               |
+| `docker buildx build --platform linux/arm64 --file infra/docker/gateway.Dockerfile --tag machinepulse-gateway:arm64-check --load .` | Arm64 gateway image cross-built successfully; image architecture was verified                                                                                |
+| `mise run check`                                                                                                                    | Formatting, lint, typing, 124 simulator tests, Go race tests/build/module verification, expanded lockfile validation, and both Compose configurations passed |
+| Repository hooks on all changed and new files                                                                                       | File hygiene, TOML/YAML, simulator, gateway, Compose, and Pixi lock checks passed                                                                            |
+| Documentation navigation and whitespace                                                                                             | 386 local Markdown links/anchors and `git diff --check` passed                                                                                               |
 
 The disposable Compose project's containers, network, and volumes were removed.
 Generated sample datasets remain in the ignored host output directory. No

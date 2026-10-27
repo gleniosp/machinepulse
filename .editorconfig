@@ -1,0 +1,11 @@
+root = true
+
+# Files without a dedicated formatter. dprint owns documents/configuration;
+# Ruff owns Python; gofmt owns Go, including its tab indentation.
+[{*.txt,*.sh,Dockerfile,*.Dockerfile,LICENSE,.editorconfig,.gitignore,.gitattributes,.dockerignore,.env.example,*.ini,*.conf}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true

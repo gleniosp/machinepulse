@@ -81,15 +81,15 @@ this test; root `check` and the infrastructure hook validate Compose syntax.
 Local validation on 2026-10-16, Linux amd64, Docker Engine 29.7.2 and Compose
 5.4.0:
 
-| Command or check | Result |
-|---|---|
-| `mise run infra:check` | Passed |
-| `mise run infra:test` | Fresh startup and both persistence assertions passed; disposable services and volumes removed |
-| `mise run infra:up` then `mise run infra:status` | Both services healthy; MQTT published on `127.0.0.1:1883`, Kafka on `127.0.0.1:9092` |
-| Bundled MQTT client using the host listener | MQTT 5 CONNACK and QoS 1 PUBACK received |
-| Bundled Kafka topic client using the host bootstrap listener | Topic listing returned successfully |
-| `mise run check` | Passed: simulator lint, formatting, typing, 124 tests, Pixi lock check, and Compose validation |
-| `mise run hooks:check` | Passed |
+| Command or check                                             | Result                                                                                         |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `mise run infra:check`                                       | Passed                                                                                         |
+| `mise run infra:test`                                        | Fresh startup and both persistence assertions passed; disposable services and volumes removed  |
+| `mise run infra:up` then `mise run infra:status`             | Both services healthy; MQTT published on `127.0.0.1:1883`, Kafka on `127.0.0.1:9092`           |
+| Bundled MQTT client using the host listener                  | MQTT 5 CONNACK and QoS 1 PUBACK received                                                       |
+| Bundled Kafka topic client using the host bootstrap listener | Topic listing returned successfully                                                            |
+| `mise run check`                                             | Passed: simulator lint, formatting, typing, 124 tests, Pixi lock check, and Compose validation |
+| `mise run hooks:check`                                       | Passed                                                                                         |
 
 The host-listener probes used the pinned images' clients in temporary
 containers with Linux host networking: `mosquitto_pub -h 127.0.0.1 -p 1883 -V
@@ -136,13 +136,13 @@ subscription and permits another publication.
 
 Local validation on 2026-10-16, Linux amd64, Go 1.27.1 and Docker Engine 29.7.2:
 
-| Command or check | Result |
-|---|---|
-| `mise run gateway:check` | Formatting, vet, compilation, dependency checksum verification, and unit tests with the race detector passed |
-| `mise run gateway:test:integration` | MQTT 5 QoS 1 subscription, source preservation, deferred acknowledgement, bounded in-flight delivery, gateway redelivery, and broker/session recovery passed; disposable services and volumes removed |
-| `mise run check` | Gateway checks, 124 simulator tests, simulator formatting/lint/typing, Pixi lock verification, and Compose validation passed |
-| `prek run --files` with every tracked and new repository file | All applicable hooks passed, including gateway, simulator, infrastructure, and Pixi lock checks |
-| `git diff --check` | Passed |
+| Command or check                                              | Result                                                                                                                                                                                                |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mise run gateway:check`                                      | Formatting, vet, compilation, dependency checksum verification, and unit tests with the race detector passed                                                                                          |
+| `mise run gateway:test:integration`                           | MQTT 5 QoS 1 subscription, source preservation, deferred acknowledgement, bounded in-flight delivery, gateway redelivery, and broker/session recovery passed; disposable services and volumes removed |
+| `mise run check`                                              | Gateway checks, 124 simulator tests, simulator formatting/lint/typing, Pixi lock verification, and Compose validation passed                                                                          |
+| `prek run --files` with every tracked and new repository file | All applicable hooks passed, including gateway, simulator, infrastructure, and Pixi lock checks                                                                                                       |
+| `git diff --check`                                            | Passed                                                                                                                                                                                                |
 
 - [Gateway unit tests](../../services/telemetry-gateway/internal/gateway/gateway_test.go)
 - [Broker integration test](../../services/telemetry-gateway/internal/gateway/broker_integration_test.go)
@@ -232,6 +232,63 @@ container and data while using the supported readiness command.
 the correction, including broker restart and persistent-session recovery;
 `git diff --check` passed. A new CI run requires the maintainer to commit and
 push this correction.
+
+## Delivery tooling — 2026-10-27
+
+Implemented the maintainer-selected tooling scope in
+[#107](https://github.com/gleniosp/machinepulse/issues/107), in the working tree
+on `chore/107-task-delivery-conventions` based on
+`36c7e35c3720aad399ed97a003d1b1a8a24c2539`. The
+[working agreement](../working-agreement.md) owns the issue-based branch,
+local-review, commit, and publication workflow; the existing delivery skills
+now route to it and the new PR template. The
+[tooling guide](../developer-tooling.md) owns setup, formatter boundaries,
+message-validation behavior, and editor support.
+
+Pixi moved to 0.83.0 in mise and the digest-pinned simulator build image, with
+workspace compatibility `>=0.83.0,<0.84`. Commitizen 4.19.3 and its dependencies
+were added only to the existing Pixi `dev` environment. A parsed lockfile
+comparison confirmed that the default runtime environment and every
+pre-existing locked package were retained. Dprint and its checksum-pinned
+plugins format documents/configuration; EditorConfig covers the fallback file
+types. The initial formatting pass also touched golden JSON fixtures. Although
+their parsed values were unchanged, the simulator's exact-serialization test
+failed. Restored all test fixtures and excluded fixture directories from dprint;
+the test then passed. The remaining initial formatting edits are in documents,
+configuration, and the human-authored simulator example.
+
+Validation:
+
+- `mise install --locked pixi dprint`, `mise run format:setup`, and
+  `mise exec -- pixi install --locked -e dev` passed. The tool lock records
+  Pixi 0.83.0 and dprint 0.64.3; plugin versions/checksums live in `dprint.json`.
+- `mise run check` passed: the
+  [delivery-tooling script](../../tools/check-delivery-tooling.sh), dprint,
+  Python formatting/lint/strict typing, all 124 simulator tests, Go formatting,
+  vet/build/module checks and race-enabled unit tests, Pixi lock validation,
+  both Compose configurations, and container-script syntax.
+- The delivery-tooling script tested 14 accepted/rejected message cases through
+  both the direct task and an installed commit-msg hook, with a message filename
+  containing spaces. It installed both hook stages in a disposable repository,
+  staged only that repository's copied config, and created no commits. Its
+  temporary adapter resolves the message path before invoking the real root
+  task. Six formatter fixture types exercised coverage, generated/cache/lockfile
+  and test-fixture exclusions, read-only failure checks, and repeatability.
+- `mise run hooks:check` passed across tracked files. The pre-commit stage ran
+  the existing file checks and dprint; message validation remained separate.
+- `mise run containers:test` passed with the updated build image: locked runtime
+  installation, dataset generation, MQTT reception, gateway restart/recreation,
+  and disposable-service cleanup.
+- The skill-creator `quick_validate.py` checks passed for `phase-delivery` and
+  `pull-request`; `bash -n tools/check-delivery-tooling.sh` and
+  `git diff --check` passed. Manually reviewed the PR template, policy/skill
+  links, formatter ownership, and VS Code extension/settings assignments.
+
+Runtime evidence is local Linux amd64; other locked platforms were resolved but
+not executed. VS Code extensions were recommended/configured without an
+interactive editor run. GitHub CI and the normal checkout's new hook installation
+remain to be exercised after maintainer review/publication and `mise run setup`.
+Changes are uncommitted and await local review.
 
 ## Weekly review
 

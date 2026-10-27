@@ -53,11 +53,12 @@ If the conflict materially affects scope, architecture, data semantics, or safet
 
 ## Git and repository hygiene
 
-- Each week's work uses one dedicated branch and one pull request. When a week maps directly to a phase, the phase branch and pull request are the same unit of work. Suggest branch names in `phase-XX/task-description` form for phase work, combining the phase name with a short description of the first task in that phase (for example, `phase-01/vibration-generation`), and `week-XX/short-description` form for other weekly work. For work outside the numbered phases, the maintainer may approve separate task-oriented branches and pull requests. The approved public-onboarding sequence is `chore/github-planning`, followed after merge by `feat/public-onboarding`, both targeting `main`; its scope is tracked in the [public-onboarding milestone](https://github.com/gleniosp/machinepulse/milestone/10). The maintainer creates or switches to the branch.
-- The agent does not create branches or commits. Within the weekly or phase branch, each coherent completed task or step should be represented by a commit. The agent proposes commit boundaries and commands; the maintainer decides the commit packages and executes them.
-- Record implementation completion through checked acceptance criteria and evidence on the GitHub issue before raising its pull request. Do not maintain a second live task status in repository documents. The maintainer owns pull-request creation, review, approval, and merging. Keep related GitHub issues open until the pull request containing their changes has merged; close them only after that merge and when their acceptance criteria and evidence are complete.
+- Use one focused, independently reviewable issue per branch and pull request. Milestones group phase delivery. An explicitly agreed coherent combined delivery may cover multiple issues; use the first issue number in its branch and a separate `Closes #N` for each fully delivered issue.
+- Suggest `<type>/<issue-number>-<short-description>` branch names, such as `chore/107-task-delivery-conventions` or `feat/22-ingress-validation`. Use familiar Conventional Commit types. The maintainer creates or switches to the branch; inspect the actual branch and working tree before editing.
+- The agent does not create branches or commits. It proposes coherent commit boundaries and messages after local review; the maintainer decides the commit packages and executes them.
+- Record implementation completion through checked acceptance criteria and evidence on the GitHub issue before raising its pull request. Do not maintain a second live task status in repository documents. The maintainer owns publication decisions, review, approval, and merging; an agent may publish a PR only when explicitly asked. Keep related GitHub issues open until their changes merge and their acceptance criteria and evidence are complete.
 - Do not reset, revert, delete, or overwrite work unless the maintainer explicitly requests the operation and its target is clear.
-- When a commit is requested, use a Conventional Commit / Commitizen-compatible message with a lowercase imperative subject and a short explanation of why the change exists.
+- Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[(scope)][!]: <description>`. Write a short lowercase imperative description and add a body when the reason needs explanation. Typical types are `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `style`, `chore`, and `revert`. Scopes name the affected area, for example `chore(tooling): validate commit messages`. Use `!` or a `BREAKING CHANGE:` footer only for an actual breaking change. Reference the issue with `Refs #107` in the body; the complete delivery's PR owns issue closure. Branch names and commit subjects have different formats.
 - Keep secrets, private information, proprietary data, and unlicensed external material out of the repository. Record provenance and licensing for external datasets, models, documents, images, and code.
 - GitHub is the operational source of issue and milestone state. If it is unavailable, record the blocker and do not invent completion state.
 
@@ -65,17 +66,17 @@ If the conflict materially affects scope, architecture, data semantics, or safet
 
 The agent should perform the following sequence without requiring the maintainer to provide a guessed issue number:
 
-1. Inspect GitHub milestones and open issues for `gleniosp/machinepulse`.
+1. Inspect GitHub milestones, open issues, native blocker links, and related pull requests/reviews for `gleniosp/machinepulse`.
 2. Select the earliest active milestone with unfinished work, unless the maintainer names another milestone.
 3. Select the first open, unblocked issue in that milestone, prioritizing high-priority work and then the stable task ID where one exists.
 4. Read the issue, its milestone, linked specification, relevant journal entry, and applicable ADRs or experiments.
-5. Check whether the issue is implementation-ready.
+5. Check whether the issue is implementation-ready. Verify prerequisite delivery through merged pull requests or default-branch evidence, rather than relying only on issue labels, checked boxes, or closed state. Work awaiting review or merge needs that handoff rather than a fresh implementation.
 6. If context is missing, create or update the required specification, issue acceptance criteria, milestone description, or experiment before coding.
-7. Propose the weekly, phase, or approved task-oriented branch name and wait for the maintainer to create or select the branch.
+7. Propose the issue-based branch name and wait for the maintainer to create or select it. Confirm the actual branch before implementation.
 8. Implement the smallest complete slice that satisfies the issue.
 9. Run the narrowest relevant validation first, then broader checks when available.
 10. Record evidence in the journal and update any affected specification, ADR, or experiment.
-11. Report the proposed commit boundary and pull-request handoff. Leave the issue open until the maintainer-approved pull request is merged; the maintainer closes it only when all acceptance criteria and evidence are satisfied.
+11. Hand off the complete local change for maintainer/developer review and acceptance, including validation and limitations. After accepted corrections, propose commit boundaries and messages. Follow the publication workflow below; keep the issue open until merge.
 
 Example discovery command:
 
@@ -101,7 +102,10 @@ GitHub issue
     → journal entry
     → ADR or experiment when needed
     → issue acceptance criteria checked with evidence
-    → maintainer raises, reviews, and merges the pull request
+    → local maintainer/developer review and acceptance
+    → focused maintainer commits
+    → authorized push and pull-request publication
+    → PR review, corrections, and maintainer merge
     → related GitHub issue closed
 ```
 
@@ -153,6 +157,33 @@ The agent should treat this feedback as the current direction. If the change aff
 
 When the maintainer asks only for a discussion or plan, do not edit code or documentation until an implementation or documentation change is authorized.
 
+## Review, commits, and publication
+
+Implementation authorization covers local changes, validation, and review handoff.
+Leave the complete working tree available for maintainer/developer review and
+acceptance before commits. A request for a commit message returns text only;
+the maintainer creates focused commits and controls their contents.
+
+A request to prepare PR content returns a title and body using the
+[PR template](../.github/pull_request_template.md). An explicit request to raise
+the PR authorizes pushing the reviewed commits and publishing the PR against
+`main`, or reusing the branch's existing PR. Inspect the full branch diff and
+commit series against the current base, plus staged, unstaged, and untracked
+work, before publication. Resolve uncommitted or unreviewed changes with the
+maintainer before pushing. Do not infer publication authority from implementation
+or a commit-message request.
+
+Use a short descriptive PR title without a Conventional Commit prefix. Explain
+the final problem and resulting behavior, actual validation/evidence, and
+remaining limits. Use a draft for incomplete work. Each claimed completed issue
+must have evidenced acceptance criteria and its own `Closes #N` reference;
+GitHub closes it when the PR merges. Use `Refs #N` for partial work.
+
+Address PR feedback locally, revalidate affected behavior, and update owning
+documentation and evidence. Corrections follow the same local review,
+maintainer commit, and requested publication sequence. The maintainer approves
+and merges; agents do not self-approve, merge, or enable auto-merge.
+
 ## Agent autonomy and approval boundaries
 
 The agent may perform routine repository work autonomously when it is within an accepted issue:
@@ -190,7 +221,7 @@ Record these conditions on the GitHub issue as soon as they are met. Do not
 require a separate repository task-status update.
 
 The related GitHub issue remains open while its pull request is pending. After
-the maintainer-approved weekly or phase pull request is merged, close the issue
+the maintainer-approved pull request is merged, close the issue
 if its acceptance criteria and evidence are complete.
 
 Record phase exit evidence in the repository and link it from the milestone

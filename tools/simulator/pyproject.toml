@@ -1,7 +1,5 @@
 [project]
-authors = [
-    { name = "gleniosp", email = "11273108+gleniosp@users.noreply.github.com" },
-]
+authors = [{ name = "gleniosp", email = "11273108+gleniosp@users.noreply.github.com" }]
 dependencies = ["pydantic>=2.11,<3"]
 name = "machinepulse-simulator"
 version = "0.1.0"

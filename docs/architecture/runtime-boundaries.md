@@ -7,19 +7,19 @@ This document owns provisional component responsibilities, language direction, i
 
 ## Responsibility matrix
 
-| Component | Primary responsibility | Initial language | Main inputs | Main outputs |
-|---|---|---|---|---|
-| Simulator | Generate reproducible synthetic machine telemetry | Python | Configuration, seed, condition | Contract-compliant telemetry windows and labeled datasets; the current CLI writes local files (see the [simulator specification](../specs/simulator.md)) |
-| Edge producer | Acquire, buffer, timestamp, and publish physical measurements | To be selected | Sensor readings, device configuration | MQTT telemetry windows |
-| MQTT boundary | Device-oriented publish/subscribe transport | Infrastructure | Producer messages | Gateway deliveries |
-| Telemetry gateway | Validate external messages and enter the internal platform | Go | MQTT messages | Valid and invalid event outcomes |
-| Event stream | Buffer and distribute internal events | Infrastructure | Gateway and worker events | Consumer-group deliveries |
-| Persistence consumer | Store source telemetry and derived records | Go or Python, to be decided | Valid events | PostgreSQL and ClickHouse records |
-| Analytics worker | Normalize windows, calculate features, and infer anomalies | Python | Telemetry events and model artifacts | Features and anomaly observations |
-| Workflow service | Apply alert policy and manage maintenance state | Go | Anomaly observations and user commands | Alerts, work orders, maintenance events |
-| API | Expose product and analytical read models | Go | Database state and query parameters | HTTP API responses |
-| Dashboard | Present system state and accept user actions | React/TypeScript | API responses | User commands through the API |
-| Observability stack | Collect and present logs, metrics, and traces | Infrastructure | Instrumented components | Operational views |
+| Component            | Primary responsibility                                        | Initial language            | Main inputs                            | Main outputs                                                                                                                                             |
+| -------------------- | ------------------------------------------------------------- | --------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Simulator            | Generate reproducible synthetic machine telemetry             | Python                      | Configuration, seed, condition         | Contract-compliant telemetry windows and labeled datasets; the current CLI writes local files (see the [simulator specification](../specs/simulator.md)) |
+| Edge producer        | Acquire, buffer, timestamp, and publish physical measurements | To be selected              | Sensor readings, device configuration  | MQTT telemetry windows                                                                                                                                   |
+| MQTT boundary        | Device-oriented publish/subscribe transport                   | Infrastructure              | Producer messages                      | Gateway deliveries                                                                                                                                       |
+| Telemetry gateway    | Validate external messages and enter the internal platform    | Go                          | MQTT messages                          | Valid and invalid event outcomes                                                                                                                         |
+| Event stream         | Buffer and distribute internal events                         | Infrastructure              | Gateway and worker events              | Consumer-group deliveries                                                                                                                                |
+| Persistence consumer | Store source telemetry and derived records                    | Go or Python, to be decided | Valid events                           | PostgreSQL and ClickHouse records                                                                                                                        |
+| Analytics worker     | Normalize windows, calculate features, and infer anomalies    | Python                      | Telemetry events and model artifacts   | Features and anomaly observations                                                                                                                        |
+| Workflow service     | Apply alert policy and manage maintenance state               | Go                          | Anomaly observations and user commands | Alerts, work orders, maintenance events                                                                                                                  |
+| API                  | Expose product and analytical read models                     | Go                          | Database state and query parameters    | HTTP API responses                                                                                                                                       |
+| Dashboard            | Present system state and accept user actions                  | React/TypeScript            | API responses                          | User commands through the API                                                                                                                            |
+| Observability stack  | Collect and present logs, metrics, and traces                 | Infrastructure              | Instrumented components                | Operational views                                                                                                                                        |
 
 ## Boundary rules
 

@@ -59,11 +59,11 @@ mise run simulator:experiment:conditions
 
 ## Results
 
-| Condition | Intensity | Temperature first/last (°C) | RMS X/Y/Z (m/s²) | Dominant X frequency (Hz) | X amplitude at 30 Hz (m/s²) |
-|---|---:|---:|---:|---:|---:|
-| Normal | 0.0 | 40.000 / 40.000 | 0.037095 / 0.030155 / 0.023458 | 30.0 | 0.050545 |
-| Imbalance | 0.7 | 40.000 / 40.000 | 0.085813 / 0.054094 / 0.047004 | 30.0 | 0.120543 |
-| Overheating | 0.7 | 40.875 / 46.125 | 0.037095 / 0.030155 / 0.023458 | 30.0 | 0.050545 |
+| Condition   | Intensity | Temperature first/last (°C) |               RMS X/Y/Z (m/s²) | Dominant X frequency (Hz) | X amplitude at 30 Hz (m/s²) |
+| ----------- | --------: | --------------------------: | -----------------------------: | ------------------------: | --------------------------: |
+| Normal      |       0.0 |             40.000 / 40.000 | 0.037095 / 0.030155 / 0.023458 |                      30.0 |                    0.050545 |
+| Imbalance   |       0.7 |             40.000 / 40.000 | 0.085813 / 0.054094 / 0.047004 |                      30.0 |                    0.120543 |
+| Overheating |       0.7 |             40.875 / 46.125 | 0.037095 / 0.030155 / 0.023458 |                      30.0 |                    0.050545 |
 
 All conditions retained 1800 RPM. Normal and overheating produced identical
 vibration samples with the fixed seed. The imbalance scenario raised the X-axis

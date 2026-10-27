@@ -39,6 +39,12 @@ jobs:
       - name: Download pinned gateway dependencies
         run: mise run gateway:setup
 
+      - name: Install pinned document formatters
+        run: mise run format:setup
+
+      - name: Verify commit-message tooling
+        run: mise run tooling:test
+
       - name: Run repository checks and tests
         run: mise run hooks:check
 

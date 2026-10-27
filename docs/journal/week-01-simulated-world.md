@@ -31,15 +31,15 @@ operating conditions.
 ## Planned outcomes
 
 - [x] P01-001 simulator configuration and condition behavior are specified;
-  EXP-0001 records the selected synthetic settings and their limits.
+      EXP-0001 records the selected synthetic settings and their limits.
 - [x] Reproducibility metadata and fixed-seed vibration generation are
-  implemented.
+      implemented.
 - [x] Motor, vibration, temperature, and RPM generation are implemented.
 - [x] Telemetry serialization and validation are covered by tests.
 - [x] CLI output and ground-truth sidecar are documented.
 - [x] Plots, limitations, and experiment results are recorded.
 - [x] The mise/Pixi tooling foundation and repository hooks are installed and
-  pass their current checks.
+      pass their current checks.
 
 ## Day 1 — Configuration and domain model
 
@@ -562,12 +562,12 @@ These labeled synthetic examples show the generated context values. The
 condition and intensity columns are ground-truth labels; they are not fields in
 the context records.
 
-| Condition | Intensity | Window index | Temperature (°C) | RPM (rev/min) |
-|---|---:|---:|---:|---:|
-| normal | 0.0 | 0 | 40.0 | 1800.0 |
-| imbalance | 0.7 | 0 | 40.0 | 1800.0 |
-| overheating | 0.5 | 0 | 40.625 | 1800.0 |
-| overheating | 0.5 | 3 | 44.375 | 1800.0 |
+| Condition   | Intensity | Window index | Temperature (°C) | RPM (rev/min) |
+| ----------- | --------: | -----------: | ---------------: | ------------: |
+| normal      |       0.0 |            0 |             40.0 |        1800.0 |
+| imbalance   |       0.7 |            0 |             40.0 |        1800.0 |
+| overheating |       0.5 |            0 |           40.625 |        1800.0 |
+| overheating |       0.5 |            3 |           44.375 |        1800.0 |
 
 ### Evidence
 

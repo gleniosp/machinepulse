@@ -2,10 +2,17 @@
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
+  "[markdown][json][jsonc][yaml][toml]": {
+    "editor.defaultFormatter": "dprint.dprint"
+  },
+  "yaml.format.enable": false,
+  "evenBetterToml.formatter.enabled": false,
+  "go.formatTool": "gofmt",
   "ruff.configurationPreference": "filesystemFirst",
   "gopls": {
-    "build.buildFlags": [
-      "-tags=integration"
-    ]
+    "build.buildFlags": ["-tags=integration"]
   }
 }

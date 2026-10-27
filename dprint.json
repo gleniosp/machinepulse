@@ -1,0 +1,25 @@
+{
+  "includes": ["**/*.{md,json,jsonc,yaml,yml,toml}"],
+  "excludes": [
+    "**/{.git,.pixi,node_modules,__pycache__,.pytest_cache,.ruff_cache,.mypy_cache}/**",
+    "simulator-output/**",
+    "docs/experiments/artifacts/**",
+    "**/tests/fixtures/**",
+    "**/*.lock",
+    "**/package-lock.json",
+    "**/pnpm-lock.yaml",
+    "**/dist/**",
+    "**/build/**"
+  ],
+  "markdown": {
+    "textWrap": "maintain",
+    "codeBlock.skipFormat": true
+  },
+  "oxc": {
+    "embeddedLanguageFormatting": "off"
+  },
+  "plugins": [
+    "https://github.com/dprint/dprint-plugin-markdown/releases/download/0.28.2/plugin.wasm@77d0095123be1df7c802ef1b8875433c757f79238c26a58d1c49b8cafca44e2c",
+    "https://github.com/dprint/dprint-plugin-oxc/releases/download/0.48.0/plugin.wasm@ab83ae1cc1194d3791c9dd1593edd32e8f2bcef921ab47b0940d97459a04bf9a"
+  ]
+}

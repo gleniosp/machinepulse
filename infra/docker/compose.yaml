@@ -9,7 +9,21 @@ services:
       - ../mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - mqtt-data:/mosquitto/data
     healthcheck:
-      test: ["CMD", "mosquitto_pub", "-h", "127.0.0.1", "-V", "mqttv5", "-q", "1", "-t", "machinepulse/health", "-m", "ready"]
+      test:
+        [
+          "CMD",
+          "mosquitto_pub",
+          "-h",
+          "127.0.0.1",
+          "-V",
+          "mqttv5",
+          "-q",
+          "1",
+          "-t",
+          "machinepulse/health",
+          "-m",
+          "ready",
+        ]
       interval: 5s
       timeout: 5s
       retries: 12

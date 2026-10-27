@@ -62,14 +62,14 @@ deviation `0.01 m/s²`. The intensity-1.0 imbalance run added its configured
 per-axis 30 Hz component. A direct DFT over bins 1–100 Hz found the dominant
 component at 30 Hz for every axis and condition:
 
-| Condition | Axis | RMS (m/s²) | Peak (m/s²) | Dominant amplitude at 30 Hz (m/s²) |
-|---|---:|---:|---:|---:|
-| Normal | X | 0.037095 | 0.073685 | 0.050545 |
-| Normal | Y | 0.030155 | 0.068589 | 0.040134 |
-| Normal | Z | 0.023458 | 0.059016 | 0.029902 |
-| Imbalance, intensity 1.0 | X | 0.106912 | 0.172799 | 0.150543 |
-| Imbalance, intensity 1.0 | Y | 0.064540 | 0.117207 | 0.090128 |
-| Imbalance, intensity 1.0 | Z | 0.057405 | 0.107139 | 0.079902 |
+| Condition                | Axis | RMS (m/s²) | Peak (m/s²) | Dominant amplitude at 30 Hz (m/s²) |
+| ------------------------ | ---: | ---------: | ----------: | ---------------------------------: |
+| Normal                   |    X |   0.037095 |    0.073685 |                           0.050545 |
+| Normal                   |    Y |   0.030155 |    0.068589 |                           0.040134 |
+| Normal                   |    Z |   0.023458 |    0.059016 |                           0.029902 |
+| Imbalance, intensity 1.0 |    X |   0.106912 |    0.172799 |                           0.150543 |
+| Imbalance, intensity 1.0 |    Y |   0.064540 |    0.117207 |                           0.090128 |
+| Imbalance, intensity 1.0 |    Z |   0.057405 |    0.107139 |                           0.079902 |
 
 The direct DFT (discrete Fourier transform) is an analysis applied to the
 generated samples. It compares them with repeating patterns at candidate
@@ -100,12 +100,12 @@ its peak is clear.
 
 The one-factor-at-a-time comparison on 2026-10-14 found:
 
-| Setting | Normal X-axis result | Imbalance X-axis result | Observation |
-|---|---|---|---|
-| Sample rate 400, 800, 1600 Hz; 1000 ms | Dominant 30 Hz amplitude 0.049764–0.050545 m/s² | Dominant 30 Hz amplitude 0.149759–0.150543 m/s² | All three rates put the modeled 30 Hz component on a 1 Hz DFT bin in this synthetic one-second window. |
-| Window 250 ms; 1600 Hz | Dominant bin 28 Hz, amplitude 0.034854 m/s² | Dominant bin 28 Hz, amplitude 0.100695 m/s² | The 4 Hz bin spacing does not include 30 Hz and spreads its amplitude across bins. |
-| Window 500 ms; 1600 Hz | Dominant 30 Hz amplitude 0.050390 m/s² | Dominant 30 Hz amplitude 0.150390 m/s² | The 2 Hz bin spacing includes 30 Hz. |
-| Window 1000 ms; 1600 Hz | Dominant 30 Hz amplitude 0.050545 m/s² | Dominant 30 Hz amplitude 0.150543 m/s² | The 1 Hz bin spacing makes the modeled peak easy to inspect. |
+| Setting                                                    | Normal X-axis result                                                      | Imbalance X-axis result                                                   | Observation                                                                                                                           |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Sample rate 400, 800, 1600 Hz; 1000 ms                     | Dominant 30 Hz amplitude 0.049764–0.050545 m/s²                           | Dominant 30 Hz amplitude 0.149759–0.150543 m/s²                           | All three rates put the modeled 30 Hz component on a 1 Hz DFT bin in this synthetic one-second window.                                |
+| Window 250 ms; 1600 Hz                                     | Dominant bin 28 Hz, amplitude 0.034854 m/s²                               | Dominant bin 28 Hz, amplitude 0.100695 m/s²                               | The 4 Hz bin spacing does not include 30 Hz and spreads its amplitude across bins.                                                    |
+| Window 500 ms; 1600 Hz                                     | Dominant 30 Hz amplitude 0.050390 m/s²                                    | Dominant 30 Hz amplitude 0.150390 m/s²                                    | The 2 Hz bin spacing includes 30 Hz.                                                                                                  |
+| Window 1000 ms; 1600 Hz                                    | Dominant 30 Hz amplitude 0.050545 m/s²                                    | Dominant 30 Hz amplitude 0.150543 m/s²                                    | The 1 Hz bin spacing makes the modeled peak easy to inspect.                                                                          |
 | Noise standard deviation 0.005–0.02 m/s²; 1600 Hz, 1000 ms | X-axis RMS 0.035893–0.041231 m/s²; 30 Hz amplitude 0.050272–0.051099 m/s² | X-axis RMS 0.106374–0.108666 m/s²; 30 Hz amplitude 0.150271–0.151088 m/s² | Higher noise increases time-domain RMS and peak variation; the modeled component remains visible in this fixed one-second comparison. |
 
 Temperature and RPM context are deterministic and were checked separately in

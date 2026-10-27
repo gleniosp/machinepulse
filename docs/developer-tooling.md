@@ -18,13 +18,13 @@ and should not be repeated here.
 
 ## Ownership model
 
-| Area | Owner and expected files | Repository-level integration |
-|---|---|---|
-| Shared tools and commands | `mise.toml`, `mise.lock`, `prek.toml`, and root mise tasks | Root tasks are the shared command interface |
-| Go service or library | A root `go.work` coordinates local modules; each module owns `go.mod` and `go.sum` | Add the Go toolchain through mise when Go code is introduced; project tasks delegate to the module |
-| Python tool, app, or library | Root Pixi workspace (`pixi.toml`, `pixi.lock`) owns the locked environment; root `ruff.toml` and `mypy.ini` own Python quality policy; each project owns package metadata, runtime dependencies, pytest configuration, and task names | Project mise tasks run native commands through the shared root Pixi environment |
-| JavaScript/TypeScript app or package | Root pnpm workspace, catalog, and lockfile; each project owns its `package.json` dependencies and scripts | Package scripts run native tooling through pnpm |
-| Infrastructure | `infra/` package or folder with Docker, database, and operational scripts | mise exposes documented infra tasks; services remain explicit and local-first |
+| Area                                 | Owner and expected files                                                                                                                                                                                                              | Repository-level integration                                                                       |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Shared tools and commands            | `mise.toml`, `mise.lock`, `prek.toml`, and root mise tasks                                                                                                                                                                            | Root tasks are the shared command interface                                                        |
+| Go service or library                | A root `go.work` coordinates local modules; each module owns `go.mod` and `go.sum`                                                                                                                                                    | Add the Go toolchain through mise when Go code is introduced; project tasks delegate to the module |
+| Python tool, app, or library         | Root Pixi workspace (`pixi.toml`, `pixi.lock`) owns the locked environment; root `ruff.toml` and `mypy.ini` own Python quality policy; each project owns package metadata, runtime dependencies, pytest configuration, and task names | Project mise tasks run native commands through the shared root Pixi environment                    |
+| JavaScript/TypeScript app or package | Root pnpm workspace, catalog, and lockfile; each project owns its `package.json` dependencies and scripts                                                                                                                             | Package scripts run native tooling through pnpm                                                    |
+| Infrastructure                       | `infra/` package or folder with Docker, database, and operational scripts                                                                                                                                                             | mise exposes documented infra tasks; services remain explicit and local-first                      |
 
 Pixi environments may use conda-forge packages, PyPI packages, or both where
 appropriate for the Python component. Pixi workspace dependency sharing is
@@ -38,14 +38,14 @@ credentials for the local workflow.
 
 ## Toolchain policy
 
-The root mise config currently pins GitHub CLI, Go, Pixi, and prek. Python and its
+The root mise config currently pins GitHub CLI, Go, Pixi, prek, and dprint. Python and its
 environments come from the root Pixi workspace; Node.js and pnpm remain
 unpinned until projects in those ecosystems need them. Exact versions and
 dependency ranges belong in the manifests and lockfiles named in the ownership
 table.
 
 Pixi owns Python environment dependencies: the root manifest provides Python,
-and its development feature provides Ruff, mypy, and pytest. The simulator's
+and its development feature provides Ruff, mypy, pytest, and Commitizen. The simulator's
 `pyproject.toml` owns its package metadata, runtime dependencies, build settings,
 and pytest configuration. Root `ruff.toml` and `mypy.ini` own shared lint,
 formatting, and strict type-checking settings for Python 3.13, including
@@ -81,7 +81,8 @@ does not by itself establish runtime validation on every platform.
 
 Run `mise run setup` from the repository root for a local setup. It installs
 the locked mise tools, installs the Pixi development environment, downloads
-the gateway Go dependencies, and installs the managed Git pre-commit hook. Each step is safe to repeat. Run
+the gateway Go dependencies, installs pinned dprint plugins, and installs the
+managed Git pre-commit and commit-msg hooks. Each step is safe to repeat. Run
 `mise run hooks:install` separately only when the hook needs to be installed or
 refreshed.
 
@@ -117,7 +118,8 @@ root Pixi manifests change; the Pixi lock check runs when Pixi manifests or
 simulator package metadata change. Gateway checks run
 when the gateway module, Go workspace, or shared mise toolchain changes.
 `mise run hooks:check` applies the configured hooks across all eligible
-tracked repository files.
+tracked repository files at the pre-commit stage. It does not validate a Git
+commit-message file; that uses the separate commit-msg stage described below.
 
 The [local infrastructure guide](../infra/README.md) owns Docker/Compose host
 prerequisites and broker lifecycle commands. `mise run infra:check` validates
@@ -169,12 +171,83 @@ starting services; it also runs in root `check` and its scoped pre-commit hook.
 VS Code selects Ruff for Python and prefers repository configuration. Use the
 Pixi `dev` interpreter for editor analysis, as with the simulator.
 
+## Formatting and editor support
+
+Use `mise run format` to apply formatting and `mise run format-check` to check
+it without editing files. Dprint owns Markdown, JSON/JSONC, YAML, and TOML;
+Ruff owns Python and gofmt owns Go. Root `check`, the scoped document pre-commit
+hook, and CI run the same `documents:format-check` task. Pre-commit reports
+document formatting failures; run `mise run documents:format`, review, and
+restage the result. No formatter automatically stages changes.
+
+`dprint.json` owns coverage, generated/cache/lockfile/test-fixture exclusions, and versioned
+plugin URLs with SHA-256 checksums. `mise run format:setup` installs the plugins;
+the normal setup and CI call it. The Markdown plugin preserves prose line breaks
+and code blocks; the Oxc plugin handles configuration files with embedded
+language formatting disabled. These choices keep executable examples and other
+language formatters under their existing owners. Update plugin URLs and
+checksums together when upgrading. Dprint and its plugins are MIT-licensed
+development tools, obtained from their upstream release URLs in the tool lock
+and formatter config.
+
+`.editorconfig` supplies UTF-8, LF, final-newline, whitespace, and indentation
+defaults only for files without a dedicated formatter, including shell scripts,
+Dockerfiles, plain text, and repository dotfiles. It does not override Go's tab
+indentation or the dedicated document/Python formatters.
+
+VS Code's workspace recommendations cover Python/Ruff, Go, dprint, EditorConfig,
+YAML/TOML language support, Container Tools, and Oxc for the planned frontend.
+VS Code already includes TypeScript/React language support. Recommending the
+frontend extension does not introduce a frontend toolchain; its lint policy
+belongs to the future package configuration. Workspace settings select the
+owning formatter for current file types and disable the YAML/TOML extensions'
+competing formatters. Launch VS Code from a mise-enabled shell so its extensions
+find the repository-selected tools. Continue using the Pixi `dev` interpreter
+for Python analysis.
+
+## Commit-message validation
+
+The [working agreement](working-agreement.md#git-and-repository-hygiene) owns
+branch and Conventional Commit policy. `.cz.toml` selects Commitizen's
+Conventional Commits implementation; Commitizen and its dependencies are locked
+in the existing Pixi `dev` environment. Commitizen is an MIT-licensed development
+dependency from [its upstream project](https://github.com/commitizen-tools/commitizen).
+
+Prek passes Git's message filename to `mise run commit:check`, which delegates
+to the Pixi `commit-check` task. To validate a prepared message without making
+a commit:
+
+```sh
+mise run commit:check /path/to/commit-message.txt
+mise exec -- prek run commit-check --hook-stage commit-msg --commit-msg-filename /path/to/commit-message.txt
+```
+
+Setup installs both Git hook stages. Ordinary file hooks run only at pre-commit;
+Commitizen runs at commit-msg and propagates invalid-message failures. Empty
+messages are allowed through this hook so Git can abort the commit normally.
+Git-generated messages beginning with `Merge ` are permitted. Reverts use
+`revert: ...`; ordinary Git `Revert "..."` subjects and `fixup!`, `squash!`, or
+`amend!` subjects are rejected and need a Conventional Commit subject before
+commit. Scoped subjects and actual breaking-change notation are supported.
+The checker validates syntax; maintainers review whether the type, description,
+and breaking-change claim accurately describe the change.
+
+`mise run tooling:test` checks valid/invalid messages through both the task and
+an installed commit-msg hook, using a filename containing spaces. It verifies
+installation of both hook stages in a disposable repository, propagates
+validation failures, and creates no commits. It also verifies dprint's file
+coverage, exclusions, read-only failure behavior, and repeatable formatting in
+disposable fixtures. Root `check` and CI run this regression check.
+
 ## Dependency and lockfile policy
 
 - Commit the root mise and Pixi lockfiles with their workspace manifests.
 - Keep each ecosystem's workspace lockfile at its workspace root; project
   manifests continue to declare their direct dependencies.
 - Keep development tools out of runtime-only environments.
+- Keep the mise-selected Pixi version, workspace `requires-pixi` minimum and
+  upper bound, and simulator Docker build image compatible. Update the Docker
+  image's digest with its version; verify locked installs after upgrades.
 - Store infrastructure image references, Compose files, and database setup
   scripts under `infra/` and validate them through named mise tasks.
 - Do not use a global developer installation as an undocumented dependency of
@@ -230,7 +303,7 @@ task. `mise run gateway:check` needs no broker; `mise run gateway:test:integrati
 - [mise lockfiles](https://mise.jdx.dev/dev-tools/mise-lock.html)
 - [Pixi workspaces](https://pixi.prefix.dev/latest/first_workspace/)
 - [Pixi in `pyproject.toml`](https://pixi.prefix.dev/latest/python/pyproject_toml/)
-- [Pixi multiple-package workspaces](https://pixi.prefix.dev/v0.76.1/build/workspace/)
+- [Pixi multiple-package workspaces](https://pixi.prefix.dev/latest/build/workspace/)
 - [Pixi lock files](https://pixi.prefix.dev/latest/workspace/lock_file/)
 - [Vite+ getting started](https://viteplus.dev/guide)
 - [Vite+ project-local CLI](https://viteplus.dev/guide/local-cli)

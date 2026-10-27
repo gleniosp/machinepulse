@@ -30,14 +30,14 @@ and authorization must remain separate from the ID.
 
 Evaluate each entity independently of the event-ID format:
 
-| Need | Device ID | Asset ID |
-|---|---|---|
-| Stable identity | Survives producer restart, update, and reassignment | Survives rename, repair, and relocation |
-| Independent allocation | Provisioning and simulator configuration can work offline | Separate installations can create records without a shared counter |
-| Immutable input | Must not depend on address, credentials, or software version | Must not depend on name, location, or current device |
-| Practical representation | Bounded, safe to copy into config, compact in telemetry | Bounded, suitable for durable references and joins |
-| Creation ordering | Not used for event ordering | Not used for asset chronology |
-| Human-facing labels | Device label remains separate metadata | Customer number, name, and physical tag remain separate metadata |
+| Need                     | Device ID                                                    | Asset ID                                                           |
+| ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| Stable identity          | Survives producer restart, update, and reassignment          | Survives rename, repair, and relocation                            |
+| Independent allocation   | Provisioning and simulator configuration can work offline    | Separate installations can create records without a shared counter |
+| Immutable input          | Must not depend on address, credentials, or software version | Must not depend on name, location, or current device               |
+| Practical representation | Bounded, safe to copy into config, compact in telemetry      | Bounded, suitable for durable references and joins                 |
+| Creation ordering        | Not used for event ordering                                  | Not used for asset chronology                                      |
+| Human-facing labels      | Device label remains separate metadata                       | Customer number, name, and physical tag remain separate metadata   |
 
 Both have occasional allocation followed by many references. A high telemetry
 rate does not mean a high entity-ID allocation rate. There is no measured
@@ -117,15 +117,15 @@ URL to the record; replacing a tag does not create a new asset.
 
 ## Alternatives considered
 
-| Format | Allocation and text | Fit for MachinePulse |
-|---|---|---|
-| ULID | Millisecond time plus 80 random bits; 26-character Base32 text | Selected: compact standard representation; accepts approximate allocation-time disclosure and non-global ordering |
-| UUIDv4 | Clock-independent random generation; 36-character text; 122 random bits | Strong opaque alternative with native PostgreSQL support and no timestamp disclosure |
-| UUIDv7 | Millisecond time plus up to 74 random bits; 36-character text | Strong option for sustained ordered inserts; no entity-table bottleneck is established here |
-| Nano ID (default secure profile) | Clock-independent random generation; 21-character text; 126 random bits | Shorter opaque alternative; requires a project-defined alphabet and profile across producers and consumers |
-| UUIDv5 from a name | Repeatable generation from a namespace and name | Useful for events with a fixed input tuple; risky as an entity key when names or external tags change |
-| Counter or human-readable tag | Compact; needs an allocation scope | Useful as display or external metadata; insufficient as an independently allocated canonical identity |
-| Manufacturer/global asset URI | Existing issuer-scoped identity | Preserve for reconciliation and interoperability; cannot be assumed present for every simulated or physical entity |
+| Format                           | Allocation and text                                                     | Fit for MachinePulse                                                                                               |
+| -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| ULID                             | Millisecond time plus 80 random bits; 26-character Base32 text          | Selected: compact standard representation; accepts approximate allocation-time disclosure and non-global ordering  |
+| UUIDv4                           | Clock-independent random generation; 36-character text; 122 random bits | Strong opaque alternative with native PostgreSQL support and no timestamp disclosure                               |
+| UUIDv7                           | Millisecond time plus up to 74 random bits; 36-character text           | Strong option for sustained ordered inserts; no entity-table bottleneck is established here                        |
+| Nano ID (default secure profile) | Clock-independent random generation; 21-character text; 126 random bits | Shorter opaque alternative; requires a project-defined alphabet and profile across producers and consumers         |
+| UUIDv5 from a name               | Repeatable generation from a namespace and name                         | Useful for events with a fixed input tuple; risky as an entity key when names or external tags change              |
+| Counter or human-readable tag    | Compact; needs an allocation scope                                      | Useful as display or external metadata; insufficient as an independently allocated canonical identity              |
+| Manufacturer/global asset URI    | Existing issuer-scoped identity                                         | Preserve for reconciliation and interoperability; cannot be assumed present for every simulated or physical entity |
 
 ULID's timestamp comes from the allocator's clock. Clock skew can make
 different producers' IDs appear out of order, and independent random

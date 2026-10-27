@@ -9,7 +9,8 @@ lockfile = true
 github-cli = "2.98.0"
 go = "1.27.1"
 prek = "0.5.3"
-pixi = "0.76.1"
+pixi = "0.83.0"
+dprint = "0.64.3"
 
 # Read local defaults with mise's dotenv parser. Map supported variables back
 # into the environment while preserving caller-supplied values, even empty ones.
@@ -33,6 +34,7 @@ run = [
   "mise install --locked",
   "mise run simulator:setup",
   "mise run gateway:setup",
+  "mise run format:setup",
   "mise run hooks:install",
 ]
 
@@ -79,11 +81,15 @@ run = "mise run //tools/simulator:experiment:conditions"
 
 [tasks.format]
 description = "Format all current projects"
-run = ["mise run python:format", "mise run gateway:format"]
+run = ["mise run documents:format", "mise run python:format", "mise run gateway:format"]
 
 [tasks.format-check]
 description = "Check formatting for all current projects"
-run = ["mise run python:format-check", "mise run gateway:format-check"]
+run = [
+  "mise run documents:format-check",
+  "mise run python:format-check",
+  "mise run gateway:format-check",
+]
 
 [tasks.lint]
 description = "Lint all current projects"
@@ -95,11 +101,19 @@ run = ["mise run python:typecheck", "mise run gateway:typecheck"]
 
 [tasks.test]
 description = "Test all current projects"
-run = ["mise run simulator:test", "mise run gateway:test", "mise run infra:test", "mise run gateway:test:integration", "mise run containers:test"]
+run = [
+  "mise run simulator:test",
+  "mise run gateway:test",
+  "mise run infra:test",
+  "mise run gateway:test:integration",
+  "mise run containers:test",
+]
 
 [tasks.check]
 description = "Run all current repository checks"
 run = [
+  "mise run tooling:test",
+  "mise run documents:format-check",
   "mise run python:check",
   "mise run simulator:test",
   "mise run gateway:check",
@@ -161,22 +175,40 @@ run = ["mise run python:format-check", "mise run python:lint", "mise run python:
 
 [tasks."containers:check"]
 description = "Check smoke-test shell syntax without starting Docker"
-run = [
-  "bash -n infra/docker/smoke-test.sh",
-  "bash -n infra/docker/broker-smoke-test.sh",
-]
+run = ["bash -n infra/docker/smoke-test.sh", "bash -n infra/docker/broker-smoke-test.sh"]
 
 [tasks."pixi:lock-check"]
 description = "Check that the root Pixi lockfile is current"
 run = "mise exec -- pixi lock --check --manifest-path pixi.toml"
 
 [tasks."hooks:install"]
-description = "Install the repository's prek Git hook"
+description = "Install the repository's pre-commit and commit-msg hooks"
 run = "mise exec -- prek install"
 
 [tasks."hooks:check"]
-description = "Run all configured repository hooks across all files"
+description = "Run pre-commit checks across all eligible tracked files"
 run = "mise exec -- prek run --all-files"
+
+[tasks."format:setup"]
+description = "Install the pinned dprint plugins"
+run = "mise exec -- dprint install"
+
+[tasks."documents:format"]
+description = "Format documents and configuration with dprint"
+run = "mise exec -- dprint fmt"
+
+[tasks."documents:format-check"]
+description = "Check document and configuration formatting without editing files"
+run = "mise exec -- dprint check"
+
+[tasks."commit:check"]
+description = "Check a Conventional Commit message file"
+raw_args = true
+run = "mise exec -- pixi run --manifest-path pixi.toml --locked -e dev commit-check"
+
+[tasks."tooling:test"]
+description = "Verify commit hooks and document formatting in disposable fixtures"
+run = "bash tools/check-delivery-tooling.sh"
 
 [tasks."gateway:setup"]
 description = "Download the gateway's pinned Go dependencies"

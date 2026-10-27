@@ -93,13 +93,13 @@ direct dependencies and native scripts. Each ecosystem retains the lockfile
 shape required by its native workspace model, rather than forcing one lockfile
 per project or a universal dependency model.
 
-| Ecosystem | Workspace and shared configuration | Project-owned configuration |
-|---|---|---|
-| Python | A root `pixi.toml` workspace, shared settings, and a dependency pool where Pixi supports inheritance | Each project keeps package metadata and direct dependencies. Project task aliases live in its `mise.toml`; use the root workspace's shared environment and lockfile |
-| JavaScript / TypeScript | A root pnpm workspace, catalogs for shared version ranges, and one workspace lockfile | Each package keeps its `package.json`, direct dependencies, and scripts |
-| Go | A root `go.work` coordinates local Go modules | Each module keeps its own `go.mod`, `go.sum`, and Go commands |
-| Rust, JVM, and future ecosystems | Use the ecosystem's native workspace or multi-project feature when introduced | Projects keep native manifests, scripts, and lockfiles according to that workspace model |
-| Infrastructure | Keep infrastructure dependencies and provider configuration in their own area | Use native provider lockfiles and named mise tasks |
+| Ecosystem                        | Workspace and shared configuration                                                                   | Project-owned configuration                                                                                                                                         |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Python                           | A root `pixi.toml` workspace, shared settings, and a dependency pool where Pixi supports inheritance | Each project keeps package metadata and direct dependencies. Project task aliases live in its `mise.toml`; use the root workspace's shared environment and lockfile |
+| JavaScript / TypeScript          | A root pnpm workspace, catalogs for shared version ranges, and one workspace lockfile                | Each package keeps its `package.json`, direct dependencies, and scripts                                                                                             |
+| Go                               | A root `go.work` coordinates local Go modules                                                        | Each module keeps its own `go.mod`, `go.sum`, and Go commands                                                                                                       |
+| Rust, JVM, and future ecosystems | Use the ecosystem's native workspace or multi-project feature when introduced                        | Projects keep native manifests, scripts, and lockfiles according to that workspace model                                                                            |
+| Infrastructure                   | Keep infrastructure dependencies and provider configuration in their own area                        | Use native provider lockfiles and named mise tasks                                                                                                                  |
 
 Pixi's shared dependency pool applies only to dependency tables supported by
 Pixi's workspace model. In particular, PyPI dependencies remain declared by

@@ -32,29 +32,29 @@ To generate and inspect a local synthetic dataset, start with the [simulator qui
 
 ## Document ownership
 
-| Area | Owner | Responsibility |
-|---|---|---|
-| Product | [Vision](product/vision.md) | Why the product exists, who it serves, and its principles |
-| Product | [Scope](product/scope.md) | Version 0.1 inclusion, exclusion, completion, and scope-change rules |
-| Product | [Requirements](product/requirements.md) | Stable functional and non-functional requirement identifiers |
-| Product | [Domain model](product/domain-model.md) | Canonical entities, relationships, and domain invariants |
-| Product | [Workflows](product/workflows.md) | User and system journeys the product should support |
-| Product | [Glossary](product/glossary.md) | Shared vocabulary not owned by a single capability |
-| Architecture | [Overview](architecture/overview.md) | System shape, storage roles, deployment direction, and evolution |
-| Architecture | [Data flow](architecture/data-flow.md) | How data moves, changes meaning, fails, and is replayed |
-| Architecture | [Runtime boundaries](architecture/runtime-boundaries.md) | Component ownership and cross-boundary rules |
-| Specifications | [Specifications index](specs/README.md) | Specification lifecycle and contract registry |
-| Guide | [Simulator quickstart](guides/simulator-quickstart.md) | Simulator purpose, invocation, and interpretation of generated files |
-| Guide | [Docker quickstart](guides/docker-quickstart.md) | Run the current components without host language toolchains |
-| Guide | [Local telemetry infrastructure](../infra/README.md) | Local broker setup, configuration, readiness, and verification |
-| Project operations | [Working agreement](working-agreement.md) | Maintainer-agent collaboration and delivery lifecycle |
-| Project operations | [Developer tooling baseline](developer-tooling.md) | Tool, environment, setup, and root task ownership |
-| Project operations | [Readiness checklist](project-readiness.md) | Evidence that the project is ready for the next phase |
-| Execution | [Roadmap](roadmap.md) | Direction and links to GitHub planning |
-| Execution | [Journal index](journal/README.md) | Journal format and evidence rules |
-| Decisions | [ADR index](adr/README.md) | Durable architectural decisions and their consequences |
-| Investigation | [Experiment index](experiments/README.md) | Reproducible answers to uncertain questions |
-| Communication | [Article workflow](blog/README.md) | Evidence-based technical article drafts |
+| Area               | Owner                                                    | Responsibility                                                       |
+| ------------------ | -------------------------------------------------------- | -------------------------------------------------------------------- |
+| Product            | [Vision](product/vision.md)                              | Why the product exists, who it serves, and its principles            |
+| Product            | [Scope](product/scope.md)                                | Version 0.1 inclusion, exclusion, completion, and scope-change rules |
+| Product            | [Requirements](product/requirements.md)                  | Stable functional and non-functional requirement identifiers         |
+| Product            | [Domain model](product/domain-model.md)                  | Canonical entities, relationships, and domain invariants             |
+| Product            | [Workflows](product/workflows.md)                        | User and system journeys the product should support                  |
+| Product            | [Glossary](product/glossary.md)                          | Shared vocabulary not owned by a single capability                   |
+| Architecture       | [Overview](architecture/overview.md)                     | System shape, storage roles, deployment direction, and evolution     |
+| Architecture       | [Data flow](architecture/data-flow.md)                   | How data moves, changes meaning, fails, and is replayed              |
+| Architecture       | [Runtime boundaries](architecture/runtime-boundaries.md) | Component ownership and cross-boundary rules                         |
+| Specifications     | [Specifications index](specs/README.md)                  | Specification lifecycle and contract registry                        |
+| Guide              | [Simulator quickstart](guides/simulator-quickstart.md)   | Simulator purpose, invocation, and interpretation of generated files |
+| Guide              | [Docker quickstart](guides/docker-quickstart.md)         | Run the current components without host language toolchains          |
+| Guide              | [Local telemetry infrastructure](../infra/README.md)     | Local broker setup, configuration, readiness, and verification       |
+| Project operations | [Working agreement](working-agreement.md)                | Maintainer-agent collaboration and delivery lifecycle                |
+| Project operations | [Developer tooling baseline](developer-tooling.md)       | Tool, environment, setup, and root task ownership                    |
+| Project operations | [Readiness checklist](project-readiness.md)              | Evidence that the project is ready for the next phase                |
+| Execution          | [Roadmap](roadmap.md)                                    | Direction and links to GitHub planning                               |
+| Execution          | [Journal index](journal/README.md)                       | Journal format and evidence rules                                    |
+| Decisions          | [ADR index](adr/README.md)                               | Durable architectural decisions and their consequences               |
+| Investigation      | [Experiment index](experiments/README.md)                | Reproducible answers to uncertain questions                          |
+| Communication      | [Article workflow](blog/README.md)                       | Evidence-based technical article drafts                              |
 
 When a fact appears to belong in more than one place, keep the authoritative version in the narrowest owner and add a link from the other document. Do not create a second summary that can drift.
 

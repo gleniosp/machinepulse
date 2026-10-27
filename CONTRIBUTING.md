@@ -49,6 +49,12 @@ behavior or setup changes. Follow the
 [artifact provenance and licensing baseline](docs/project-governance.md#artifact-provenance-and-licensing)
 for code, data, models, and images.
 
+Use the [PR template](.github/pull_request_template.md) when preparing a change
+for review. The [commit-message check](docs/developer-tooling.md#commit-message-validation)
+runs automatically after hook setup and can also check a prepared message file.
+The [formatting and editor guide](docs/developer-tooling.md#formatting-and-editor-support)
+describes formatter ownership and the recommended VS Code extensions.
+
 ## GitHub CLI (optional)
 
 GitHub's web interface is sufficient for reports and contribution discussions.
@@ -73,13 +79,13 @@ export GH_TOKEN
 For maintainer automation, restrict the token to this repository and grant only
 the permissions needed for the operations you intend to perform:
 
-| Operation | Repository permission |
-|---|---|
-| Read workflow runs | Actions: read |
-| Push source changes | Contents: read and write |
-| Maintain issues | Issues: read and write |
+| Operation              | Repository permission         |
+| ---------------------- | ----------------------------- |
+| Read workflow runs     | Actions: read                 |
+| Push source changes    | Contents: read and write      |
+| Maintain issues        | Issues: read and write        |
 | Maintain pull requests | Pull requests: read and write |
-| Repository metadata | Metadata: read |
+| Repository metadata    | Metadata: read                |
 
 This table describes maintainer operations, not access required to try the
 project or report a problem. See the official
