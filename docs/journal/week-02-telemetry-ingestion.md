@@ -275,8 +275,17 @@ Final task/documentation review:
   repeated tooling/workflow prose, and consolidated this evidence.
   `git diff --check` passed.
 
-Runtime evidence is local Linux amd64. Interactive VS Code behavior and hosted
-CI remain unverified; recommendations preserve the maintainer's selections.
+The [first PR #108 CI run](https://github.com/gleniosp/machinepulse/actions/runs/40559746666)
+failed before repository checks: mise 2026.8.11's bundled dprint recipe lacked
+attestation metadata required by the lockfile generated with mise 2026.10.20.
+Aligned the repository minimum and CI pin to 2026.10.20. Regenerating `mise.lock`
+left its pins, checksums, and provenance unchanged. A fresh installation of all
+five tools with isolated configuration/data/cache directories and
+`MISE_LOCKED_VERIFY_PROVENANCE=true` passed, including dprint 0.64.3.
+`mise run check` and `git diff --check` also passed for the correction.
+
+The fresh-install verification ran on local Linux amd64. Interactive VS Code
+behavior remains unverified; hosted CI results are tracked on PR #108.
 
 ## Weekly review
 
