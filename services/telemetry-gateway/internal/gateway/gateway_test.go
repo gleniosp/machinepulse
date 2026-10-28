@@ -17,12 +17,15 @@ import (
 	"github.com/eclipse/paho.golang/paho"
 )
 
-const sourceJSON = `{"event_id":"09f5ca55-ec6a-50cb-9dc0-caa53d0d4171","device_id":"01ARZ3NDEKTSV4RRFFQ69G5FAV","asset_id":"01ARZ3NDEKTSV4RRFFQ69G5FAW","occurred_at":"2026-10-01T00:00:00.000000Z","schema_version":"telemetry.v1","unknown":{"large":9007199254740993}}`
+const sourceJSON = `{"event_id":"09f5ca55-ec6a-50cb-9dc0-caa53d0d4171","device_id":"01ARZ3NDEKTSV4RRFFQ69G5FAV","asset_id":"01ARZ3NDEKTSV4RRFFQ69G5FAW","occurred_at":"2026-10-01T00:00:00.000000Z","schema_version":"telemetry.v1","sequence":9007199254740993,"sampling":{"rate_hz":1,"sample_count":1,"window_duration_ms":1000},"measurements":{"temperature_c":40,"rpm":1800,"vibration_m_s2":{"x":[0.1],"y":[0],"z":[-0.1]}}}`
+
+const sourceTopic = "machinepulse/v1/telemetry/01ARZ3NDEKTSV4RRFFQ69G5FAV"
 
 func testGateway(t *testing.T, handler Handler, output io.Writer) *Gateway {
 	t.Helper()
 	config := DefaultConfig()
 	config.BrokerAddress = "127.0.0.1:1883"
+	config.QuarantineDir = t.TempDir()
 	g, err := New(config, slog.New(slog.NewJSONHandler(output, nil)), handler)
 	if err != nil {
 		t.Fatal(err)
@@ -33,10 +36,7 @@ func testGateway(t *testing.T, handler Handler, output io.Writer) *Gateway {
 func TestDecodePreservesProducerBytesAndSeparateReceipt(t *testing.T) {
 	payload := []byte(sourceJSON)
 	receipt := time.Date(2026, 10, 16, 12, 0, 0, 123, time.FixedZone("local", 7200))
-	d, err := decode("source/topic", payload, receipt)
-	if err != nil {
-		t.Fatal(err)
-	}
+	d := deliveryFor(sourceTopic, payload, receipt)
 	payload[0] = ' '
 	if string(d.Payload) != sourceJSON || d.Source.OccurredAt != "2026-10-01T00:00:00.000000Z" {
 		t.Fatalf("producer data changed: %+v", d)
@@ -57,7 +57,7 @@ func TestReceiveAcknowledgesOnlyDurableSuccess(t *testing.T) {
 				processed = true
 				return result
 			}, io.Discard)
-			err := g.receive(context.Background(), &paho.Publish{QoS: 1, Topic: "source", Payload: []byte(sourceJSON)}, func(*paho.Publish) error {
+			err := g.receive(context.Background(), &paho.Publish{QoS: 1, Topic: sourceTopic, Payload: []byte(sourceJSON)}, func(*paho.Publish) error {
 				if !processed || result != nil {
 					t.Fatal("ack before durable success")
 				}
@@ -78,7 +78,7 @@ func fmtError(err error) string {
 	return err.Error()
 }
 
-func TestMalformedOrUnsupportedDeliveryIsNeverAcknowledged(t *testing.T) {
+func TestMalformedOrUnsupportedDeliveryIsQuarantinedBeforeAcknowledgement(t *testing.T) {
 	cases := []paho.Publish{
 		{QoS: 1, Payload: []byte(`{`)},
 		{QoS: 1, Payload: []byte(`null`)},
@@ -90,8 +90,19 @@ func TestMalformedOrUnsupportedDeliveryIsNeverAcknowledged(t *testing.T) {
 	}
 	g := testGateway(t, func(context.Context, Delivery) error { t.Fatal("handler called"); return nil }, io.Discard)
 	for _, packet := range cases {
-		if err := g.receive(context.Background(), &packet, func(*paho.Publish) error { t.Fatal("ack called"); return nil }); err == nil {
-			t.Errorf("expected decode/transport error for %+v", packet)
+		acknowledged := false
+		before := g.Counters().Quarantined
+		if err := g.receive(context.Background(), &packet, func(*paho.Publish) error {
+			if g.Counters().Quarantined != before+1 {
+				t.Fatal("ack before quarantine")
+			}
+			acknowledged = true
+			return nil
+		}); err != nil {
+			t.Fatal(err)
+		}
+		if acknowledged != (packet.QoS == 1) {
+			t.Fatalf("unexpected ack for QoS %d", packet.QoS)
 		}
 	}
 }
@@ -99,9 +110,33 @@ func TestMalformedOrUnsupportedDeliveryIsNeverAcknowledged(t *testing.T) {
 func TestCancellationDuringDispositionDoesNotAcknowledge(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	g := testGateway(t, func(context.Context, Delivery) error { cancel(); return nil }, io.Discard)
-	err := g.receive(ctx, &paho.Publish{QoS: 1, Payload: []byte(sourceJSON)}, func(*paho.Publish) error { t.Fatal("ack called"); return nil })
+	err := g.receive(ctx, &paho.Publish{QoS: 1, Topic: sourceTopic, Payload: []byte(sourceJSON)}, func(*paho.Publish) error { t.Fatal("ack called"); return nil })
 	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("expected cancellation, got %v", err)
+	}
+}
+
+func TestConstructorOwnsValidationBounds(t *testing.T) {
+	minimum, maximum, acceleration := 30.0, 50.0, 1.0
+	config := DefaultConfig()
+	config.BrokerAddress = "127.0.0.1:1883"
+	config.QuarantineDir = t.TempDir()
+	config.Validation = ValidationPolicy{TemperatureMin: &minimum, TemperatureMax: &maximum, AccelerationMax: &acceleration}
+	processed := false
+	g, err := New(config, slog.New(slog.NewJSONHandler(io.Discard, nil)), func(context.Context, Delivery) error {
+		processed = true
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Caller-owned configuration changes must not alter the validated policy.
+	minimum, maximum, acceleration = 41, 39, 0
+	if err := g.receive(context.Background(), sourcePacket(), func(*paho.Publish) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+	if !processed || *g.config.Validation.TemperatureMin != 30 || *g.config.Validation.TemperatureMax != 50 || *g.config.Validation.AccelerationMax != 1 {
+		t.Fatal("gateway retained caller-owned validation bounds")
 	}
 }
 
@@ -167,6 +202,7 @@ func TestConfigurationRejectsEphemeralSessionsAndInvalidLimits(t *testing.T) {
 		func(c *Config) { c.ReconnectCap = 0 },
 		func(c *Config) { c.OperationTimeout = 0 },
 		func(c *Config) { c.MaximumPacketSize = 0 },
+		func(c *Config) { c.QuarantineDir = " " },
 		func(c *Config) { c.BrokerAddress = "mqtt://localhost" },
 		func(c *Config) { c.BrokerAddress = "" },
 		func(c *Config) { c.BrokerAddress = "host name:1883" },

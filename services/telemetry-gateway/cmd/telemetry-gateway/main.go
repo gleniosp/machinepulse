@@ -31,7 +31,8 @@ func main() {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	logger.Warn("gateway_observe_mode", "detail", "durable sinks are pending; deliveries remain unacknowledged and apply backpressure")
+	logger.Warn("gateway_validation_mode", "quarantine_dir", config.QuarantineDir,
+		"detail", "invalid deliveries are durably quarantined; valid deliveries await the P02-005 stream sink and remain unacknowledged")
 	if err := g.Run(ctx); err != nil {
 		logger.Error("gateway_failed", "error", err)
 		os.Exit(1)

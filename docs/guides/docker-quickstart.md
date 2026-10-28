@@ -58,20 +58,23 @@ docker compose exec -T mqtt mosquitto_pub \
 docker compose logs --tail 50 gateway
 ```
 
-Expect `telemetry_received` and `telemetry_unacknowledged`. The gateway is in
-observation mode: it preserves the message but withholds acknowledgement until
-durable sinks are implemented. Its one-message receive limit pauses subsequent
+Expect `telemetry_received` and `telemetry_unacknowledged`. The gateway validates
+this valid fixture and preserves its bytes, then withholds acknowledgement until
+the stream sink is implemented. Its one-message receive limit pauses subsequent
 deliveries. Kafka is available locally, but the gateway does not publish to it
 yet. See the [gateway guide](../../services/telemetry-gateway/README.md) for
-the receive contract and recovery behavior.
+the validation/quarantine example, configuration, and recovery behavior.
+Invalid deliveries are recorded before acknowledgement in the persistent
+`gateway-quarantine` volume. Publish invalid fixtures before a valid pending
+delivery when exercising this path on a fresh session.
 
-Stop the runtime while preserving broker data:
+Stop the runtime while preserving broker and quarantine data:
 
 ```sh
 docker compose down
 ```
 
-Later `up` commands reuse the broker volumes. Dataset files remain on the host.
+Later `up` commands reuse the broker and quarantine volumes. Dataset files remain on the host.
 Broker persistence, connection addresses, and trusted-local-network limitations
 are owned by the [infrastructure guide](../../infra/README.md).
 
@@ -162,16 +165,16 @@ The separate `broker-smoke-test.sh` tests broker persistence without building
 the applications.
 
 The application smoke test builds both images without layer-cache reuse, compares two
-generated datasets, checks fixture reception, and verifies pending-message
-recovery after gateway restart and full container recreation. Its separate
+generated datasets, checks valid/invalid reception, and verifies pending-message
+recovery and quarantine persistence after gateway restart and full container recreation. Its separate
 project, random host ports, temporary output, and image tags keep it independent
 of the normal local runtime. It ignores the developer dotenv file, prints
 service diagnostics on failure, and removes its own containers, volumes,
 images, network, and temporary files on exit. Shared Docker build caches remain.
 
 CI runs this test alongside the existing broker and gateway integration checks.
-These checks demonstrate the current observation-mode workflow, not durable
-Kafka publication or power-loss recovery.
+These checks demonstrate local validation, quarantine, and pending-message
+recovery. Kafka publication and power-loss recovery remain unverified.
 
 For editing these scripts, the pinned local lint/format commands are documented
 in [developer tooling](../developer-tooling.md#container-test-scripts). Static

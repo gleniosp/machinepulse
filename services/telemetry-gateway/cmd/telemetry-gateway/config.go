@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/gleniosp/machinepulse/services/telemetry-gateway/internal/gateway"
 )
@@ -20,6 +21,10 @@ func parseConfig(args []string, lookup func(string) (string, bool), output io.Wr
 	limit := flags.Uint64("max-packet-bytes", uint64(config.MaximumPacketSize), "maximum inbound packet size (MACHINEPULSE_MQTT_MAX_PACKET_BYTES)")
 	flags.DurationVar(&config.ReconnectCap, "reconnect-cap", config.ReconnectCap, "maximum reconnect delay (MACHINEPULSE_MQTT_RECONNECT_CAP)")
 	flags.DurationVar(&config.OperationTimeout, "operation-timeout", config.OperationTimeout, "operation deadline (MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT)")
+	flags.StringVar(&config.QuarantineDir, "quarantine-dir", config.QuarantineDir, "durable local quarantine directory (MACHINEPULSE_GATEWAY_QUARANTINE_DIR)")
+	temperatureMin := flags.String("temperature-min", "", "optional inclusive temperature minimum in Celsius (MACHINEPULSE_GATEWAY_TEMPERATURE_MIN)")
+	temperatureMax := flags.String("temperature-max", "", "optional inclusive temperature maximum in Celsius (MACHINEPULSE_GATEWAY_TEMPERATURE_MAX)")
+	accelerationMax := flags.String("acceleration-max", "", "optional inclusive absolute acceleration maximum in m/s² (MACHINEPULSE_GATEWAY_ACCELERATION_MAX)")
 	if err := flags.Parse(args); err != nil {
 		return config, err
 	}
@@ -35,6 +40,10 @@ func parseConfig(args []string, lookup func(string) (string, bool), output io.Wr
 		{"max-packet-bytes", "MACHINEPULSE_MQTT_MAX_PACKET_BYTES"},
 		{"reconnect-cap", "MACHINEPULSE_MQTT_RECONNECT_CAP"},
 		{"operation-timeout", "MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT"},
+		{"quarantine-dir", "MACHINEPULSE_GATEWAY_QUARANTINE_DIR"},
+		{"temperature-min", "MACHINEPULSE_GATEWAY_TEMPERATURE_MIN"},
+		{"temperature-max", "MACHINEPULSE_GATEWAY_TEMPERATURE_MAX"},
+		{"acceleration-max", "MACHINEPULSE_GATEWAY_ACCELERATION_MAX"},
 	} {
 		if explicit[setting.flag] {
 			continue
@@ -49,6 +58,23 @@ func parseConfig(args []string, lookup func(string) (string, bool), output io.Wr
 		return config, fmt.Errorf("session expiry and packet limit must fit uint32")
 	}
 	config.SessionExpiry, config.MaximumPacketSize = uint32(*expiry), uint32(*limit)
+	for _, bound := range []struct {
+		name, value string
+		target      **float64
+	}{
+		{"temperature-min", *temperatureMin, &config.Validation.TemperatureMin},
+		{"temperature-max", *temperatureMax, &config.Validation.TemperatureMax},
+		{"acceleration-max", *accelerationMax, &config.Validation.AccelerationMax},
+	} {
+		if bound.value == "" {
+			continue
+		}
+		value, err := strconv.ParseFloat(bound.value, 64)
+		if err != nil {
+			return config, fmt.Errorf("%s: must be a finite number", bound.name)
+		}
+		*bound.target = &value
+	}
 	if config.BrokerAddress == "" {
 		return config, fmt.Errorf("MACHINEPULSE_MQTT_ADDRESS or --broker is required")
 	}

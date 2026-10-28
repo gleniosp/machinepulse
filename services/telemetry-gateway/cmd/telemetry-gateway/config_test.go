@@ -21,9 +21,16 @@ func TestConfigurationUsesDeploymentEnvironment(t *testing.T) {
 		"MACHINEPULSE_MQTT_RECONNECT_CAP":          "30s",
 		"MACHINEPULSE_MQTT_MAX_PACKET_BYTES":       "2097152",
 		"MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT":   "5s",
+		"MACHINEPULSE_GATEWAY_QUARANTINE_DIR":      "/tmp/machinepulse-quarantine",
+		"MACHINEPULSE_GATEWAY_TEMPERATURE_MIN":     "-40",
+		"MACHINEPULSE_GATEWAY_TEMPERATURE_MAX":     "150",
+		"MACHINEPULSE_GATEWAY_ACCELERATION_MAX":    "100",
 	}), io.Discard)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if config.QuarantineDir != "/tmp/machinepulse-quarantine" || *config.Validation.TemperatureMin != -40 || *config.Validation.TemperatureMax != 150 || *config.Validation.AccelerationMax != 100 {
+		t.Fatalf("validation environment not applied: %+v", config)
 	}
 	if config.BrokerAddress != "mqtt.staging.internal:21883" || config.ClientID != "staging-gateway-1" ||
 		config.SessionExpiry != 3600 || config.ReconnectCap != 30*time.Second ||
@@ -65,6 +72,10 @@ func TestInvalidEnvironmentFailsAtStartup(t *testing.T) {
 		{"MACHINEPULSE_MQTT_MAX_PACKET_BYTES", "4294967296"},
 		{"MACHINEPULSE_MQTT_RECONNECT_CAP", "later"},
 		{"MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT", "0s"},
+		{"MACHINEPULSE_GATEWAY_TEMPERATURE_MIN", "NaN"},
+		{"MACHINEPULSE_GATEWAY_TEMPERATURE_MAX", "Inf"},
+		{"MACHINEPULSE_GATEWAY_ACCELERATION_MAX", "-1"},
+		{"MACHINEPULSE_GATEWAY_ACCELERATION_MAX", "fast"},
 	} {
 		t.Run(setting.key+"="+setting.value, func(t *testing.T) {
 			values := map[string]string{"MACHINEPULSE_MQTT_ADDRESS": "mqtt:1883", setting.key: setting.value}
@@ -72,6 +83,17 @@ func TestInvalidEnvironmentFailsAtStartup(t *testing.T) {
 				t.Fatal("invalid environment accepted")
 			}
 		})
+	}
+}
+
+func TestBoundFlagsOverrideEnvironmentAndValidateOrder(t *testing.T) {
+	values := map[string]string{"MACHINEPULSE_MQTT_ADDRESS": "mqtt:1883", "MACHINEPULSE_GATEWAY_TEMPERATURE_MIN": "invalid", "MACHINEPULSE_GATEWAY_ACCELERATION_MAX": "invalid"}
+	config, err := parseConfig([]string{"--temperature-min=-20", "--temperature-max=100", "--acceleration-max="}, lookupMap(values), io.Discard)
+	if err != nil || config.Validation.TemperatureMin == nil || *config.Validation.TemperatureMin != -20 || config.Validation.AccelerationMax != nil {
+		t.Fatalf("override failed: %+v, %v", config, err)
+	}
+	if _, err := parseConfig([]string{"--broker=mqtt:1883", "--temperature-min=100", "--temperature-max=20"}, lookupMap(nil), io.Discard); err == nil {
+		t.Fatal("inverted bounds accepted")
 	}
 }
 

@@ -189,6 +189,53 @@ a durable terminal disposition. The internal stream route is separate from the
 MQTT topic. A later redelivery may repeat work, so consumers use the source
 `event_id` for idempotency.
 
+## Local ingress validation and quarantine
+
+**P02-004 implementation proposal for maintainer review.** The accepted MQTT
+acknowledgement ordering above remains the governing contract.
+
+The gateway checks the stateless [telemetry validation rules](telemetry-contract.md#validation-rules)
+before calling the valid-event handler. It also requires the MQTT topic device
+ID to match the payload, QoS 1, and a false Retain flag. Invalid UTF-8, duplicate
+JSON object keys, trailing JSON values, and nesting beyond 64 containers are
+rejected with a field path, stable reason code, and actionable message. Integer
+fields use JSON integer notation. UTC timestamps use the ISO date-time form
+with seconds and an explicit zero offset or `Z`; source bytes are preserved.
+The gateway enforces the configured MQTT packet limit on each complete frame
+size, including its fixed header, before the MQTT client allocates the body.
+Oversized frames and malformed remaining-length headers terminate the connection
+before application delivery and cannot be quarantined.
+
+Temperature minimum/maximum and maximum absolute acceleration are optional,
+inclusive deployment settings. Unset bounds impose no physical range policy;
+finite-number and non-negative RPM checks always apply. The gateway does not
+clamp measurements, reject clock skew, consult enrollment state, or deduplicate
+events. Duplicate identity is preserved for the persistence/consumer owners.
+
+The initial invalid path is a configured local filesystem directory on durable
+storage. Each rejected delivery becomes a separate `quarantine.v1` JSON record
+containing its exact payload as base64, SHA-256 digest, MQTT topic/QoS/Retain,
+UTC receipt time, best-effort source string fields, and the validation reason.
+Metadata from an invalid payload is untrusted. A new file is written and synced,
+published atomically through a hard link to a unique `.json` filename, and its
+directory synced before success. Existing records cannot be overwritten.
+Write, sync, publication, cancellation, or acknowledgement failures are visible;
+without confirmed durable disposition the delivery stays unacknowledged.
+Temporary files left by a crash are not completed quarantine records. Retried
+invalid deliveries may produce multiple records and retain the same digest.
+
+Local process counters distinguish received, valid, invalid, quarantined, and
+quarantine-failed deliveries and are emitted as structured log snapshots.
+Validation success means the event reached the valid handler, not that the
+internal stream accepted it. P02-005 supplies that durable handler; until then
+valid deliveries remain pending. QoS 0 invalid deliveries can be recorded but
+cannot obtain the QoS 1 acknowledgement or redelivery guarantees.
+
+The host filesystem and persistent container volume own quarantine durability;
+operators must provision capacity and retain the directory. There is no
+automatic eviction, replay UI, or power-loss durability claim. Storage/replay
+work owns later lifecycle integration.
+
 ## Acceptance evidence and limits
 
 P02-001 is complete. The accepted topic naming, QoS, reconnect/session

@@ -1,5 +1,6 @@
 /.pixi/
 simulator-output/
+gateway-quarantine/
 /.env
 /.env.*
 !/.env.example

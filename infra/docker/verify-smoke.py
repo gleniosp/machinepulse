@@ -7,6 +7,8 @@ Only the Python standard library is required. Local static checks use
 the repository's pinned Pixi development tools without executing this module.
 """
 
+import base64
+import hashlib
 import importlib.util
 import json
 import os
@@ -65,13 +67,28 @@ def verify_gateway(stage: str) -> None:
         if line.strip()
     ]
     fixture = json.loads(Path("/checks/fixture.json").read_text())
-    received = [record for record in records if record["msg"] == "telemetry_received"]
+    received = [
+        record
+        for record in records
+        if record["msg"] == "telemetry_received"
+        and record.get("event_id") == fixture["event_id"]
+    ]
     assert len(received) >= (2 if stage == "restart" else 1)
     for record in received:
         for field in ("event_id", "device_id", "asset_id", "occurred_at"):
             assert record[field] == fixture[field], (stage, field, record)
         assert record["gateway_received_at"].endswith("Z")
     assert any(record["msg"] == "telemetry_unacknowledged" for record in records)
+    quarantine_files = list(Path(f"/checks/evidence/quarantine-{stage}").glob("*.json"))
+    assert len(quarantine_files) == 1, (stage, quarantine_files)
+    rejection = json.loads(quarantine_files[0].read_text())
+    assert rejection["schema_version"] == "quarantine.v1"
+    assert base64.b64decode(rejection["payload_base64"], validate=True) == b"{"
+    assert rejection["payload_sha256"] == hashlib.sha256(b"{").hexdigest()
+    assert rejection["reason"]["code"] == "invalid_json"
+    assert rejection["mqtt_topic"].endswith(fixture["device_id"])
+    assert rejection["mqtt_qos"] == 1
+    assert rejection["mqtt_retained"] is False
     if stage == "initial":
         assert any(record["msg"] == "mqtt_subscribed" for record in records)
     else:
@@ -79,7 +96,10 @@ def verify_gateway(stage: str) -> None:
             record["msg"] == "mqtt_connected" and record["session_present"]
             for record in records
         )
-    print(f"PASS: gateway {stage}, source identity preserved and disposition pending")
+    print(
+        f"PASS: gateway {stage}, source identity preserved, valid disposition pending, "
+        "and invalid payload durably quarantined"
+    )
 
 
 if __name__ == "__main__":
