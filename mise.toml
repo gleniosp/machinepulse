@@ -27,6 +27,10 @@ MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS = "{{ get_env(name='MACHINEPULSE_MQTT_S
 MACHINEPULSE_MQTT_RECONNECT_CAP = "{{ get_env(name='MACHINEPULSE_MQTT_RECONNECT_CAP', default=vars.MACHINEPULSE_MQTT_RECONNECT_CAP | default(value='')) }}"
 MACHINEPULSE_MQTT_MAX_PACKET_BYTES = "{{ get_env(name='MACHINEPULSE_MQTT_MAX_PACKET_BYTES', default=vars.MACHINEPULSE_MQTT_MAX_PACKET_BYTES | default(value='')) }}"
 MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT = "{{ get_env(name='MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT', default=vars.MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT | default(value='')) }}"
+MACHINEPULSE_GATEWAY_QUARANTINE_DIR = "{{ get_env(name='MACHINEPULSE_GATEWAY_QUARANTINE_DIR', default=vars.MACHINEPULSE_GATEWAY_QUARANTINE_DIR | default(value='')) }}"
+MACHINEPULSE_GATEWAY_TEMPERATURE_MIN = "{{ get_env(name='MACHINEPULSE_GATEWAY_TEMPERATURE_MIN', default=vars.MACHINEPULSE_GATEWAY_TEMPERATURE_MIN | default(value='')) }}"
+MACHINEPULSE_GATEWAY_TEMPERATURE_MAX = "{{ get_env(name='MACHINEPULSE_GATEWAY_TEMPERATURE_MAX', default=vars.MACHINEPULSE_GATEWAY_TEMPERATURE_MAX | default(value='')) }}"
+MACHINEPULSE_GATEWAY_ACCELERATION_MAX = "{{ get_env(name='MACHINEPULSE_GATEWAY_ACCELERATION_MAX', default=vars.MACHINEPULSE_GATEWAY_ACCELERATION_MAX | default(value='')) }}"
 
 [tasks.setup]
 description = "Install repository tools, project environments, and Git hooks"
@@ -183,7 +187,7 @@ description = "Download the gateway's pinned Go dependencies"
 run = "mise run //services/telemetry-gateway:setup"
 
 [tasks."gateway:run"]
-description = "Run the gateway in observation mode"
+description = "Validate MQTT telemetry and quarantine invalid deliveries"
 raw_args = true
 run = "mise run //services/telemetry-gateway:run"
 

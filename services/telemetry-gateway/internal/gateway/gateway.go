@@ -9,6 +9,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/eclipse/paho.golang/paho"
@@ -20,7 +21,7 @@ var ErrNoDisposition = errors.New("durable disposition is not configured")
 
 // Handler must return nil only after a durable terminal disposition. It must
 // honor ctx and must not retain references to a client or acknowledge MQTT itself.
-// Until P02-004/P02-005 supply durable sinks, the command returns ErrNoDisposition.
+// P02-005 supplies the command's durable valid-event sink.
 type Handler func(context.Context, Delivery) error
 
 type Config struct {
@@ -30,6 +31,8 @@ type Config struct {
 	ReconnectCap      time.Duration
 	OperationTimeout  time.Duration
 	MaximumPacketSize uint32
+	QuarantineDir     string
+	Validation        ValidationPolicy
 }
 
 // DefaultConfig supplies tuning defaults. Callers must provide BrokerAddress.
@@ -38,6 +41,7 @@ func DefaultConfig() Config {
 		ClientID:      "machinepulse-gateway-local",
 		SessionExpiry: 86400, ReconnectCap: time.Minute,
 		OperationTimeout: 10 * time.Second, MaximumPacketSize: 1024 * 1024,
+		QuarantineDir: "gateway-quarantine",
 	}
 }
 
@@ -56,13 +60,28 @@ func (c Config) Validate() error {
 	if strings.TrimSpace(c.ClientID) == "" || c.SessionExpiry == 0 || c.ReconnectCap <= 0 || c.OperationTimeout <= 0 || c.MaximumPacketSize == 0 {
 		return errors.New("client ID, session expiry, reconnect cap, operation timeout, and packet limit must be nonzero")
 	}
-	return nil
+	if strings.TrimSpace(c.QuarantineDir) == "" {
+		return errors.New("quarantine directory is required")
+	}
+	return c.Validation.Validate()
+}
+
+// ValidationCounters count attempts for this process, including redeliveries.
+// Valid means stateless validation passed, not durable downstream acceptance.
+type ValidationCounters struct {
+	Received, Valid, Invalid, Quarantined, QuarantineFailed uint64
+}
+
+type validationMetrics struct {
+	received, valid, invalid, quarantined, quarantineFailed atomic.Uint64
 }
 
 type Gateway struct {
-	config Config
-	logger *slog.Logger
-	handle Handler
+	config     Config
+	logger     *slog.Logger
+	handle     Handler
+	quarantine quarantineSink
+	metrics    validationMetrics
 	// Only the connection loop accesses this flag. A session may exist even
 	// when the previous SUBSCRIBE was rejected or its acknowledgement was lost.
 	subscriptionPending bool
@@ -75,7 +94,24 @@ func New(config Config, logger *slog.Logger, handle Handler) (*Gateway, error) {
 	if logger == nil || handle == nil {
 		return nil, errors.New("logger and durable-disposition handler are required")
 	}
-	return &Gateway{config: config, logger: logger, handle: handle}, nil
+	quarantine, err := newFileQuarantine(config.QuarantineDir)
+	if err != nil {
+		return nil, err
+	}
+	return &Gateway{config: config, logger: logger, handle: handle, quarantine: quarantine}, nil
+}
+
+func (g *Gateway) Counters() ValidationCounters {
+	return ValidationCounters{
+		Received: g.metrics.received.Load(), Valid: g.metrics.valid.Load(), Invalid: g.metrics.invalid.Load(),
+		Quarantined: g.metrics.quarantined.Load(), QuarantineFailed: g.metrics.quarantineFailed.Load(),
+	}
+}
+
+func (g *Gateway) logCounters() {
+	c := g.Counters()
+	g.logger.Info("telemetry_validation_counters", "received_total", c.Received, "valid_total", c.Valid,
+		"invalid_total", c.Invalid, "quarantined_total", c.Quarantined, "quarantine_failed_total", c.QuarantineFailed)
 }
 
 // Run reconnects until cancellation. Each connection owns a separate Paho
@@ -180,27 +216,38 @@ func (g *Gateway) receive(ctx context.Context, packet *paho.Publish, ack func(*p
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
-	if packet.QoS != 1 || packet.Retain {
-		err := errors.New("expected non-retained QoS 1 telemetry")
-		g.logger.Error("telemetry_unacknowledged", "topic", packet.Topic, "error", err)
-		return err
-	}
-	delivery, err := decode(packet.Topic, packet.Payload, time.Now())
-	if err != nil {
-		g.logger.Error("telemetry_decode_failed", "topic", packet.Topic, "error", err)
-		return err
-	}
+	g.metrics.received.Add(1)
+	defer g.logCounters()
+	delivery := deliveryFor(packet.Topic, packet.Payload, time.Now())
 	fields := []any{"event_id", delivery.Source.EventID, "device_id", delivery.Source.DeviceID,
 		"asset_id", delivery.Source.AssetID, "occurred_at", delivery.Source.OccurredAt,
 		"gateway_received_at", delivery.GatewayReceivedAt.Format(time.RFC3339Nano), "topic", packet.Topic}
 	g.logger.Info("telemetry_received", fields...)
 	handlerCtx, cancel := context.WithTimeout(ctx, g.config.OperationTimeout)
-	err = g.handle(handlerCtx, delivery)
+	defer cancel()
+	var err error
+	if reason := validateTelemetry(delivery, packet.QoS, packet.Retain, g.config.Validation); reason != nil {
+		g.metrics.invalid.Add(1)
+		g.logger.Warn("telemetry_rejected", append(fields, "reason_code", reason.Code, "path", reason.Path, "error", reason.Message)...)
+		err = g.quarantine.Store(handlerCtx, rejection(delivery, packet.QoS, packet.Retain, reason))
+		if err == nil {
+			err = handlerCtx.Err()
+		}
+		if err != nil {
+			g.metrics.quarantineFailed.Add(1)
+			g.logger.Error("telemetry_quarantine_failed", append(fields, "error", err)...)
+		} else {
+			g.metrics.quarantined.Add(1)
+			g.logger.Info("telemetry_quarantined", fields...)
+		}
+	} else {
+		g.metrics.valid.Add(1)
+		err = g.handle(handlerCtx, delivery)
+	}
 	if err == nil {
 		err = handlerCtx.Err()
 	}
-	cancel()
-	if err == nil {
+	if err == nil && packet.QoS == 1 {
 		err = ack(packet)
 	}
 	if err != nil {

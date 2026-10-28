@@ -10,9 +10,12 @@ ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
     go build -mod=readonly -trimpath -ldflags="-s -w" \
     -o /out/telemetry-gateway ./cmd/telemetry-gateway
+RUN mkdir -p /out/quarantine && chown 65532:65532 /out/quarantine && chmod 700 /out/quarantine
 
 FROM scratch AS runtime
 COPY --from=build /out/telemetry-gateway /telemetry-gateway
 COPY LICENSE /licenses/MachinePulse-LICENSE
+COPY --from=build --chown=65532:65532 /out/quarantine /var/lib/machinepulse/quarantine
+ENV MACHINEPULSE_GATEWAY_QUARANTINE_DIR=/var/lib/machinepulse/quarantine
 USER 65532:65532
 ENTRYPOINT ["/telemetry-gateway"]

@@ -1,16 +1,11 @@
 package gateway
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
-	"io"
 	"time"
 )
 
-// Source indexes producer metadata without parsing or normalizing event time.
-// Contract validation and invalid-message disposition belong to P02-004.
+// Source indexes untrusted producer strings without normalizing event time.
 type Source struct {
 	EventID       string `json:"event_id"`
 	DeviceID      string `json:"device_id"`
@@ -28,24 +23,21 @@ type Delivery struct {
 	GatewayReceivedAt time.Time
 }
 
-func decode(topic string, payload []byte, receivedAt time.Time) (Delivery, error) {
+func deliveryFor(topic string, payload []byte, receivedAt time.Time) Delivery {
+	delivery := Delivery{
+		Payload: append(json.RawMessage(nil), payload...),
+		Topic:   topic, GatewayReceivedAt: receivedAt.UTC(),
+	}
 	var fields map[string]json.RawMessage
-	decoder := json.NewDecoder(bytes.NewReader(payload))
-	if err := decoder.Decode(&fields); err != nil {
-		return Delivery{}, fmt.Errorf("decode telemetry object: %w", err)
+	// Failure of one metadata field must not discard other recoverable fields.
+	if json.Unmarshal(payload, &fields) == nil {
+		for key, target := range map[string]*string{
+			"event_id": &delivery.Source.EventID, "device_id": &delivery.Source.DeviceID,
+			"asset_id": &delivery.Source.AssetID, "occurred_at": &delivery.Source.OccurredAt,
+			"schema_version": &delivery.Source.SchemaVersion,
+		} {
+			_ = json.Unmarshal(fields[key], target)
+		}
 	}
-	if fields == nil {
-		return Delivery{}, errors.New("telemetry must be a JSON object")
-	}
-	if err := decoder.Decode(new(any)); err != io.EOF {
-		return Delivery{}, errors.New("telemetry must contain exactly one JSON object")
-	}
-	var source Source
-	if err := json.Unmarshal(payload, &source); err != nil {
-		return Delivery{}, fmt.Errorf("decode producer metadata: %w", err)
-	}
-	return Delivery{
-		Source: source, Payload: append(json.RawMessage(nil), payload...),
-		Topic: topic, GatewayReceivedAt: receivedAt.UTC(),
-	}, nil
+	return delivery
 }

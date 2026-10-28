@@ -287,8 +287,85 @@ five tools with isolated configuration/data/cache directories and
 The fresh-install verification ran on local Linux amd64. Interactive VS Code
 behavior remains unverified; hosted CI results are tracked on PR #108.
 
+## Ingress validation and quarantine — 2026-10-28
+
+Implemented the local slice for
+[P02-004 / #22](https://github.com/gleniosp/machinepulse/issues/22) on
+`feat/22-ingress-validation`. The
+[ingestion specification](../specs/ingestion.md#local-ingress-validation-and-quarantine)
+contains the proposed local policy for maintainer review; the
+[gateway guide](../../services/telemetry-gateway/README.md) owns configuration
+and operator commands. No additional runtime dependency was introduced.
+
+### What was demonstrated
+
+The gateway accepts the shared producer fixture and rejects all nine shared
+invalid fixtures with actionable reasons. Additional Go tests cover ambiguous
+JSON, strict integer types, identifier profiles, UTC event time, exact sampling
+arithmetic beyond machine integer range, missing/unknown fields, finite scalar
+and axis values, sample counts, topic/device matching, delivery policy, and
+optional inclusive deployment bounds. Repeated valid event IDs reach the valid
+handler without changing source bytes or timestamp text.
+
+File quarantine preserves arbitrary bytes (including invalid UTF-8) through
+base64 encoding and a SHA-256 digest, along with receipt/transport metadata,
+recoverable source fields, and the rejection reason. Unit tests verify records
+remain readable after reopening, retries do not overwrite earlier records,
+private file permissions, counter/log output, and acknowledgement gating on
+storage errors, cancellation, and expired disposition. A failed acknowledgement
+does not remove the quarantine record.
+
+The real Mosquitto test demonstrated that an invalid delivery reaches file
+quarantine before the next valid event can pass the one-message receive limit.
+An injected quarantine outage prevented that next delivery. After a gateway
+restart, the invalid bytes were redelivered intact, persisted, and acknowledged,
+releasing the queued valid event. Existing gateway/broker restart and session
+recovery assertions also passed.
+
+The application container test wrote quarantine as UID 65532 into its named
+volume and verified exact malformed bytes, digest, reason, and transport fields
+after initial receipt, gateway restart, and full container recreation. The valid
+fixture remained pending and retained its source identity through those stages.
+The disposable containers, images, networks, and volumes were removed by the
+test harness.
+
+### Validation evidence
+
+Local Linux amd64, pinned Go 1.27.1 and repository toolchain:
+
+| Command                             | Result                                                                                                                                        |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mise run gateway:test`             | Go unit tests passed with the race detector                                                                                                   |
+| `mise run gateway:test:integration` | Real-broker acknowledgement, quarantine outage/redelivery, and recovery assertions passed                                                     |
+| `mise run fix`                      | Formatting and all repository checks passed, including Go vet/build/module checks, Python lint/types, lockfile, Compose, and shell syntax     |
+| `mise run test`                     | 124 simulator tests, Go race-enabled tests, broker persistence, gateway integration, and container builds/datasets/quarantine recovery passed |
+
+The initial sandboxed Go run could not use the tool caches. After cache access
+was approved, compilation exposed a local error-variable type mismatch, which
+was corrected before the passing runs. The first root check found table
+formatting; the repository formatter corrected it. Hosted CI has not run for
+these local changes.
+
+### Limits and next boundary
+
+Evidence covers local Linux filesystems and graceful restarts, not power loss,
+other host platforms, sustained load, or storage exhaustion. File and directory
+sync plus atomic publication are required of the configured storage. Context
+deadlines are checked between filesystem operations and cannot interrupt a
+blocked kernel filesystem call. Quarantine has no eviction or replay tooling;
+operators retain its directory/volume and provision capacity. Source metadata
+on invalid records remains untrusted, and repeated invalid attempts can create
+multiple records.
+
+Valid deliveries reach the handler, but the command still returns
+`ErrNoDisposition` there until P02-005 supplies the internal stream sink.
+Quarantine failure leaves a delivery pending until reconnection/restart rather
+than retrying disposition on the same connection. No enrollment lookup,
+deduplication, clock-skew cutoff, or universal physical range was introduced.
+
 ## Weekly review
 
-P02-001 through P02-003 are complete. The remaining Phase 02 outcomes require
-validation, durable disposition, internal publication, and simulator-to-stream
-integration evidence.
+The gateway evidence now covers ingress validation and durable local invalid
+disposition in addition to connection/session behavior. Internal publication,
+consumer failure handling, and simulator-to-stream integration remain the next
+capability boundaries; GitHub owns their delivery state.

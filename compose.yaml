@@ -17,6 +17,12 @@ services:
       MACHINEPULSE_MQTT_RECONNECT_CAP: ${MACHINEPULSE_MQTT_RECONNECT_CAP:-}
       MACHINEPULSE_MQTT_MAX_PACKET_BYTES: ${MACHINEPULSE_MQTT_MAX_PACKET_BYTES:-}
       MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT: ${MACHINEPULSE_GATEWAY_OPERATION_TIMEOUT:-}
+      MACHINEPULSE_GATEWAY_QUARANTINE_DIR: /var/lib/machinepulse/quarantine
+      MACHINEPULSE_GATEWAY_TEMPERATURE_MIN: ${MACHINEPULSE_GATEWAY_TEMPERATURE_MIN:-}
+      MACHINEPULSE_GATEWAY_TEMPERATURE_MAX: ${MACHINEPULSE_GATEWAY_TEMPERATURE_MAX:-}
+      MACHINEPULSE_GATEWAY_ACCELERATION_MAX: ${MACHINEPULSE_GATEWAY_ACCELERATION_MAX:-}
+    volumes:
+      - gateway-quarantine:/var/lib/machinepulse/quarantine
     depends_on:
       mqtt:
         condition: service_healthy
@@ -37,3 +43,6 @@ services:
         target: /output/simulator-output
         bind:
           create_host_path: false
+
+volumes:
+  gateway-quarantine:

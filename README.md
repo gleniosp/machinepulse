@@ -17,13 +17,13 @@ are engineering evidence, not validated diagnoses.
 
 The **Python simulator** generates repeatable datasets with measurements,
 separate labels describing the simulated conditions, and a manifest recording
-how each run was produced. The **Go gateway** receives MQTT messages and records
-source identity and receipt time. MQTT and Kafka run locally in Docker.
+how each run was produced. The **Go gateway** validates MQTT telemetry, records
+source identity and receipt time, and durably quarantines invalid deliveries.
+MQTT and Kafka run locally in Docker.
 
 These pieces are not connected end to end yet: the simulator writes files
-rather than publishing to MQTT. The gateway currently runs in **observation
-mode**; it logs received messages but withholds acknowledgement because durable
-storage/publication is not implemented. Its one-message receive limit then
+rather than publishing to MQTT. The gateway withholds acknowledgement for valid
+events because stream publication is not implemented. Its one-message receive limit then
 pauses further deliveries. Kafka is available, but receives no gateway events yet.
 
 The intended path is:
@@ -83,8 +83,8 @@ requirements, publishing a sample message, individual components, and checks.
 - **Ordering:** producer timestamps remain separate from gateway receipt time.
   The design assumes late or out-of-order messages and sequence gaps.
 - **Failures:** gateway reconnect and pending-message redelivery are tested
-  while the MQTT session survives. Durable quarantine, downstream retries,
-  replay, and producer buffering remain planned; session persistence alone
+  while the MQTT session survives. Invalid deliveries are acknowledged after
+  local file quarantine is durable. Downstream retries, replay, and producer buffering remain planned; session persistence alone
   does not guarantee data retention.
 
 The [ingestion contract](docs/specs/ingestion.md) and

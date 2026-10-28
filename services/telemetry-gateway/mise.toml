@@ -4,7 +4,7 @@ run = "mise exec -- go mod download"
 dir = "{{config_root}}"
 
 [tasks.run]
-description = "Observe local MQTT telemetry (durable sinks pending)"
+description = "Validate MQTT telemetry and quarantine invalid deliveries"
 raw_args = true
 run = "mise exec -- go run ./cmd/telemetry-gateway"
 dir = "{{config_root}}"
@@ -45,5 +45,5 @@ dir = "{{config_root}}"
 
 [tasks."test:integration"]
 description = "Run the real-broker gateway integration test in disposable Compose services"
-run = "mise exec -- go test -race -tags=integration -run TestBrokerSessionAndDeferredAcknowledgement -count=1 -v ./internal/gateway"
+run = "mise exec -- go test -race -tags=integration -run TestBroker -count=1 -v ./internal/gateway"
 dir = "{{config_root}}"

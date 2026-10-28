@@ -86,15 +86,20 @@ done
 "${compose[@]}" up --no-build --detach --wait --wait-timeout 180
 wait_for_log mqtt_connected
 topic=$("${verify[@]}" topic)
+printf '{' | "${compose[@]}" exec -T mqtt mosquitto_pub -V mqttv5 -q 1 \
+  -t "$topic" -s
+wait_for_log telemetry_quarantined
 "${compose[@]}" exec -T mqtt mosquitto_pub -V mqttv5 -q 1 \
   -t "$topic" -s < tools/simulator/tests/fixtures/telemetry.v1.json
 wait_for_log telemetry_unacknowledged
 "${compose[@]}" logs --no-color --no-log-prefix gateway > "$scratch/initial.log"
+"${compose[@]}" cp gateway:/var/lib/machinepulse/quarantine "$scratch/quarantine-initial"
 "${verify[@]}" gateway initial
 
 "${compose[@]}" restart gateway
 wait_for_log telemetry_unacknowledged 2
 "${compose[@]}" logs --no-color --no-log-prefix gateway > "$scratch/restart.log"
+"${compose[@]}" cp gateway:/var/lib/machinepulse/quarantine "$scratch/quarantine-restart"
 "${verify[@]}" gateway restart
 
 # Recreate every runtime container while retaining this test's broker volumes.
@@ -102,5 +107,6 @@ wait_for_log telemetry_unacknowledged 2
 "${compose[@]}" up --no-build --detach --wait --wait-timeout 180
 wait_for_log telemetry_unacknowledged
 "${compose[@]}" logs --no-color --no-log-prefix gateway > "$scratch/recreate.log"
+"${compose[@]}" cp gateway:/var/lib/machinepulse/quarantine "$scratch/quarantine-recreate"
 "${verify[@]}" gateway recreate
-echo "PASS: container builds, datasets, MQTT reception, restart, and recreation"
+echo "PASS: container builds, datasets, MQTT validation, persistent quarantine, restart, and recreation"
