@@ -201,8 +201,10 @@ JSON object keys, trailing JSON values, and nesting beyond 64 containers are
 rejected with a field path, stable reason code, and actionable message. Integer
 fields use JSON integer notation. UTC timestamps use the ISO date-time form
 with seconds and an explicit zero offset or `Z`; source bytes are preserved.
-The configured MQTT packet limit bounds receipt size; packets rejected by the
-MQTT client before delivery cannot be quarantined by the application.
+The gateway enforces the configured MQTT packet limit on each complete frame
+size, including its fixed header, before the MQTT client allocates the body.
+Oversized frames and malformed remaining-length headers terminate the connection
+before application delivery and cannot be quarantined.
 
 Temperature minimum/maximum and maximum absolute acceleration are optional,
 inclusive deployment settings. Unset bounds impose no physical range policy;

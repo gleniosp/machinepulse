@@ -89,9 +89,10 @@ invalid supplied values cause a startup error.
 `host:port` for the local environment; `--client-id` must remain stable and
 unique per running deployment. Session expiry, reconnect cap, operation
 deadline, and inbound MQTT packet limit are configurable. The default packet
-limit is 1 MiB; raise it explicitly for larger telemetry windows. The MQTT client
-can reject oversized packets before the gateway sees them, so those packets
-cannot be quarantined by the application.
+limit is 1 MiB; raise it explicitly for larger telemetry windows. The gateway
+checks each MQTT frame's full size before the client allocates its body. An
+oversized frame terminates the connection before application delivery, so it
+cannot be quarantined.
 
 The host quarantine default is `gateway-quarantine` relative to the process
 working directory (`services/telemetry-gateway` for mise tasks). An absolute

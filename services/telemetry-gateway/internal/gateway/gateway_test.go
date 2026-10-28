@@ -116,6 +116,30 @@ func TestCancellationDuringDispositionDoesNotAcknowledge(t *testing.T) {
 	}
 }
 
+func TestConstructorOwnsValidationBounds(t *testing.T) {
+	minimum, maximum, acceleration := 30.0, 50.0, 1.0
+	config := DefaultConfig()
+	config.BrokerAddress = "127.0.0.1:1883"
+	config.QuarantineDir = t.TempDir()
+	config.Validation = ValidationPolicy{TemperatureMin: &minimum, TemperatureMax: &maximum, AccelerationMax: &acceleration}
+	processed := false
+	g, err := New(config, slog.New(slog.NewJSONHandler(io.Discard, nil)), func(context.Context, Delivery) error {
+		processed = true
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Caller-owned configuration changes must not alter the validated policy.
+	minimum, maximum, acceleration = 41, 39, 0
+	if err := g.receive(context.Background(), sourcePacket(), func(*paho.Publish) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+	if !processed || *g.config.Validation.TemperatureMin != 30 || *g.config.Validation.TemperatureMax != 50 || *g.config.Validation.AccelerationMax != 1 {
+		t.Fatal("gateway retained caller-owned validation bounds")
+	}
+}
+
 type logBuffer struct {
 	mu sync.Mutex
 	bytes.Buffer

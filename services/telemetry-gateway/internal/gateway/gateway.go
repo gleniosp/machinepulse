@@ -76,6 +76,8 @@ type validationMetrics struct {
 	received, valid, invalid, quarantined, quarantineFailed atomic.Uint64
 }
 
+// Gateway owns one connection loop. Construct it with New and call Run once
+// at a time. Counters may be read concurrently with Run.
 type Gateway struct {
 	config     Config
 	logger     *slog.Logger
@@ -87,7 +89,10 @@ type Gateway struct {
 	subscriptionPending bool
 }
 
+// New prepares file quarantine and copies config, including optional bounds.
+// Later caller mutations of config do not alter the gateway's policy.
 func New(config Config, logger *slog.Logger, handle Handler) (*Gateway, error) {
+	config.Validation = config.Validation.clone()
 	if err := config.Validate(); err != nil {
 		return nil, err
 	}
@@ -101,6 +106,8 @@ func New(config Config, logger *slog.Logger, handle Handler) (*Gateway, error) {
 	return &Gateway{config: config, logger: logger, handle: handle, quarantine: quarantine}, nil
 }
 
+// Counters returns independently loaded process counters. During processing,
+// the values may describe slightly different instants rather than one transaction.
 func (g *Gateway) Counters() ValidationCounters {
 	return ValidationCounters{
 		Received: g.metrics.received.Load(), Valid: g.metrics.valid.Load(), Invalid: g.metrics.invalid.Load(),
@@ -152,6 +159,7 @@ func (g *Gateway) connect(ctx context.Context) (bool, error) {
 		return false, err
 	}
 	defer conn.Close()
+	conn = limitPackets(conn, g.config.MaximumPacketSize)
 	client := paho.NewClient(paho.ClientConfig{
 		ClientID: g.config.ClientID, Conn: conn, PacketTimeout: g.config.OperationTimeout,
 		EnableManualAcknowledgment: true,

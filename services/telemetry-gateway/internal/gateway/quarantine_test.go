@@ -113,6 +113,26 @@ func TestQuarantineDirectoryMustBeUsable(t *testing.T) {
 	q := &fileQuarantine{directory: filepath.Join(t.TempDir(), "missing")}
 	if err := q.Store(context.Background(), Rejection{}); err == nil {
 		t.Fatal("missing directory write succeeded")
+	} else if !errors.Is(err, os.ErrNotExist) || !strings.Contains(err.Error(), "create quarantine record") {
+		t.Fatalf("storage error lost operation/cause: %v", err)
+	}
+}
+
+func TestFailedQuarantineWriteCleansUpTemporaryFile(t *testing.T) {
+	directory := t.TempDir()
+	q, err := newFileQuarantine(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// time.Time's JSON marshaler rejects years outside the wire format range.
+	record := Rejection{GatewayReceivedAt: time.Date(10000, 1, 1, 0, 0, 0, 0, time.UTC)}
+	err = q.Store(context.Background(), record)
+	if _, ok := errors.AsType[*json.MarshalerError](err); !ok || !strings.Contains(err.Error(), "write quarantine record") {
+		t.Fatalf("write error lost operation/cause: %v", err)
+	}
+	entries, err := os.ReadDir(directory)
+	if err != nil || len(entries) != 0 {
+		t.Fatalf("failed write left records behind: %v, %v", entries, err)
 	}
 }
 

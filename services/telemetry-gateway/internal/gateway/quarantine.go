@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -91,27 +92,41 @@ func syncDirectory(path string) error {
 	return closeErr
 }
 
-func (q *fileQuarantine) Store(ctx context.Context, record Rejection) error {
+func (q *fileQuarantine) Store(ctx context.Context, record Rejection) (storeErr error) {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
 	file, err := os.CreateTemp(q.directory, ".pending-")
 	if err != nil {
-		return err
+		return fmt.Errorf("create quarantine record: %w", err)
 	}
-	defer os.Remove(file.Name()) // Only this operation's unpublished temporary file.
-	defer file.Close()
+	open, temporary := true, true
+	// Preserve the primary failure as well as cleanup failures. Only this
+	// operation's temporary file is removed; completed records are retained.
+	defer func() {
+		if open {
+			if err := file.Close(); err != nil {
+				storeErr = errors.Join(storeErr, fmt.Errorf("close incomplete quarantine record: %w", err))
+			}
+		}
+		if temporary {
+			if err := os.Remove(file.Name()); err != nil && !errors.Is(err, os.ErrNotExist) {
+				storeErr = errors.Join(storeErr, fmt.Errorf("remove temporary quarantine record: %w", err))
+			}
+		}
+	}()
 	if err := json.NewEncoder(file).Encode(record); err != nil {
-		return err
+		return fmt.Errorf("write quarantine record: %w", err)
 	}
 	if err := ctx.Err(); err != nil {
 		return err
 	}
 	if err := file.Sync(); err != nil {
-		return err
+		return fmt.Errorf("sync quarantine record: %w", err)
 	}
+	open = false // Close consumes the file even when it reports an error.
 	if err := file.Close(); err != nil {
-		return err
+		return fmt.Errorf("close quarantine record: %w", err)
 	}
 	if err := ctx.Err(); err != nil {
 		return err
@@ -120,13 +135,14 @@ func (q *fileQuarantine) Store(ctx context.Context, record Rejection) error {
 	// Link publishes atomically and fails if a completed filename already
 	// exists. It cannot overwrite an older record, even after a name collision.
 	if err := os.Link(file.Name(), filepath.Join(q.directory, name)); err != nil {
-		return err
+		return fmt.Errorf("publish quarantine record: %w", err)
 	}
 	if err := os.Remove(file.Name()); err != nil {
-		return err
+		return fmt.Errorf("remove temporary quarantine record: %w", err)
 	}
+	temporary = false
 	if err := syncDirectory(q.directory); err != nil {
-		return err
+		return fmt.Errorf("sync quarantine directory: %w", err)
 	}
 	return ctx.Err()
 }

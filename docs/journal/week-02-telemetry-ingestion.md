@@ -363,6 +363,48 @@ Quarantine failure leaves a delivery pending until reconnection/restart rather
 than retrying disposition on the same connection. No enrollment lookup,
 deduplication, clock-skew cutoff, or universal physical range was introduced.
 
+## Go engineering review follow-up — 2026-10-28
+
+Reviewed all Go source and tests using the maintainer's `go-engineering` skill,
+including module/workspace requirements, build tags, CI tasks, accepted
+contracts, and the resolved Eclipse Paho v0.23.0 source. The maintainer had
+accepted and committed the initial P02-004 implementation as `0d9f0bb` before
+this review.
+
+Three corrections were warranted:
+
+- Paho advertises `MaximumPacketSize` but its incoming reader does not enforce
+  that property before allocation. Added a connection wrapper that checks the
+  MQTT fixed header and remaining length before exposing the frame to Paho,
+  then streams each permitted body. Tests cover fragmented headers, multiple
+  frames, exact limits, malformed/truncated lengths, and an oversized CONNACK
+  whose body is never sent. The scripted peer confirms rejection without
+  waiting for the operation timeout.
+- `New` copied configuration values but retained caller-owned pointers to
+  measurement bounds. It now copies the pointed-to values too. A regression
+  mutates all three original bounds after construction and verifies that the
+  gateway continues using its validated policy. Documented the gateway's Run
+  and counter concurrency contracts.
+- Quarantine failures now identify the failed operation and preserve the
+  underlying error through wrapping. Cleanup closes an incomplete record once
+  and reports temporary-file cleanup errors alongside the primary failure.
+  A failed serialization test verifies temporary-file removal and preservation
+  of the marshaler error; the missing-directory case verifies its filesystem
+  cause remains inspectable.
+
+`mise run gateway:test` passed with the race detector. `mise run gateway:check`
+passed formatting, vet, build, and dependency checksum verification.
+`mise run gateway:test:integration` passed the existing real-broker
+acknowledgement, quarantine outage/redelivery, and session-recovery assertions
+with the new connection wrapper. `mise run fix` (including repository checks)
+and `git diff --check` also passed. Evidence remains local Linux amd64; the
+earlier durability and platform limitations still apply. No dependency or
+toolchain requirement changed.
+
+The ingestion specification and gateway guide now describe the enforced frame
+limit. These corrections are a local review follow-up under #22, with commits
+and publication remaining maintainer-owned.
+
 ## Weekly review
 
 The gateway evidence now covers ingress validation and durable local invalid

@@ -23,6 +23,20 @@ type ValidationPolicy struct {
 	AccelerationMax *float64
 }
 
+func (p ValidationPolicy) clone() ValidationPolicy {
+	cloneBound := func(bound *float64) *float64 {
+		if bound == nil {
+			return nil
+		}
+		value := *bound
+		return &value
+	}
+	return ValidationPolicy{
+		TemperatureMin: cloneBound(p.TemperatureMin), TemperatureMax: cloneBound(p.TemperatureMax),
+		AccelerationMax: cloneBound(p.AccelerationMax),
+	}
+}
+
 func (p ValidationPolicy) Validate() error {
 	for _, bound := range []*float64{p.TemperatureMin, p.TemperatureMax, p.AccelerationMax} {
 		if bound != nil && (math.IsNaN(*bound) || math.IsInf(*bound, 0)) {
