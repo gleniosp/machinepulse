@@ -18,13 +18,13 @@ are engineering evidence, not validated diagnoses.
 The **Python simulator** generates repeatable datasets with measurements,
 separate labels describing the simulated conditions, and a manifest recording
 how each run was produced. The **Go gateway** validates MQTT telemetry, records
-source identity and receipt time, and durably quarantines invalid deliveries.
+source identity and receipt time, publishes valid events to Kafka, and durably
+quarantines invalid deliveries.
 MQTT and Kafka run locally in Docker.
 
 These pieces are not connected end to end yet: the simulator writes files
-rather than publishing to MQTT. The gateway withholds acknowledgement for valid
-events because stream publication is not implemented. Its one-message receive limit then
-pauses further deliveries. Kafka is available, but receives no gateway events yet.
+rather than publishing to MQTT. Manually published MQTT telemetry can traverse
+the gateway into Kafka using the versioned internal event contract.
 
 The intended path is:
 
@@ -71,6 +71,9 @@ docker compose logs --tail 50 gateway
 docker compose down
 ```
 
+Before publishing telemetry, explicitly provision the Kafka application topic
+using the [gateway guide](services/telemetry-gateway/README.md#run-locally).
+
 Stopping preserves broker volumes and generated files. The
 [Docker guide](docs/guides/docker-quickstart.md) covers configuration, resource
 requirements, publishing a sample message, individual components, and checks.
@@ -83,8 +86,11 @@ requirements, publishing a sample message, individual components, and checks.
 - **Ordering:** producer timestamps remain separate from gateway receipt time.
   The design assumes late or out-of-order messages and sequence gaps.
 - **Failures:** gateway reconnect and pending-message redelivery are tested
-  while the MQTT session survives. Invalid deliveries are acknowledged after
-  local file quarantine is durable. Downstream retries, replay, and producer buffering remain planned; session persistence alone
+  while the MQTT session survives. Valid deliveries are acknowledged after Kafka
+  acceptance; invalid deliveries after local file quarantine is durable. A stream
+  failure leaves a delivery pending and pauses further QoS 1 messages until
+  restart/redelivery. Downstream retries, replay, and producer buffering remain
+  planned; session persistence alone
   does not guarantee data retention.
 
 The [ingestion contract](docs/specs/ingestion.md) and

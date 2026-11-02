@@ -21,10 +21,11 @@ var ErrNoDisposition = errors.New("durable disposition is not configured")
 
 // Handler must return nil only after a durable terminal disposition. It must
 // honor ctx and must not retain references to a client or acknowledge MQTT itself.
-// P02-005 supplies the command's durable valid-event sink.
+// The command uses synchronous Kafka publication for valid events.
 type Handler func(context.Context, Delivery) error
 
 type Config struct {
+	KafkaAddress      string
 	BrokerAddress     string
 	ClientID          string
 	SessionExpiry     uint32

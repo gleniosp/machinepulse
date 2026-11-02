@@ -22,17 +22,20 @@ func main() {
 		logger.Error("gateway_configuration_failed", "error", err)
 		os.Exit(2)
 	}
-	g, err := gateway.New(config, logger, func(context.Context, gateway.Delivery) error {
-		return gateway.ErrNoDisposition
-	})
+	publisher := gateway.NewStreamPublisher(config.KafkaAddress, config.OperationTimeout)
+	defer func() {
+		if err := publisher.Close(); err != nil {
+			logger.Error("stream_close_failed", "error", err)
+		}
+	}()
+	g, err := gateway.New(config, logger, publisher.Publish)
 	if err != nil {
 		logger.Error("gateway_configuration_failed", "error", err)
 		os.Exit(2)
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	logger.Warn("gateway_validation_mode", "quarantine_dir", config.QuarantineDir,
-		"detail", "invalid deliveries are durably quarantined; valid deliveries await the P02-005 stream sink and remain unacknowledged")
+	logger.Info("gateway_stream_mode", "topic", gateway.InternalTopic, "kafka", config.KafkaAddress)
 	if err := g.Run(ctx); err != nil {
 		logger.Error("gateway_failed", "error", err)
 		os.Exit(1)

@@ -11,6 +11,7 @@ services:
       context: .
       dockerfile: infra/docker/gateway.Dockerfile
     environment:
+      MACHINEPULSE_KAFKA_ADDRESS: kafka:19092
       MACHINEPULSE_MQTT_ADDRESS: mqtt:1883
       MACHINEPULSE_MQTT_CLIENT_ID: ${MACHINEPULSE_CONTAINER_MQTT_CLIENT_ID:-machinepulse-gateway-container}
       MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS: ${MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS:-}

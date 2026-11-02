@@ -31,6 +31,8 @@ Specifications should link to the product requirements they satisfy and to archi
 | [Simulator behavior](simulator.md)                      | Draft    | Defines deterministic motor telemetry generation and ground-truth separation                                         |
 | [Ingestion and internal event boundaries](ingestion.md) | Accepted | Defines the MQTT route and delivery boundary into the internal event stream; defers the internal envelope to P02-005 |
 
+| [Internal telemetry events](internal-telemetry.md) | Draft | Defines the Kafka route, versioned envelope, provenance, and publication semantics |
+
 The remaining capability specifications will be added just before their implementation phases:
 
 - simulator behavior;

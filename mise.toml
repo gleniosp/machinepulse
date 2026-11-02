@@ -19,6 +19,7 @@ dprint = "0.64.3"
 _.file = ".env"
 
 [env]
+MACHINEPULSE_KAFKA_ADDRESS = "{{ get_env(name='MACHINEPULSE_KAFKA_ADDRESS', default=vars.MACHINEPULSE_KAFKA_ADDRESS | default(value='')) }}"
 MACHINEPULSE_MQTT_ADDRESS = "{{ get_env(name='MACHINEPULSE_MQTT_ADDRESS', default=vars.MACHINEPULSE_MQTT_ADDRESS | default(value='')) }}"
 MACHINEPULSE_MQTT_CLIENT_ID = "{{ get_env(name='MACHINEPULSE_MQTT_CLIENT_ID', default=vars.MACHINEPULSE_MQTT_CLIENT_ID | default(value='')) }}"
 MACHINEPULSE_MQTT_PORT = "{{ get_env(name='MACHINEPULSE_MQTT_PORT', default=vars.MACHINEPULSE_MQTT_PORT | default(value='')) }}"
