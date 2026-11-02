@@ -411,3 +411,34 @@ The gateway evidence now covers ingress validation and durable local invalid
 disposition in addition to connection/session behavior. Internal publication,
 consumer failure handling, and simulator-to-stream integration remain the next
 capability boundaries; GitHub owns their delivery state.
+
+## 2026-11-02 — Versioned internal telemetry publication
+
+Implemented [P02-005 / #23](https://github.com/gleniosp/machinepulse/issues/23)
+on `feat/23-versioned-internal-events`. The proposed
+[internal telemetry contract](../specs/internal-telemetry.md) owns routing,
+envelope fields, partition key, compatibility, and local topic policy. The
+command now connects a synchronous Kafka writer to the validated-event handler.
+The source identity and original telemetry object survive the boundary; receipt
+time remains separate. The shared producer/consumer fixture is under
+`services/telemetry-gateway/internal/gateway/testdata/`.
+
+Validation:
+
+- `mise run gateway:check`: formatting, vet, build, and dependency checks passed.
+- `mise run gateway:test`: race-enabled unit tests passed, including fixture
+  compatibility, source provenance, stream failure preventing MQTT acknowledgement,
+  and Kafka address configuration.
+- `mise run gateway:test:integration`: both real-broker tests passed. A disposable
+  Kafka topic accepted the publication and a consumer recovered its key, version,
+  source identity, and receipt timestamp. Existing Mosquitto session, quarantine,
+  backpressure, and recovery tests also passed.
+- `mise run infra:check` and `mise run containers:check`: passed.
+
+The gateway guide documents explicit topic provisioning and host/container
+addresses. The existing container smoke test intentionally leaves this topic
+absent to retain its pending-delivery/restart scenario; the full container image
+smoke test was not rerun for this slice. Single-node broker acceptance does not
+prove replica availability or power-loss durability. Ambiguous publication can
+duplicate events; consumer retry/dead letters remain P02-006. The new contract
+and local changes await maintainer review; no commits or PR were created.

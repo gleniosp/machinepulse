@@ -8,8 +8,8 @@
 - **Related task:** [P02-001 — Specify MQTT topics and ingestion semantics](https://github.com/gleniosp/machinepulse/issues/19)
 
 This specification defines the producer-facing MQTT topic convention and the
-delivery boundary between MQTT and the internal event stream. It does not
-define the internal event envelope or stream topic names; P02-005 owns those.
+delivery boundary between MQTT and the internal event stream. The [internal telemetry contract](internal-telemetry.md) proposes the event
+envelope and stream topic names for P02-005.
 The maintainer accepted these semantics on 2026-10-15. Runtime behavior and
 broker/client compatibility remain to be verified by the follow-up tasks.
 
@@ -227,8 +227,8 @@ invalid deliveries may produce multiple records and retain the same digest.
 Local process counters distinguish received, valid, invalid, quarantined, and
 quarantine-failed deliveries and are emitted as structured log snapshots.
 Validation success means the event reached the valid handler, not that the
-internal stream accepted it. P02-005 supplies that durable handler; until then
-valid deliveries remain pending. QoS 0 invalid deliveries can be recorded but
+internal stream accepted it. The command uses the [internal telemetry publisher](internal-telemetry.md)
+for that durable handler; stream failures leave valid deliveries pending. QoS 0 invalid deliveries can be recorded but
 cannot obtain the QoS 1 acknowledgement or redelivery guarantees.
 
 The host filesystem and persistent container volume own quarantine durability;

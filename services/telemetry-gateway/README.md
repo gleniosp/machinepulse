@@ -4,8 +4,8 @@ The Go gateway receives device-facing MQTT telemetry using the accepted
 [ingestion contract](../../docs/specs/ingestion.md). It validates `telemetry.v1`,
 preserves exact payload bytes and producer metadata, and adds a separate UTC
 receipt time. Invalid deliveries are durably quarantined before acknowledgement.
-Valid deliveries reach an in-process handler; the internal event schema and
-stream publication belong to P02-005.
+Valid deliveries are published synchronously to Kafka using the
+[internal event contract](../../docs/specs/internal-telemetry.md).
 
 ## Run locally
 
@@ -18,6 +18,12 @@ From the repository root:
 cp .env.example .env
 mise run setup
 mise run infra:up
+# Explicitly provision the application topic before publishing telemetry.
+docker compose --file infra/docker/compose.yaml exec -T kafka \
+  /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 \
+  --create --if-not-exists --topic machinepulse.telemetry.v1 \
+  --partitions 1 --replication-factor 1 \
+  --config retention.ms=604800000 --config cleanup.policy=delete
 mise run gateway:run
 ```
 
@@ -31,12 +37,12 @@ docker compose --file infra/docker/compose.yaml exec -T mqtt mosquitto_pub \
 ```
 
 JSON logs on stderr show `mqtt_subscribed`, `mqtt_connected`,
-`telemetry_received`, and `telemetry_unacknowledged`. The command's valid-event
-handler returns `ErrNoDisposition` until P02-005 supplies the stream sink, so a
-valid delivery remains unacknowledged. The
-one-message receive maximum pauses further QoS 1 deliveries, and restarting
-with the same client ID redelivers the pending message while the broker
-session survives. A producer PUBACK only confirms broker receipt.
+`telemetry_received`, and `telemetry_disposition_complete`. MQTT acknowledgement
+follows synchronous Kafka acceptance with all in-sync replica acknowledgements.
+If the topic is absent or Kafka fails, `telemetry_unacknowledged` records the
+failure; restart the gateway after fixing the sink to redeliver the pending
+message. A producer PUBACK only confirms MQTT broker receipt. Duplicate records
+remain possible after ambiguous failures or a crash before MQTT acknowledgement.
 
 To exercise rejection, publish an invalid fixture **before** the valid fixture
 on a fresh gateway session; a pending valid delivery pauses later messages:
@@ -75,6 +81,7 @@ invalid supplied values cause a startup error.
 | Environment variable                       | Flag                  |
 | ------------------------------------------ | --------------------- |
 | `MACHINEPULSE_MQTT_ADDRESS`                | `--broker`            |
+| `MACHINEPULSE_KAFKA_ADDRESS`               | `--kafka`             |
 | `MACHINEPULSE_MQTT_CLIENT_ID`              | `--client-id`         |
 | `MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS` | `--session-expiry`    |
 | `MACHINEPULSE_MQTT_RECONNECT_CAP`          | `--reconnect-cap`     |
@@ -173,8 +180,22 @@ This receive path does not implement a producer's outgoing publication buffer.
 The handler interface returns success only after durable disposition; only
 then does the gateway call `Ack`. Handlers must honor their context deadline.
 Failures remain pending at the broker and are visible in structured logs.
-The command connects validation and file quarantine; P02-005 connects stream
-publication to the valid-event handoff. Context deadlines are checked between
+The command connects validation, file quarantine, and synchronous Kafka publication. Context deadlines are checked between
 filesystem operations; a blocked kernel filesystem call cannot be interrupted
 by a Go context. [Week 02](../../docs/journal/week-02-telemetry-ingestion.md)
 owns the recorded results and limits.
+
+## Kafka publication
+
+`--kafka` / `MACHINEPULSE_KAFKA_ADDRESS` selects one bootstrap `host:port`
+(default `127.0.0.1:9092`). Match a changed local Kafka port explicitly. Compose
+uses `kafka:19092` on its internal network. Provision the topic with the command
+above before using either host or container gateways. Existing topics are not
+reconfigured by `--if-not-exists`; inspect their retention and partition settings.
+
+The pinned [kafka-go client](https://github.com/segmentio/kafka-go/tree/v0.4.49)
+is MIT licensed. Its synchronous writer disables automatic topic creation and
+uses one bounded attempt per delivery. `gateway:test:integration` also provisions
+a disposable Kafka topic and verifies publication and consumer source identity.
+The container smoke test deliberately leaves the application topic absent to
+exercise pending valid delivery and redelivery across restart.

@@ -103,3 +103,16 @@ func TestHelpDoesNotRequireDeploymentConfiguration(t *testing.T) {
 		t.Fatalf("expected help, got %v", err)
 	}
 }
+
+func TestKafkaConfiguration(t *testing.T) {
+	config, err := parseConfig([]string{"--broker", "localhost:1883", "--kafka", "kafka:19092"}, lookupMap(map[string]string{"MACHINEPULSE_KAFKA_ADDRESS": "invalid"}), io.Discard)
+	if err != nil || config.KafkaAddress != "kafka:19092" {
+		t.Fatalf("Kafka flag precedence: %+v %v", config, err)
+	}
+	for _, address := range []string{"bad", "localhost:0", "localhost:65536", ":9092"} {
+		_, err := parseConfig([]string{"--broker", "localhost:1883"}, lookupMap(map[string]string{"MACHINEPULSE_KAFKA_ADDRESS": address}), io.Discard)
+		if err == nil {
+			t.Fatalf("accepted invalid Kafka address %q", address)
+		}
+	}
+}

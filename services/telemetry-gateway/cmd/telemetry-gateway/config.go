@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net"
 	"strconv"
+	"strings"
 
 	"github.com/gleniosp/machinepulse/services/telemetry-gateway/internal/gateway"
 )
@@ -15,6 +17,7 @@ func parseConfig(args []string, lookup func(string) (string, bool), output io.Wr
 	config := gateway.DefaultConfig()
 	flags := flag.NewFlagSet("telemetry-gateway", flag.ContinueOnError)
 	flags.SetOutput(output)
+	flags.StringVar(&config.KafkaAddress, "kafka", "127.0.0.1:9092", "Kafka bootstrap host:port (MACHINEPULSE_KAFKA_ADDRESS)")
 	flags.StringVar(&config.BrokerAddress, "broker", config.BrokerAddress, "MQTT host:port; required via flag or MACHINEPULSE_MQTT_ADDRESS")
 	flags.StringVar(&config.ClientID, "client-id", config.ClientID, "stable deployment client ID (MACHINEPULSE_MQTT_CLIENT_ID)")
 	expiry := flags.Uint64("session-expiry", uint64(config.SessionExpiry), "session expiry in seconds (MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS)")
@@ -35,6 +38,7 @@ func parseConfig(args []string, lookup func(string) (string, bool), output io.Wr
 	flags.Visit(func(f *flag.Flag) { explicit[f.Name] = true })
 	for _, setting := range []struct{ flag, env string }{
 		{"broker", "MACHINEPULSE_MQTT_ADDRESS"},
+		{"kafka", "MACHINEPULSE_KAFKA_ADDRESS"},
 		{"client-id", "MACHINEPULSE_MQTT_CLIENT_ID"},
 		{"session-expiry", "MACHINEPULSE_MQTT_SESSION_EXPIRY_SECONDS"},
 		{"max-packet-bytes", "MACHINEPULSE_MQTT_MAX_PACKET_BYTES"},
@@ -77,6 +81,11 @@ func parseConfig(args []string, lookup func(string) (string, bool), output io.Wr
 	}
 	if config.BrokerAddress == "" {
 		return config, fmt.Errorf("MACHINEPULSE_MQTT_ADDRESS or --broker is required")
+	}
+	host, port, err := net.SplitHostPort(config.KafkaAddress)
+	number, portErr := strconv.ParseUint(port, 10, 16)
+	if err != nil || portErr != nil || number == 0 || strings.TrimSpace(host) == "" || strings.ContainsAny(host, "/ \t\r\n") {
+		return config, fmt.Errorf("kafka must be host:port with a numeric port between 1 and 65535")
 	}
 	return config, config.Validate()
 }

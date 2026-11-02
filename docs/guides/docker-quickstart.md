@@ -58,12 +58,12 @@ docker compose exec -T mqtt mosquitto_pub \
 docker compose logs --tail 50 gateway
 ```
 
-Expect `telemetry_received` and `telemetry_unacknowledged`. The gateway validates
-this valid fixture and preserves its bytes, then withholds acknowledgement until
-the stream sink is implemented. Its one-message receive limit pauses subsequent
-deliveries. Kafka is available locally, but the gateway does not publish to it
-yet. See the [gateway guide](../../services/telemetry-gateway/README.md) for
-the validation/quarantine example, configuration, and recovery behavior.
+Provision the application topic using the [gateway guide](../../services/telemetry-gateway/README.md#run-locally)
+before publishing. Expect `telemetry_received` and `telemetry_disposition_complete`
+after Kafka acceptance. An absent topic or failed stream leaves the delivery
+unacknowledged and pauses subsequent QoS 1 messages until restart/redelivery.
+
+The gateway guide also covers validation, quarantine, configuration, and recovery.
 Invalid deliveries are recorded before acknowledgement in the persistent
 `gateway-quarantine` volume. Publish invalid fixtures before a valid pending
 delivery when exercising this path on a fresh session.
