@@ -7,6 +7,9 @@ receipt time. Invalid deliveries are durably quarantined before acknowledgement.
 Valid deliveries are published synchronously to Kafka using the
 [internal event contract](../../docs/specs/internal-telemetry.md).
 
+For the full journey and failure recovery, see the
+[event-flow walkthrough](../../docs/guides/event-flow-explained.md).
+
 ## Run locally
 
 For a container build and Compose workflow without host Go or mise, see the
@@ -199,3 +202,21 @@ uses one bounded attempt per delivery. `gateway:test:integration` also provision
 a disposable Kafka topic and verifies publication and consumer source identity.
 The container smoke test deliberately leaves the application topic absent to
 exercise pending valid delivery and redelivery across restart.
+
+## Internal consumer transport
+
+`internal/gateway` provides `RunConsumer`, `NewConsumerReader`, and
+`NewDeadLetterWriter` for the next internal handlers. Configure `ConsumerPolicy`
+explicitly with `MaxAttempts`, fixed `Backoff`, `OperationTimeout`, and terminal
+policy `stop` or `dead-letter`. Supply an idempotent durable handler, consumer
+group, and structured logger. The loop owns serial intake; callers close the
+reader and writer after it returns. This is a transport API, with domain
+persistence deferred to Phase 03.
+
+Provision `machinepulse.telemetry.dead-letter.v1` before selecting dead-letter
+policy, using the source topic's provisioning command and local retention policy.
+The [internal event contract](../../docs/specs/internal-telemetry.md#consumer-disposition-p02-006-proposal)
+owns acknowledgement, failure records, duplicate behavior, and replay limits.
+`mise run gateway:test` exercises failure injection; `mise run
+gateway:test:integration` verifies uncommitted redelivery and durable dead letters
+against the disposable Kafka broker.

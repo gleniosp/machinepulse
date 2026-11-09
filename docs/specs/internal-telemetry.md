@@ -47,3 +47,36 @@ Single-node acknowledgements establish broker acceptance, with durability
 limited by the broker's persistent volume and filesystem. They do not establish
 replica availability or power-loss durability. The gateway does not create
 application topics or silently change broker policies.
+
+## Consumer disposition (P02-006 proposal)
+
+The initial Go consumer processes records serially in a consumer group using
+explicit synchronous offset commits. A handler must return success only after
+its side effect is durable and use source `event_id` for idempotency. No domain
+storage handler is introduced by this transport slice.
+
+Configuration supplies a maximum number of attempts (including the first), a
+fixed positive backoff, an operation timeout, and terminal policy (`stop` or
+`dead-letter`). Each attempt has its own deadline. Cancellation stops without
+committing. Exhaustion under `stop` returns an error without committing. Under
+`dead-letter`, publication to `machinepulse.telemetry.dead-letter.v1` must be
+acknowledged by all in-sync replicas before committing the source offset. A
+publication or commit failure stops intake; restarting the same group may
+redeliver the record. Topics must be provisioned explicitly with the same local
+retention/replication policy as the source topic.
+
+Dead-letter JSON contains `schema_version` (`internal.dead-letter.v1`), the
+original Kafka record bytes (base64), key, topic, partition, offset, consumer
+group, attempt count, final failure reason, and UTC failure time. Original bytes
+retain source identity even for an invalid envelope. Consumers reject unsupported
+versions, missing identities, mismatched source/payload identity, and a device
+key that differs from source identity before calling the handler.
+
+Structured attempt and disposition logs include source event/device identity,
+group, topic, partition, offset, attempt number and failure. Repeated event IDs
+are intentionally passed to handlers: these correlation fields expose duplicates
+without an unbounded in-memory deduplication cache. Ambiguous commits, crashes,
+and rebalances can duplicate successful processing or dead letters. Attempt
+budgets restart on redelivery; this is at-least-once delivery, with no automatic
+replay or exactly-once guarantee. The caller owns reader/writer closure after Run
+returns and must run only one loop per reader with auto commits disabled.

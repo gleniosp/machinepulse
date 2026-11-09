@@ -442,3 +442,51 @@ smoke test was not rerun for this slice. Single-node broker acceptance does not
 prove replica availability or power-loss durability. Ambiguous publication can
 duplicate events; consumer retry/dead letters remain P02-006. The new contract
 and local changes await maintainer review; no commits or PR were created.
+
+## 2026-11-09 — Consumer acknowledgement and failure disposition
+
+Implemented [P02-006 / #24](https://github.com/gleniosp/machinepulse/issues/24)
+as a serial Go consumer transport API in `internal/gateway/consumer.go`. The
+[internal telemetry contract](../specs/internal-telemetry.md#consumer-disposition-p02-006-proposal)
+proposes the processing budget, offset disposition, dead-letter envelope, and
+duplicate semantics. The gateway guide describes composition and provisioning.
+No persistence or analytics handler is introduced ahead of its owning phase.
+
+Validation on local Linux amd64:
+
+- `mise run gateway:test`: race-enabled tests passed, including retry success,
+  exhaustion with stop/dead-letter policies, dead-letter outage preventing commit,
+  commit outage, cancellation, expired attempt, inconsistent provenance, policy
+  validation, and repeated event identity in structured logs.
+- `mise run gateway:check`: formatting, vet, build, and dependency checks passed.
+- `mise run gateway:test:integration`: both broker tests passed (58.5 seconds).
+  Kafka redelivered an uncommitted failed record after reopening the same group;
+  retry exhaustion then published a dead letter before committing. Its exact
+  original bytes, offset, final failure reason, and attempt count were recovered
+  from Kafka. Existing MQTT/session/quarantine recovery evidence also passed.
+- `mise run check`: all repository formatting, lint, type, dependency, lockfile,
+  Compose, and shell syntax checks passed. Cache writes required sandbox approval.
+
+Limits: the API requires an idempotent durable handler that honors context and a
+single serial loop per reader. Attempt budgets reset on broker redelivery;
+ambiguous commits or crashes may duplicate processing and dead letters. No
+exactly-once, power-loss, production availability, or replay-tooling claim is
+made. An oversized dead letter or unavailable topic stops intake without
+committing; operators must provision capacity. The consumer contract proposal
+and local implementation await maintainer review. Changes remain uncommitted.
+
+### Event-flow walkthrough and recovery planning — 2026-11-09
+
+Added the [event-flow walkthrough](../guides/event-flow-explained.md), following
+one measurement through MQTT, gateway validation, local quarantine, Kafka,
+consumer attempts, duplicate delivery, and dead-letter investigation. It
+separates implemented transport from future domain handlers, durable idempotency,
+and replay, and links to owning contracts rather than defining another one.
+The documentation hub, gateway guide, and architecture data flow link to it;
+root agent instructions require related development to keep it updated.
+
+Expanded [P03-007 / #33](https://github.com/gleniosp/machinepulse/issues/33) to
+explicitly cover bounded dead-letter selection, investigation and repair,
+provenance, retention/evidence preservation, verification of durable recovery,
+and integration evidence for repeated, interrupted, and failed replay. These
+are future unchecked acceptance criteria, not implemented recovery tooling.
