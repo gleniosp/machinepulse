@@ -22,13 +22,14 @@ Use [GitHub milestones](https://github.com/gleniosp/machinepulse/milestones) for
 current priorities and delivery progress. The [roadmap](roadmap.md)
 explains where to find implementation planning and historical work.
 
+For contributor and operational walkthroughs, see the
+[guides directory](guides/).
+
 For the existing telemetry components, the [local infrastructure guide](../infra/README.md)
 covers the brokers and the [gateway guide](../services/telemetry-gateway/README.md)
 covers the receive path. The accepted transport contract is in
 [Ingestion and Internal Event Boundaries](specs/ingestion.md), with implementation
 evidence in [Week 02](journal/week-02-telemetry-ingestion.md).
-
-To generate and inspect a local synthetic dataset, start with the [simulator quickstart](guides/simulator-quickstart.md). It links the current file output to the telemetry contract and target architecture without repeating their definitions.
 
 ## Document ownership
 
@@ -44,8 +45,7 @@ To generate and inspect a local synthetic dataset, start with the [simulator qui
 | Architecture       | [Data flow](architecture/data-flow.md)                   | How data moves, changes meaning, fails, and is replayed              |
 | Architecture       | [Runtime boundaries](architecture/runtime-boundaries.md) | Component ownership and cross-boundary rules                         |
 | Specifications     | [Specifications index](specs/README.md)                  | Specification lifecycle and contract registry                        |
-| Guide              | [Simulator quickstart](guides/simulator-quickstart.md)   | Simulator purpose, invocation, and interpretation of generated files |
-| Guide              | [Docker quickstart](guides/docker-quickstart.md)         | Run the current components without host language toolchains          |
+| Guide              | [Guides directory](guides/)                              | Contributor and operational walkthroughs                             |
 | Guide              | [Local telemetry infrastructure](../infra/README.md)     | Local broker setup, configuration, readiness, and verification       |
 | Project operations | [Working agreement](working-agreement.md)                | Maintainer-agent collaboration and delivery lifecycle                |
 | Project operations | [Developer tooling baseline](developer-tooling.md)       | Tool, environment, setup, and root task ownership                    |

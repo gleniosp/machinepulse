@@ -121,6 +121,17 @@ dead-letter behavior. A crash after durable publication but before MQTT
 acknowledgement can cause redelivery, so `event_id`-based idempotency remains
 required.
 
+An invalid telemetry payload is acknowledged to the broker after its quarantine
+record is durable; malformed application data therefore does not remain queued
+for repeated delivery. If quarantine persistence fails, the current gateway
+withholds the acknowledgement and does not retry disposition on the same
+connection. Its Receive Maximum of one leaves that delivery in flight and
+backpressures later QoS 1 deliveries. Under MQTT 5, the broker resends an
+unacknowledged QoS delivery when the gateway reconnects with its existing
+session; it is not required to resend it repeatedly while the connection remains
+active. If the session expires or broker state is lost, the producer-side edge
+buffer is needed for recovery.
+
 ## Event time and gateway receipt time
 
 The producer's `occurred_at` keeps its existing telemetry-contract meaning:

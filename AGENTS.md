@@ -23,4 +23,7 @@ Do not copy information between these sources. Update the document that owns a f
 - Follow the responsibility boundaries in the [architecture documentation](docs/architecture/overview.md).
 - Do not add hidden external services, proprietary data, secrets, or optional features that displace the core telemetry-to-maintenance path.
 
+Update affected guides whenever project behavior or operating procedures change.
+Keep the product glossary current and its entries alphabetized.
+
 Task-specific agent skills, when needed, belong under `.agents/skills/` and should be loaded only for the task they cover.

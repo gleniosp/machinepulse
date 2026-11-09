@@ -127,8 +127,11 @@ The exact retry and acknowledgement behavior must be tested rather than inferred
 
 The device-facing MQTT topic and gateway acknowledgement boundary are
 defined in the [ingestion specification](../specs/ingestion.md). Internal
-event-stream names and envelope fields remain a separate contract owned by
-P02-005.
+event-stream names, envelopes, and consumer dispositions belong to the
+[internal telemetry contract](../specs/internal-telemetry.md). The
+[event-flow walkthrough](../guides/event-flow-explained.md) explains these
+boundaries through one window, including current implementation limits and
+planned recovery.
 
 ## Data retention and reproducibility
 
